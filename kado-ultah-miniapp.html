@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Untuk Kamu 🕯️</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     DESAIN TOKEN — ubah palet/font di sini kalau mau
+     Tema: kertas kado & wax seal — bukan dark-mode-glow generik
+     ============================================================ */
+  :root{
+    --bg: #efe2c4;
+    --bg-panel: #f8f0dd;
+    --bg-panel-2: #e7d7ae;
+    --gold: #a8763a;
+    --blush: #a23b2e;
+    --text: #2b2118;
+    --text-muted: #8a7757;
+    --line: rgba(43,33,24,0.16);
+    --radius: 18px;
+    --font-display: "Fraunces", serif;
+    --font-body: "Plus Jakarta Sans", sans-serif;
+    --font-mono: "JetBrains Mono", monospace;
+  }
+
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; padding:0; height:100%;}
+  body{
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    overflow-x:hidden;
+    position:relative;
+  }
+  /* vignette kertas tipis, bukan glow layar */
+  body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    background: radial-gradient(900px 700px at 50% 0%, rgba(43,33,24,0.05), transparent 60%);
+    pointer-events:none;
+    z-index:0;
+  }
+  /* serat kertas halus */
+  body::after{
+    content:"";
+    position:fixed;
+    inset:0;
+    opacity:0.6;
+    mix-blend-mode: multiply;
+    pointer-events:none;
+    z-index:0;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='matrix' values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.05 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+  .app{ position:relative; z-index:1; }
+  button{font-family:inherit; cursor:pointer;}
+
+  /* ---------- layout shell ---------- */
+  .app{
+    max-width:480px;
+    margin:0 auto;
+    width:100%;
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    padding-bottom:84px; /* space for bottom nav */
+  }
+
+  /* ---------- HERO / LILIN ---------- */
+  .hero{
+    padding: 40px 24px 28px;
+    text-align:center;
+    position:relative;
+  }
+  .candle-wrap{
+    display:flex;
+    justify-content:center;
+    margin-bottom: 18px;
+  }
+  .candle{
+    width:34px; height:90px;
+    background: repeating-linear-gradient(50deg, #f8f0dd 0 6px, var(--blush) 6px 9px);
+    border-radius: 3px;
+    position:relative;
+    box-shadow: 0 3px 8px rgba(43,33,24,0.22);
+  }
+  .wick{
+    position:absolute; top:-14px; left:50%; transform:translateX(-50%);
+    width:3px; height:14px; background:#3a2a1a; border-radius:2px;
+  }
+  .flame{
+    position:absolute; top:-40px; left:50%; transform:translateX(-50%);
+    width:16px; height:26px;
+    background: radial-gradient(circle at 50% 70%, #fff6d0 0%, var(--gold) 45%, var(--blush) 90%);
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    filter: drop-shadow(0 0 8px rgba(168,118,58,0.7));
+    animation: flicker 2.4s ease-in-out infinite;
+    transform-origin: bottom center;
+    transition: opacity .4s ease, transform .4s ease;
+  }
+  .flame.off{ opacity:0; transform: translateX(-50%) scaleY(0.2); }
+  @keyframes flicker{
+    0%,100%{ transform:translateX(-50%) rotate(-2deg) scaleY(1); }
+    25%{ transform:translateX(-50%) rotate(2deg) scaleY(1.05); }
+    50%{ transform:translateX(-50%) rotate(-1deg) scaleY(0.96); }
+    75%{ transform:translateX(-50%) rotate(3deg) scaleY(1.02); }
+  }
+  .hint{
+    font-family: var(--font-mono);
+    font-size:12px;
+    color: var(--text-muted);
+    letter-spacing:.04em;
+    margin-top:4px;
+  }
+  h1.title{
+    font-family: var(--font-display);
+    font-weight:600;
+    font-size: clamp(28px, 8vw, 38px);
+    line-height:1.15;
+    margin: 6px 0 8px;
+    opacity:0;
+    transform: translateY(8px);
+    transition: opacity .6s ease, transform .6s ease;
+  }
+  h1.title.show{ opacity:1; transform:translateY(0); }
+  .subtitle{
+    color: var(--text-muted);
+    font-size:15px;
+    max-width: 320px;
+    margin: 0 auto;
+    opacity:0;
+    transition: opacity .6s ease .1s;
+  }
+  .subtitle.show{ opacity:1; }
+
+  /* ---------- SECTION HEADERS ---------- */
+  .section{ padding: 6px 20px 28px; }
+  .section-eyebrow{
+    font-family: var(--font-mono);
+    font-size:11px;
+    letter-spacing:.08em;
+    color: var(--blush);
+    text-transform:uppercase;
+    margin-bottom:4px;
+  }
+  .section-title{
+    font-family: var(--font-display);
+    font-size:22px;
+    font-weight:600;
+    margin: 0 0 14px;
+  }
+
+  /* ---------- KADO (gift boxes) ---------- */
+  .box-grid{
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap:10px;
+  }
+  .gift-box{
+    aspect-ratio:1;
+    background: linear-gradient(155deg, var(--bg-panel-2), var(--bg-panel));
+    border:1px solid var(--line);
+    border-radius: var(--radius);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+    transition: transform .25s ease, border-color .25s ease;
+  }
+  .gift-box .mark{
+    font-family: var(--font-display);
+    font-size:22px;
+    color: var(--text-muted);
+  }
+  .gift-box:active{ transform:scale(0.94); }
+  .gift-box.opened{
+    border-color: var(--blush);
+    background: linear-gradient(155deg, #f2e4c2, var(--bg-panel));
+  }
+  .gift-box.opened .mark{ color: var(--blush); }
+  .gift-box .num{
+    position:absolute; top:6px; left:9px;
+    font-family: var(--font-mono);
+    font-size:10px;
+    color: var(--text-muted);
+  }
+  .reveal-card{
+    margin-top:14px;
+    background: var(--bg-panel);
+    border:1px solid var(--line);
+    border-radius: var(--radius);
+    padding:18px;
+    font-size:15px;
+    line-height:1.55;
+    display:none;
+  }
+  .reveal-card.show{ display:block; animation: pop .3s ease; }
+  @keyframes pop{ from{ opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
+
+  /* ---------- GALERI ---------- */
+  .gallery-scroll{
+    display:flex;
+    gap:10px;
+    overflow-x:auto;
+    padding-bottom:6px;
+    scrollbar-width:none;
+  }
+  .gallery-scroll::-webkit-scrollbar{ display:none; }
+  .gallery-tile{
+    flex:0 0 auto;
+    width:140px; height:180px;
+    border-radius: var(--radius);
+    border:1px dashed var(--line);
+    background: var(--bg-panel);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    font-family: var(--font-mono);
+    font-size:11px;
+    color: var(--text-muted);
+    padding:10px;
+  }
+
+  /* ---------- KUIS ---------- */
+  .quiz-card{
+    background: var(--bg-panel);
+    border:1px solid var(--line);
+    border-radius: var(--radius);
+    padding:18px;
+  }
+  .quiz-q{
+    font-family: var(--font-display);
+    font-size:17px;
+    margin-bottom:12px;
+  }
+  .quiz-opts{ display:flex; flex-direction:column; gap:8px; }
+  .quiz-opt{
+    text-align:left;
+    background: var(--bg-panel-2);
+    border:1px solid var(--line);
+    color: var(--text);
+    border-radius:12px;
+    padding:12px 14px;
+    font-size:14px;
+    transition: border-color .2s ease, background .2s ease;
+  }
+  .quiz-opt.correct{ border-color:#7fd68f; background: rgba(127,214,143,0.12); }
+  .quiz-opt.wrong{ border-color:#e0788a; background: rgba(224,120,138,0.12); }
+  .quiz-progress{
+    font-family: var(--font-mono);
+    font-size:11px;
+    color: var(--text-muted);
+    margin-bottom:10px;
+  }
+  .quiz-final{
+    text-align:center;
+    padding:10px 0 4px;
+  }
+  .quiz-final .big{
+    font-family: var(--font-display);
+    font-size:20px;
+    margin-bottom:6px;
+  }
+
+  /* ---------- CAPSULE PESAN ---------- */
+  .capsule-box{
+    background: var(--bg-panel);
+    border:1px solid var(--line);
+    border-radius: var(--radius);
+    padding:18px;
+  }
+  .capsule-box textarea{
+    width:100%;
+    min-height:100px;
+    background: var(--bg-panel-2);
+    border:1px solid var(--line);
+    border-radius:12px;
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size:14px;
+    padding:12px;
+    resize:vertical;
+  }
+  .capsule-box textarea::placeholder{ color: var(--text-muted); }
+  .seal-btn{
+    margin-top:12px;
+    width:100%;
+    background: var(--blush);
+    color:#f8f0dd;
+    font-weight:600;
+    border: 1px solid rgba(43,33,24,0.15);
+    border-radius:12px;
+    padding:13px;
+    font-size:14px;
+  }
+  .seal-note{
+    font-family: var(--font-mono);
+    font-size:11px;
+    color: var(--text-muted);
+    margin-top:10px;
+    line-height:1.5;
+  }
+  .sealed-view{
+    text-align:center;
+    padding:10px 0;
+  }
+  .wax{
+    width:56px; height:56px;
+    margin:0 auto 12px;
+    border-radius:50%;
+    background: radial-gradient(circle at 35% 30%, #c24a3a, var(--blush) 75%);
+    display:flex; align-items:center; justify-content:center;
+    font-size:22px;
+    box-shadow: 0 4px 14px rgba(162,59,46,0.35);
+  }
+
+  /* ---------- BOTTOM NAV ---------- */
+  .bottom-nav{
+    position:fixed;
+    bottom:0; left:0; right:0;
+    background: rgba(239,226,196,0.92);
+    backdrop-filter: blur(10px);
+    border-top:1px solid var(--line);
+    display:flex;
+    justify-content:center;
+    z-index:10;
+  }
+  .bottom-nav-inner{
+    max-width:480px;
+    width:100%;
+    display:flex;
+  }
+  .nav-btn{
+    flex:1;
+    background:none;
+    border:none;
+    color: var(--text-muted);
+    padding:12px 4px 10px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:3px;
+    font-size:10px;
+    font-family: var(--font-mono);
+  }
+  .nav-btn .ic{ width:19px; height:19px; }
+  .nav-btn.active{ color: var(--blush); }
+
+  /* ---------- confetti bits ---------- */
+  .confetti{
+    position:fixed; top:-10px; pointer-events:none;
+    width:7px; height:10px; border-radius:2px;
+    animation: fall 1.4s linear forwards;
+    z-index:50;
+  }
+  @keyframes fall{
+    to{ transform: translateY(100vh) rotate(360deg); opacity:0.2; }
+  }
+
+  .hidden{ display:none !important; }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ============ HERO ============ -->
+  <div class="hero">
+    <div class="candle-wrap" id="candleWrap">
+      <div class="candle">
+        <div class="wick"></div>
+        <div class="flame" id="flame"></div>
+      </div>
+    </div>
+    <div class="hint" id="candleHint">tap lilinnya</div>
+    <h1 class="title" id="heroTitle">Woy, [Nama]. Happy birthday.</h1>
+    <p class="subtitle" id="heroSubtitle">nggak bikin kado fisik, tapi bikin ini. semoga lebih berkesan.</p>
+  </div>
+
+  <!-- ============ TAB: KADO ============ -->
+  <div class="section" id="tab-kado">
+    <div class="section-eyebrow">buka satu-satu, jangan diintip semua</div>
+    <div class="section-title">Kado Kecil</div>
+    <div class="box-grid" id="boxGrid"></div>
+    <div class="reveal-card" id="revealCard"></div>
+  </div>
+
+  <!-- ============ TAB: GALERI ============ -->
+  <div class="section hidden" id="tab-galeri">
+    <div class="section-eyebrow">scroll ke samping</div>
+    <div class="section-title">Galeri</div>
+    <div class="gallery-scroll" id="galleryScroll"></div>
+  </div>
+
+  <!-- ============ TAB: KUIS ============ -->
+  <div class="section hidden" id="tab-kuis">
+    <div class="section-eyebrow">jujur aja jawabnya</div>
+    <div class="section-title">Seberapa Kenal Kamu Sama Aku</div>
+    <div class="quiz-card" id="quizCard"></div>
+  </div>
+
+  <!-- ============ TAB: PESAN ============ -->
+  <div class="section hidden" id="tab-pesan">
+    <div class="section-eyebrow">nggak wajib, tapi kalau mau</div>
+    <div class="section-title">Balas Kalau Sempat</div>
+    <div class="capsule-box" id="capsuleBox">
+      <textarea id="capsuleInput" placeholder="tulis ucapan / harapan / apapun buat aku di sini..."></textarea>
+      <button class="seal-btn" id="sealBtn">Segel Pesan 🔏</button>
+      <div class="seal-note">*catatan buat pembuat app: ini cuma tersimpan sementara di layar (belum ada server), jadi pesannya nggak otomatis terkirim ke kamu. kalau mau beneran nerima balasannya, sambungkan tombol ini ke bot Telegram-mu (lihat komentar di kode).</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============ BOTTOM NAV ============ -->
+<div class="bottom-nav">
+  <div class="bottom-nav-inner">
+    <button class="nav-btn active" data-tab="kado"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="9" width="18" height="11" rx="1.5"/><path d="M3 9h18M12 9v11M12 9c-1.8 0-3.2-1.4-3.2-3.2S10.2 2.6 12 4.4c1.8-1.8 4.4-1.4 4.4.4S13.8 9 12 9zM12 9c1.8 0 3.2-1.4 3.2-3.2S13.8 2.6 12 4.4C10.2 2.6 7.6 3 7.6 4.8S10.2 9 12 9z"/></svg>Kado</button>
+    <button class="nav-btn" data-tab="galeri"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="16" rx="1.5"/><circle cx="9" cy="10" r="1.6"/><path d="M3 17l5.5-5 4 3.5L17 11l4 4.5"/></svg>Galeri</button>
+    <button class="nav-btn" data-tab="kuis"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9.5 9a2.5 2.5 0 1 1 3.7 2.2c-.9.5-1.2 1-1.2 2.1"/><circle cx="12" cy="17.2" r=".3" fill="currentColor"/><circle cx="12" cy="12" r="9"/></svg>Kuis</button>
+    <button class="nav-btn" data-tab="pesan"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 6l9 6 9-6"/><rect x="3" y="5" width="18" height="14" rx="1.5"/></svg>Pesan</button>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   TELEGRAM WEBAPP INIT
+   ============================================================ */
+if (window.Telegram && window.Telegram.WebApp) {
+  const tg = window.Telegram.WebApp;
+  tg.ready();
+  tg.expand();
+}
+
+/* ============================================================
+   KONTEN — GANTI DI SINI SESUAI KEBUTUHAN
+   ============================================================ */
+
+// isi tiap kotak kado (bisa 3, 6, 9 dst — kelipatan 3 biar grid rapi)
+const GIFTS = [
+  "Alasan random tapi jujur kenapa aku notice kamu: cara kamu ketawa waktu bahas hal receh.",
+  "Fun fact: dari sekian banyak chat, aku paling inget waktu kamu cerita soal [isi kenangan].",
+  "Kalau kamu jadi karakter game, kamu bakal jadi karakter yang [sifat lucu/positif].",
+  "Satu hal yang pengen aku bilang tapi belum sempat: [isi pesan].",
+  "Lagu yang selalu ngingetin aku sama kamu: [judul lagu].",
+  "PS: makasih udah jadi orang yang bikin hari-hari biasa jadi lebih seru."
+];
+
+// isi galeri — ganti "img" dengan path/URL foto asli kalau sudah ada
+// contoh: { img: "https://.../foto1.jpg", caption: "waktu itu..." }
+const GALLERY = [
+  { img: null, caption: "taruh foto kenangan #1 di sini" },
+  { img: null, caption: "taruh foto kenangan #2 di sini" },
+  { img: null, caption: "taruh foto kenangan #3 di sini" }
+];
+
+// isi kuis — jawaban benar ditandai correct:true
+const QUIZ = [
+  {
+    q: "Menurut kamu, aku paling suka ngabisin waktu luang buat...",
+    opts: [
+      { text: "[opsi A]", correct: false },
+      { text: "[opsi B — jawaban benar]", correct: true },
+      { text: "[opsi C]", correct: false }
+    ]
+  },
+  {
+    q: "Kalau aku lagi bete, biasanya karena...",
+    opts: [
+      { text: "[opsi A — jawaban benar]", correct: true },
+      { text: "[opsi B]", correct: false },
+      { text: "[opsi C]", correct: false }
+    ]
+  },
+  {
+    q: "Makanan yang selalu aku pesen kalau bingung mau makan apa:",
+    opts: [
+      { text: "[opsi A]", correct: false },
+      { text: "[opsi B]", correct: false },
+      { text: "[opsi C — jawaban benar]", correct: true }
+    ]
+  }
+];
+
+const QUIZ_FINAL_MESSAGE = "lumayan lah. lanjut ke tab Pesan kalau masih niat.";
+
+/* ============================================================
+   LOGIKA — biasanya nggak perlu diubah
+   ============================================================ */
+
+// --- lilin ---
+const flame = document.getElementById('flame');
+const candleWrap = document.getElementById('candleWrap');
+const candleHint = document.getElementById('candleHint');
+const heroTitle = document.getElementById('heroTitle');
+const heroSubtitle = document.getElementById('heroSubtitle');
+let lit = true;
+
+candleWrap.addEventListener('click', () => {
+  lit = !lit;
+  flame.classList.toggle('off', !lit);
+  if (!lit) {
+    candleHint.textContent = 'oke, wishnya sah. tap lagi kalau mau nyalain ulang';
+    heroTitle.classList.add('show');
+    heroSubtitle.classList.add('show');
+    burstConfetti();
+  } else {
+    candleHint.textContent = 'tap lilinnya ✦';
+  }
+});
+
+function burstConfetti(){
+  const colors = ['#a8763a', '#a23b2e', '#f8f0dd'];
+  for (let i = 0; i < 26; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti';
+    c.style.left = Math.random() * 100 + 'vw';
+    c.style.background = colors[Math.floor(Math.random()*colors.length)];
+    c.style.animationDelay = (Math.random()*0.4) + 's';
+    c.style.animationDuration = (1.1 + Math.random()*0.8) + 's';
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 2200);
+  }
+}
+
+// --- tab nav ---
+const tabs = ['kado','galeri','kuis','pesan'];
+document.querySelectorAll('.nav-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const target = btn.dataset.tab;
+    tabs.forEach(t => {
+      document.getElementById('tab-' + t).classList.toggle('hidden', t !== target);
+    });
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b === btn));
+  });
+});
+
+// --- render kado boxes ---
+const boxGrid = document.getElementById('boxGrid');
+const revealCard = document.getElementById('revealCard');
+GIFTS.forEach((msg, i) => {
+  const box = document.createElement('button');
+  box.className = 'gift-box';
+  box.innerHTML = `<span class="num">${String(i+1).padStart(2,'0')}</span><span class="mark">?</span>`;
+  box.addEventListener('click', () => {
+    box.classList.add('opened');
+    box.querySelector('.mark').textContent = String(i+1).padStart(2,'0');
+    revealCard.textContent = msg;
+    revealCard.classList.add('show');
+  });
+  boxGrid.appendChild(box);
+});
+
+// --- render galeri ---
+const galleryScroll = document.getElementById('galleryScroll');
+GALLERY.forEach(item => {
+  const tile = document.createElement('div');
+  tile.className = 'gallery-tile';
+  if (item.img) {
+    tile.style.backgroundImage = `url(${item.img})`;
+    tile.style.backgroundSize = 'cover';
+    tile.style.backgroundPosition = 'center';
+    tile.textContent = '';
+  } else {
+    tile.textContent = item.caption;
+  }
+  galleryScroll.appendChild(tile);
+});
+
+// --- render kuis ---
+const quizCard = document.getElementById('quizCard');
+let qIndex = 0;
+let score = 0;
+
+function renderQuiz(){
+  if (qIndex >= QUIZ.length) {
+    quizCard.innerHTML = `
+      <div class="quiz-final">
+        <div class="big">${score} / ${QUIZ.length} benar</div>
+        <p>${QUIZ_FINAL_MESSAGE}</p>
+      </div>`;
+    return;
+  }
+  const q = QUIZ[qIndex];
+  quizCard.innerHTML = `
+    <div class="quiz-progress">pertanyaan ${qIndex+1} dari ${QUIZ.length}</div>
+    <div class="quiz-q">${q.q}</div>
+    <div class="quiz-opts">
+      ${q.opts.map((o,i) => `<button class="quiz-opt" data-i="${i}">${o.text}</button>`).join('')}
+    </div>`;
+
+  quizCard.querySelectorAll('.quiz-opt').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const i = Number(btn.dataset.i);
+      const isCorrect = q.opts[i].correct;
+      quizCard.querySelectorAll('.quiz-opt').forEach((b2, i2) => {
+        if (q.opts[i2].correct) b2.classList.add('correct');
+        else if (i2 === i) b2.classList.add('wrong');
+        b2.disabled = true;
+      });
+      if (isCorrect) score++;
+      setTimeout(() => { qIndex++; renderQuiz(); }, 900);
+    });
+  });
+}
+renderQuiz();
+
+// --- capsule pesan ---
+const sealBtn = document.getElementById('sealBtn');
+const capsuleBox = document.getElementById('capsuleBox');
+const capsuleInput = document.getElementById('capsuleInput');
+
+sealBtn.addEventListener('click', () => {
+  const text = capsuleInput.value.trim();
+  if (!text) return;
+
+  capsuleBox.innerHTML = `
+    <div class="sealed-view">
+      <div class="wax"></div>
+      <p>disegel.</p>
+      <p style="color:var(--text-muted); font-size:13px;">makasih udah baca sampai sini.</p>
+    </div>`;
+
+  // sendData langsung ngirim data ini sebagai pesan ke bot kamu
+  // (ditangkep di kado_bot.py), terus otomatis nutup mini app.
+  // Makanya dikasih jeda dikit biar animasi segel di atas sempat kelihatan.
+  setTimeout(() => {
+    if (window.Telegram && window.Telegram.WebApp) {
+      window.Telegram.WebApp.sendData(JSON.stringify({ message: text }));
+    }
+  }, 900);
+});
+</script>
+
+</body>
+</html>
