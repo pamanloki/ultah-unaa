@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Untuk Kamu 🕯️</title>
+<title>Untuk Elvira</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -17,7 +17,7 @@
     --bg-panel: #f8f0dd;
     --bg-panel-2: #e7d7ae;
     --gold: #a8763a;
-    --blush: #a23b2e;
+    --blush: #2b2118;
     --text: #2b2118;
     --text-muted: #8a7757;
     --line: rgba(43,33,24,0.16);
@@ -70,19 +70,54 @@
     flex:1;
     display:flex;
     flex-direction:column;
+    padding-top:76px;
     padding-bottom:84px; /* space for bottom nav */
   }
 
-  /* ---------- HERO / LILIN ---------- */
-  .hero{
-    padding: 40px 24px 28px;
-    text-align:center;
-    position:relative;
+  /* ---------- INTRO OVERLAY (start -> lilin -> gift) ---------- */
+  .intro-overlay{
+    position:fixed; inset:0;
+    z-index:40;
+    transition: opacity .5s ease;
   }
+  .intro-overlay.hide{ opacity:0; pointer-events:none; }
+  .intro-stage{
+    position:absolute; inset:0;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:18px;
+    text-align:center;
+    padding:24px;
+    opacity:1;
+    transition: opacity .4s ease;
+  }
+  .intro-stage.hidden{ opacity:0; pointer-events:none; }
+
+  .start-btn{
+    background: var(--blush);
+    color: var(--bg-panel);
+    border:none;
+    border-radius:999px;
+    padding:16px 42px;
+    font-family: var(--font-display);
+    font-size:18px;
+    font-weight:600;
+    box-shadow: 0 4px 12px rgba(43,33,24,0.28);
+  }
+
   .candle-wrap{
     display:flex;
     justify-content:center;
-    margin-bottom: 18px;
+    position:relative;
+  }
+  .moon{
+    position:absolute;
+    top:-2px; right:-46px;
+    width:34px; height:34px;
+    opacity:0.55;
+    pointer-events:none;
   }
   .candle{
     width:34px; height:90px;
@@ -98,7 +133,7 @@
   .flame{
     position:absolute; top:-40px; left:50%; transform:translateX(-50%);
     width:16px; height:26px;
-    background: radial-gradient(circle at 50% 70%, #fff6d0 0%, var(--gold) 45%, var(--blush) 90%);
+    background: radial-gradient(circle at 50% 70%, #fff6d0 0%, var(--gold) 55%, #8a5f28 95%);
     border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
     filter: drop-shadow(0 0 8px rgba(168,118,58,0.7));
     animation: flicker 2.4s ease-in-out infinite;
@@ -117,28 +152,54 @@
     font-size:12px;
     color: var(--text-muted);
     letter-spacing:.04em;
-    margin-top:4px;
   }
-  h1.title{
+
+  .hero-gift{
+    width:126px; height:168px;
+    background: repeating-linear-gradient(45deg, var(--bg-panel-2) 0 5px, var(--bg-panel) 5px 10px);
+    border-radius:14px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+    box-shadow: 2px 5px 12px rgba(43,33,24,0.28);
+  }
+  .hero-gift::before{
+    content:"";
+    position:absolute; inset:0;
+    border:1.5px solid var(--line);
+    border-radius:inherit;
+    filter:url(#sketchy);
+    pointer-events:none;
+  }
+  .hero-gift .gift-icon{
+    width:52px;
+    height:52px;
+  }
+
+  /* judul yang mulanya di tengah, lalu "pindah" ke atas jadi header tetap */
+  .wish-title{
+    position:fixed;
+    left:50%; top:50%;
+    transform:translate(-50%,-50%);
+    width:88%;
+    max-width:400px;
     font-family: var(--font-display);
     font-weight:600;
-    font-size: clamp(28px, 8vw, 38px);
-    line-height:1.15;
-    margin: 6px 0 8px;
+    font-size: clamp(24px, 7.5vw, 32px);
+    line-height:1.2;
+    text-align:center;
+    color: var(--text);
+    z-index:35;
     opacity:0;
-    transform: translateY(8px);
-    transition: opacity .6s ease, transform .6s ease;
+    pointer-events:none;
+    transition: top .8s cubic-bezier(.4,0,.2,1), font-size .8s cubic-bezier(.4,0,.2,1), opacity .5s ease;
   }
-  h1.title.show{ opacity:1; transform:translateY(0); }
-  .subtitle{
-    color: var(--text-muted);
-    font-size:15px;
-    max-width: 320px;
-    margin: 0 auto;
-    opacity:0;
-    transition: opacity .6s ease .1s;
+  .wish-title.show{ opacity:1; }
+  .wish-title.docked{
+    top:46px;
+    font-size:19px;
   }
-  .subtitle.show{ opacity:1; }
 
   /* ---------- SECTION HEADERS ---------- */
   .section{ padding: 6px 20px 28px; }
@@ -164,45 +225,110 @@
     gap:10px;
   }
   .gift-box{
-    aspect-ratio:1;
-    background: linear-gradient(155deg, var(--bg-panel-2), var(--bg-panel));
-    border:1px solid var(--line);
-    border-radius: var(--radius);
+    aspect-ratio: 0.7;
+    background: repeating-linear-gradient(45deg, var(--bg-panel-2) 0 5px, var(--bg-panel) 5px 10px);
+    border-radius: 10px;
     display:flex;
     align-items:center;
     justify-content:center;
     position:relative;
-    transition: transform .25s ease, border-color .25s ease;
+    transform: rotate(var(--tilt, 0deg));
+    transition: transform .25s ease;
+    box-shadow: 2px 3px 6px rgba(43,33,24,0.22);
   }
+  .gift-box:active{ transform: rotate(var(--tilt, 0deg)) scale(0.94); }
   .gift-box .mark{
     font-family: var(--font-display);
-    font-size:22px;
+    font-size:26px;
     color: var(--text-muted);
   }
-  .gift-box:active{ transform:scale(0.94); }
-  .gift-box.opened{
-    border-color: var(--blush);
-    background: linear-gradient(155deg, #f2e4c2, var(--bg-panel));
+  .gift-box::before{
+    content:"";
+    position:absolute; inset:0;
+    border:1.5px solid var(--line);
+    border-radius:inherit;
+    filter:url(#sketchy);
+    pointer-events:none;
+    transition: border-color .25s ease;
   }
-  .gift-box.opened .mark{ color: var(--blush); }
-  .gift-box .num{
-    position:absolute; top:6px; left:9px;
+  .gift-box.opened::before{ border-color: var(--blush); }
+  .gift-box .idx{
+    position:absolute;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:1px;
     font-family: var(--font-mono);
     font-size:10px;
     color: var(--text-muted);
+    line-height:1;
   }
-  .reveal-card{
-    margin-top:14px;
+  .gift-box .idx svg{ width:9px; height:9px; }
+  .gift-box .idx.tl{ top:7px; left:8px; }
+  .gift-box .idx.br{ bottom:7px; right:8px; transform: rotate(180deg); }
+  .gift-box:active{ transform:scale(0.94); }
+  .gift-box.opened{
     background: var(--bg-panel);
-    border:1px solid var(--line);
-    border-radius: var(--radius);
-    padding:18px;
-    font-size:15px;
-    line-height:1.55;
-    display:none;
   }
-  .reveal-card.show{ display:block; animation: pop .3s ease; }
-  @keyframes pop{ from{ opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
+  .gift-box.opened .mark{ color: var(--blush); }
+
+  @keyframes dealIn{
+    0%{ opacity:0; transform: translateY(-170px) scale(0.4) rotate(-30deg); }
+    100%{ opacity:1; transform: translateY(0) scale(1) rotate(var(--tilt, 0deg)); }
+  }
+  .gift-box.dealing{ animation: dealIn .55s cubic-bezier(.2,.8,.2,1) both; }
+
+  .app.hidden{ display:none; }
+  .bottom-nav.hidden{ display:none; }
+  .modal-overlay{
+    position:fixed; inset:0;
+    background: rgba(43,33,24,0.5);
+    backdrop-filter: blur(2px);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding: 24px;
+    z-index:30;
+  }
+  .modal-overlay.show{ display:flex; animation: fadeIn .2s ease; }
+  @keyframes fadeIn{ from{ opacity:0; } to{ opacity:1; } }
+  .modal-card{
+    position:relative;
+    max-width:340px;
+    width:100%;
+    background: var(--bg-panel);
+    border-radius: var(--radius);
+    padding: 28px 22px 22px;
+    font-size:15px;
+    line-height:1.6;
+    animation: pop .25s ease;
+  }
+  .modal-card::before{
+    content:"";
+    position:absolute; inset:0;
+    border:1.5px solid var(--line);
+    border-radius:inherit;
+    filter:url(#sketchy);
+    pointer-events:none;
+  }
+  .modal-num{
+    font-family: var(--font-mono);
+    font-size:11px;
+    color: var(--blush);
+    margin-bottom:8px;
+  }
+  .modal-close{
+    position:absolute;
+    top:-14px; right:-14px;
+    width:32px; height:32px;
+    border-radius:50%;
+    background: var(--bg-panel);
+    color: var(--text);
+    border:1.5px solid var(--line);
+    font-size:15px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  @keyframes pop{ from{ opacity:0; transform:translateY(6px) scale(0.97);} to{opacity:1; transform:translateY(0) scale(1);} }
 
   /* ---------- GALERI ---------- */
   .gallery-scroll{
@@ -217,7 +343,6 @@
     flex:0 0 auto;
     width:140px; height:180px;
     border-radius: var(--radius);
-    border:1px dashed var(--line);
     background: var(--bg-panel);
     display:flex;
     align-items:center;
@@ -227,14 +352,31 @@
     font-size:11px;
     color: var(--text-muted);
     padding:10px;
+    position:relative;
+  }
+  .gallery-tile::before{
+    content:"";
+    position:absolute; inset:0;
+    border:1.5px dashed var(--line);
+    border-radius:inherit;
+    filter:url(#sketchy);
+    pointer-events:none;
   }
 
   /* ---------- KUIS ---------- */
   .quiz-card{
     background: var(--bg-panel);
-    border:1px solid var(--line);
     border-radius: var(--radius);
     padding:18px;
+    position:relative;
+  }
+  .quiz-card::before{
+    content:"";
+    position:absolute; inset:0;
+    border:1.5px solid var(--line);
+    border-radius:inherit;
+    filter:url(#sketchy);
+    pointer-events:none;
   }
   .quiz-q{
     font-family: var(--font-display);
@@ -245,15 +387,26 @@
   .quiz-opt{
     text-align:left;
     background: var(--bg-panel-2);
-    border:1px solid var(--line);
     color: var(--text);
     border-radius:12px;
     padding:12px 14px;
     font-size:14px;
-    transition: border-color .2s ease, background .2s ease;
+    position:relative;
+    transition: background .2s ease;
   }
-  .quiz-opt.correct{ border-color:#7fd68f; background: rgba(127,214,143,0.12); }
-  .quiz-opt.wrong{ border-color:#e0788a; background: rgba(224,120,138,0.12); }
+  .quiz-opt::before{
+    content:"";
+    position:absolute; inset:0;
+    border:1.5px solid var(--line);
+    border-radius:inherit;
+    filter:url(#sketchy);
+    pointer-events:none;
+    transition: border-color .2s ease;
+  }
+  .quiz-opt.correct::before{ border-color:#5a9e63; }
+  .quiz-opt.wrong::before{ border-color:#a2504f; }
+  .quiz-opt.correct{ background: rgba(90,158,99,0.14); }
+  .quiz-opt.wrong{ background: rgba(162,80,79,0.12); }
   .quiz-progress{
     font-family: var(--font-mono);
     font-size:11px;
@@ -273,9 +426,17 @@
   /* ---------- CAPSULE PESAN ---------- */
   .capsule-box{
     background: var(--bg-panel);
-    border:1px solid var(--line);
     border-radius: var(--radius);
     padding:18px;
+    position:relative;
+  }
+  .capsule-box::before{
+    content:"";
+    position:absolute; inset:0;
+    border:1.5px solid var(--line);
+    border-radius:inherit;
+    filter:url(#sketchy);
+    pointer-events:none;
   }
   .capsule-box textarea{
     width:100%;
@@ -316,10 +477,10 @@
     width:56px; height:56px;
     margin:0 auto 12px;
     border-radius:50%;
-    background: radial-gradient(circle at 35% 30%, #c24a3a, var(--blush) 75%);
+    background: radial-gradient(circle at 35% 30%, #453626, var(--blush) 75%);
     display:flex; align-items:center; justify-content:center;
     font-size:22px;
-    box-shadow: 0 4px 14px rgba(162,59,46,0.35);
+    box-shadow: 0 4px 14px rgba(43,33,24,0.35);
   }
 
   /* ---------- BOTTOM NAV ---------- */
@@ -369,28 +530,52 @@
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute">
+  <filter id="sketchy">
+    <feTurbulence type="fractalNoise" baseFrequency="0.045 0.09" numOctaves="2" seed="4" result="noise"/>
+    <feDisplacementMap in="SourceGraphic" in2="noise" scale="3.2"/>
+  </filter>
+</svg>
 
-<div class="app">
+<!-- ============ INTRO: mulai -> lilin -> gift ============ -->
+<div class="intro-overlay" id="introOverlay">
+  <div class="intro-stage" id="stageStart">
+    <button class="start-btn" id="startBtn">Mulai</button>
+  </div>
 
-  <!-- ============ HERO ============ -->
-  <div class="hero">
+  <div class="intro-stage hidden" id="stageCandle">
     <div class="candle-wrap" id="candleWrap">
+      <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.3">
+        <path d="M17 4a8 8 0 1 0 0 16 9 9 0 0 1 0-16z"/>
+      </svg>
       <div class="candle">
         <div class="wick"></div>
         <div class="flame" id="flame"></div>
       </div>
     </div>
-    <div class="hint" id="candleHint">tap lilinnya</div>
-    <h1 class="title" id="heroTitle">Woy, [Nama]. Happy birthday.</h1>
-    <p class="subtitle" id="heroSubtitle">nggak bikin kado fisik, tapi bikin ini. semoga lebih berkesan.</p>
+    <div class="hint">tap lilinnya</div>
   </div>
+
+  <div class="intro-stage hidden" id="stageGift">
+    <button class="hero-gift" id="heroGiftBtn">
+      <svg class="gift-icon" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.4">
+        <rect x="3" y="9" width="18" height="11" rx="1"/>
+        <path d="M3 9h18M12 9v11M12 9c-1.8 0-3.2-1.4-3.2-3.2S10.2 2.6 12 4.4c1.8-1.8 4.4-1.4 4.4.4S13.8 9 12 9zM12 9c1.8 0 3.2-1.4 3.2-3.2S13.8 2.6 12 4.4C10.2 2.6 7.6 3 7.6 4.8S10.2 9 12 9z"/>
+      </svg>
+    </button>
+    <div class="hint">tap kadonya</div>
+  </div>
+</div>
+
+<h1 class="wish-title" id="wishTitle">Elvira, met ulang tahun ya.</h1>
+
+<div class="app hidden" id="mainApp">
 
   <!-- ============ TAB: KADO ============ -->
   <div class="section" id="tab-kado">
     <div class="section-eyebrow">buka satu-satu, jangan diintip semua</div>
     <div class="section-title">Kado Kecil</div>
     <div class="box-grid" id="boxGrid"></div>
-    <div class="reveal-card" id="revealCard"></div>
   </div>
 
   <!-- ============ TAB: GALERI ============ -->
@@ -420,8 +605,17 @@
 
 </div>
 
+<!-- ============ MODAL KADO ============ -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-card">
+    <button class="modal-close" id="modalClose">✕</button>
+    <div class="modal-num" id="modalNum"></div>
+    <div class="modal-text" id="modalText"></div>
+  </div>
+</div>
+
 <!-- ============ BOTTOM NAV ============ -->
-<div class="bottom-nav">
+<div class="bottom-nav hidden" id="bottomNav">
   <div class="bottom-nav-inner">
     <button class="nav-btn active" data-tab="kado"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="9" width="18" height="11" rx="1.5"/><path d="M3 9h18M12 9v11M12 9c-1.8 0-3.2-1.4-3.2-3.2S10.2 2.6 12 4.4c1.8-1.8 4.4-1.4 4.4.4S13.8 9 12 9zM12 9c1.8 0 3.2-1.4 3.2-3.2S13.8 2.6 12 4.4C10.2 2.6 7.6 3 7.6 4.8S10.2 9 12 9z"/></svg>Kado</button>
     <button class="nav-btn" data-tab="galeri"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="16" rx="1.5"/><circle cx="9" cy="10" r="1.6"/><path d="M3 17l5.5-5 4 3.5L17 11l4 4.5"/></svg>Galeri</button>
@@ -496,29 +690,62 @@ const QUIZ_FINAL_MESSAGE = "lumayan lah. lanjut ke tab Pesan kalau masih niat.";
    LOGIKA — biasanya nggak perlu diubah
    ============================================================ */
 
-// --- lilin ---
-const flame = document.getElementById('flame');
+// --- alur intro: mulai -> lilin -> wish pindah ke atas -> gift -> deal kartu ---
+const introOverlay = document.getElementById('introOverlay');
+const stageStart = document.getElementById('stageStart');
+const stageCandle = document.getElementById('stageCandle');
+const stageGift = document.getElementById('stageGift');
+const startBtn = document.getElementById('startBtn');
 const candleWrap = document.getElementById('candleWrap');
-const candleHint = document.getElementById('candleHint');
-const heroTitle = document.getElementById('heroTitle');
-const heroSubtitle = document.getElementById('heroSubtitle');
-let lit = true;
+const flame = document.getElementById('flame');
+const heroGiftBtn = document.getElementById('heroGiftBtn');
+const wishTitle = document.getElementById('wishTitle');
+const mainApp = document.getElementById('mainApp');
+const bottomNav = document.getElementById('bottomNav');
 
-candleWrap.addEventListener('click', () => {
-  lit = !lit;
-  flame.classList.toggle('off', !lit);
-  if (!lit) {
-    candleHint.textContent = 'oke, wishnya sah. tap lagi kalau mau nyalain ulang';
-    heroTitle.classList.add('show');
-    heroSubtitle.classList.add('show');
-    burstConfetti();
-  } else {
-    candleHint.textContent = 'tap lilinnya ✦';
-  }
+startBtn.addEventListener('click', () => {
+  stageStart.classList.add('hidden');
+  stageCandle.classList.remove('hidden');
 });
 
+let candleTapped = false;
+candleWrap.addEventListener('click', () => {
+  if (candleTapped) return;
+  candleTapped = true;
+
+  flame.classList.add('off');
+  burstConfetti();
+
+  setTimeout(() => {
+    stageCandle.classList.add('hidden');
+    wishTitle.classList.add('show');
+  }, 500);
+
+  setTimeout(() => {
+    wishTitle.classList.add('docked');
+  }, 2500);
+
+  setTimeout(() => {
+    stageGift.classList.remove('hidden');
+  }, 3300);
+});
+
+heroGiftBtn.addEventListener('click', () => {
+  introOverlay.classList.add('hide');
+  mainApp.classList.remove('hidden');
+  bottomNav.classList.remove('hidden');
+  dealCards();
+}, { once: true });
+
+function dealCards(){
+  document.querySelectorAll('#boxGrid .gift-box').forEach((box, i) => {
+    box.style.animationDelay = (i * 90) + 'ms';
+    box.classList.add('dealing');
+  });
+}
+
 function burstConfetti(){
-  const colors = ['#a8763a', '#a23b2e', '#f8f0dd'];
+  const colors = ['#a8763a', '#2b2118', '#f8f0dd'];
   for (let i = 0; i < 26; i++) {
     const c = document.createElement('div');
     c.className = 'confetti';
@@ -545,16 +772,40 @@ document.querySelectorAll('.nav-btn').forEach(btn => {
 
 // --- render kado boxes ---
 const boxGrid = document.getElementById('boxGrid');
-const revealCard = document.getElementById('revealCard');
+const modalOverlay = document.getElementById('modalOverlay');
+const modalNum = document.getElementById('modalNum');
+const modalText = document.getElementById('modalText');
+const modalClose = document.getElementById('modalClose');
+
+function openModal(num, msg){
+  modalNum.textContent = num;
+  modalText.textContent = msg;
+  modalOverlay.classList.add('show');
+}
+function closeModal(){
+  modalOverlay.classList.remove('show');
+}
+modalClose.addEventListener('click', closeModal);
+modalOverlay.addEventListener('click', (e) => {
+  if (e.target === modalOverlay) closeModal();
+});
+
 GIFTS.forEach((msg, i) => {
   const box = document.createElement('button');
   box.className = 'gift-box';
-  box.innerHTML = `<span class="num">${String(i+1).padStart(2,'0')}</span><span class="mark">?</span>`;
+  const tilt = (Math.sin(i * 7.3) * 3.2).toFixed(2);
+  box.style.setProperty('--tilt', tilt + 'deg');
+  const n = String(i+1).padStart(2,'0');
+  const moonSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 4a8 8 0 1 0 0 16 9 9 0 0 1 0-16z"/></svg>';
+  box.innerHTML = `
+    <span class="idx tl">${n}${moonSvg}</span>
+    <span class="mark">?</span>
+    <span class="idx br">${n}${moonSvg}</span>`;
   box.addEventListener('click', () => {
     box.classList.add('opened');
-    box.querySelector('.mark').textContent = String(i+1).padStart(2,'0');
-    revealCard.textContent = msg;
-    revealCard.classList.add('show');
+    box.style.setProperty('--tilt', '0deg');
+    box.querySelector('.mark').textContent = n;
+    openModal(`kado #${n}`, msg);
   });
   boxGrid.appendChild(box);
 });
