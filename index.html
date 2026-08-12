@@ -200,6 +200,10 @@
     top:46px;
     font-size:19px;
   }
+  .wish-title.tab-hidden{
+    opacity:0;
+    pointer-events:none;
+  }
 
   /* ---------- SECTION HEADERS ---------- */
   .section{ padding: 6px 20px 28px; }
@@ -280,6 +284,25 @@
   .gift-box.locked .mark{ display:none; }
   .gift-box.locked .lock-icon{ display:block; }
   .gift-box.locked{ filter: grayscale(0.15); }
+  .gift-box.spin-highlight{
+    transform: rotate(var(--tilt, 0deg)) scale(1.14);
+    z-index:2;
+  }
+  .gift-box.spin-highlight::before{
+    border-color: var(--gold);
+    border-width:3.5px;
+    box-shadow: 0 0 0 3px rgba(168,118,58,0.35);
+  }
+
+  @keyframes cardFlip{
+    0%{ transform: rotate(var(--tilt, 0deg)) scaleX(1); }
+    50%{ transform: rotate(var(--tilt, 0deg)) scaleX(0); }
+    100%{ transform: rotate(0deg) scaleX(1); }
+  }
+  .gift-box.flipping{
+    animation: cardFlip .55s ease;
+    z-index:3;
+  }
 
   @keyframes dealIn{
     0%{ opacity:0; transform: translateY(-170px) scale(0.4) rotate(-30deg); }
@@ -372,73 +395,26 @@
     pointer-events:none;
   }
 
-  /* ---------- SPIN (unlock token buat kado) ---------- */
-  .spin-card{
-    background: var(--bg-panel);
-    border-radius: var(--radius);
-    padding:28px 18px 22px;
-    text-align:center;
-    position:relative;
-  }
-  .spin-card::before{
-    content:"";
-    position:absolute; inset:0;
-    border:1.5px solid var(--line);
-    border-radius:inherit;
-    filter:url(#sketchy);
-    pointer-events:none;
-  }
-  .spin-reel{
-    font-family: var(--font-display);
-    font-size:46px;
-    font-weight:600;
-    min-height:58px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    margin-bottom:18px;
-    color: var(--text);
-  }
-  .spin-reel.spinning{ color: var(--text-muted); }
+  /* ---------- SPIN (nempel di tab Kado) ---------- */
   .spin-btn{
+    display:block;
+    margin: 18px auto 0;
     background: var(--blush);
     color:#f8f0dd;
     font-weight:600;
     border: 1px solid rgba(43,33,24,0.15);
     border-radius:12px;
-    padding:13px 32px;
+    padding:12px 30px;
     font-size:14px;
   }
   .spin-btn:disabled{ opacity:0.55; }
   .spin-note{
+    text-align:center;
     font-family: var(--font-mono);
     font-size:11px;
     color: var(--text-muted);
-    margin-top:14px;
+    margin-top:10px;
     line-height:1.5;
-    min-height:28px;
-  }
-  .spin-tracker{
-    display:flex;
-    justify-content:center;
-    gap:7px;
-    margin-top:16px;
-    flex-wrap:wrap;
-  }
-  .spin-dot{
-    width:26px; height:26px;
-    border-radius:6px;
-    border:1.5px solid var(--line);
-    display:flex; align-items:center; justify-content:center;
-    font-family: var(--font-mono);
-    font-size:10px;
-    color: var(--text-muted);
-    transition: background .2s ease, color .2s ease, border-color .2s ease;
-  }
-  .spin-dot.done{
-    background: var(--blush);
-    color:#f8f0dd;
-    border-color: var(--blush);
   }
 
   /* ---------- CAPSULE PESAN ---------- */
@@ -591,9 +567,11 @@
 
   <!-- ============ TAB: KADO ============ -->
   <div class="section" id="tab-kado">
-    <div class="section-eyebrow">buka satu-satu, jangan diintip semua</div>
+    <div class="section-eyebrow">kartu kekunci, spin buat buka satu-satu</div>
     <div class="section-title">Kado Kecil</div>
     <div class="box-grid" id="boxGrid"></div>
+    <button class="spin-btn" id="spinBtn">Spin</button>
+    <div class="spin-note" id="spinNote">tiap spin buka satu kado secara acak.</div>
   </div>
 
   <!-- ============ TAB: GALERI ============ -->
@@ -601,18 +579,6 @@
     <div class="section-eyebrow">scroll ke samping</div>
     <div class="section-title">Galeri</div>
     <div class="gallery-scroll" id="galleryScroll"></div>
-  </div>
-
-  <!-- ============ TAB: SPIN ============ -->
-  <div class="section hidden" id="tab-spin">
-    <div class="section-eyebrow">putar buat dapet token kado</div>
-    <div class="section-title">Spin</div>
-    <div class="spin-card">
-      <div class="spin-reel" id="spinReel">??</div>
-      <button class="spin-btn" id="spinBtn">Putar</button>
-      <div class="spin-note" id="spinNote">tiap putaran buka token buat satu kado.</div>
-      <div class="spin-tracker" id="spinTracker"></div>
-    </div>
   </div>
 
   <!-- ============ TAB: PESAN ============ -->
@@ -642,7 +608,6 @@
   <div class="bottom-nav-inner">
     <button class="nav-btn active" data-tab="kado"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="9" width="18" height="11" rx="1.5"/><path d="M3 9h18M12 9v11M12 9c-1.8 0-3.2-1.4-3.2-3.2S10.2 2.6 12 4.4c1.8-1.8 4.4-1.4 4.4.4S13.8 9 12 9zM12 9c1.8 0 3.2-1.4 3.2-3.2S13.8 2.6 12 4.4C10.2 2.6 7.6 3 7.6 4.8S10.2 9 12 9z"/></svg>Kado</button>
     <button class="nav-btn" data-tab="galeri"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="16" rx="1.5"/><circle cx="9" cy="10" r="1.6"/><path d="M3 17l5.5-5 4 3.5L17 11l4 4.5"/></svg>Galeri</button>
-    <button class="nav-btn" data-tab="spin"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M20 12a8 8 0 1 1-2.34-5.66"/><path d="M20 4v5h-5"/></svg>Spin</button>
     <button class="nav-btn" data-tab="pesan"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 6l9 6 9-6"/><rect x="3" y="5" width="18" height="14" rx="1.5"/></svg>Pesan</button>
   </div>
 </div>
@@ -755,7 +720,7 @@ function burstConfetti(){
 }
 
 // --- tab nav ---
-const tabs = ['kado','galeri','spin','pesan'];
+const tabs = ['kado','galeri','pesan'];
 document.querySelectorAll('.nav-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     const target = btn.dataset.tab;
@@ -763,6 +728,7 @@ document.querySelectorAll('.nav-btn').forEach(btn => {
       document.getElementById('tab-' + t).classList.toggle('hidden', t !== target);
     });
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b === btn));
+    wishTitle.classList.toggle('tab-hidden', target !== 'kado');
   });
 });
 
@@ -787,6 +753,15 @@ modalOverlay.addEventListener('click', (e) => {
   if (e.target === modalOverlay) closeModal();
 });
 
+function revealBox(i){
+  const box = boxEls[i];
+  const n = String(i+1).padStart(2,'0');
+  box.classList.add('opened');
+  box.style.setProperty('--tilt', '0deg');
+  box.querySelector('.mark').textContent = n;
+  openModal(`kado #${n}`, GIFTS[i]);
+}
+
 GIFTS.forEach((msg, i) => {
   const box = document.createElement('button');
   box.className = 'gift-box locked';
@@ -802,10 +777,11 @@ GIFTS.forEach((msg, i) => {
     <span class="lock-icon">${lockSvg}</span>`;
   box.addEventListener('click', () => {
     if (box.classList.contains('locked')) return;
-    box.classList.add('opened');
-    box.style.setProperty('--tilt', '0deg');
-    box.querySelector('.mark').textContent = n;
-    openModal(`kado #${n}`, msg);
+    if (box.classList.contains('opened')) {
+      openModal(`kado #${n}`, msg);
+      return;
+    }
+    revealBox(i);
   });
   boxEls[i] = box;
   boxGrid.appendChild(box);
@@ -828,58 +804,59 @@ GALLERY.forEach(item => {
 });
 
 // --- spin: unlock kado ---
+// --- spin: animasi lompat acak antar kartu, lalu buka kartu yang kepilih ---
 const spinBtn = document.getElementById('spinBtn');
-const spinReel = document.getElementById('spinReel');
 const spinNote = document.getElementById('spinNote');
-const spinTracker = document.getElementById('spinTracker');
-const TOTAL_GIFTS = GIFTS.length;
-const unlockedSet = new Set();
-
-function renderTracker(){
-  spinTracker.innerHTML = '';
-  for (let i = 0; i < TOTAL_GIFTS; i++) {
-    const dot = document.createElement('div');
-    dot.className = 'spin-dot' + (unlockedSet.has(i) ? ' done' : '');
-    dot.textContent = String(i+1).padStart(2,'0');
-    spinTracker.appendChild(dot);
-  }
-}
-renderTracker();
 
 spinBtn.addEventListener('click', () => {
-  const remaining = [];
-  for (let i = 0; i < TOTAL_GIFTS; i++) if (!unlockedSet.has(i)) remaining.push(i);
+  const lockedIdx = boxEls
+    .map((_, i) => i)
+    .filter(i => boxEls[i].classList.contains('locked'));
 
-  if (remaining.length === 0) {
-    spinNote.textContent = 'semua kado udah ke-unlock. cek tab Kado.';
+  if (lockedIdx.length === 0) {
+    spinNote.textContent = 'semua kado udah kebuka.';
     return;
   }
 
   spinBtn.disabled = true;
-  spinReel.classList.add('spinning');
   spinNote.textContent = 'muter...';
 
-  let ticks = 0;
-  const maxTicks = 16;
-  const timer = setInterval(() => {
-    spinReel.textContent = String(Math.floor(Math.random() * TOTAL_GIFTS) + 1).padStart(2, '0');
-    ticks++;
-    if (ticks >= maxTicks) {
-      clearInterval(timer);
-      const result = remaining[Math.floor(Math.random() * remaining.length)];
-      const n = String(result + 1).padStart(2, '0');
-      spinReel.textContent = n;
-      spinReel.classList.remove('spinning');
+  const n = boxEls.length;
+  const result = lockedIdx[Math.floor(Math.random() * lockedIdx.length)];
+  const startIdx = Math.floor(Math.random() * n);
+  const loops = 2;
+  const totalSteps = loops * n + ((result - startIdx + n) % n);
 
-      unlockedSet.add(result);
+  let step = 0;
+  function tick(){
+    boxEls.forEach(b => b.classList.remove('spin-highlight'));
+    const idx = (startIdx + step) % n;
+    boxEls[idx].classList.add('spin-highlight');
+    step++;
+
+    if (step <= totalSteps) {
+      const progress = step / totalSteps;
+      const delay = 55 + progress * progress * 230; // makin lambat menjelang berhenti
+      setTimeout(tick, delay);
+    } else {
+      boxEls.forEach(b => b.classList.remove('spin-highlight'));
       const box = boxEls[result];
-      if (box) box.classList.remove('locked');
+      box.classList.remove('locked');
+      box.classList.add('flipping');
 
-      renderTracker();
-      spinNote.textContent = `dapet token kado #${n}! buka di tab Kado.`;
-      spinBtn.disabled = false;
+      // di tengah animasi flip kartu lagi "ngadep samping" (nggak keliatan) —
+      // pas itu baru diganti isinya biar kerasa kayak kartu remi kebalik
+      setTimeout(() => revealBox(result), 275);
+
+      setTimeout(() => {
+        box.classList.remove('flipping');
+        spinBtn.disabled = false;
+      }, 550);
+
+      spinNote.textContent = `dapet kado #${String(result + 1).padStart(2, '0')}!`;
     }
-  }, 70);
+  }
+  tick();
 });
 
 // --- capsule pesan ---
