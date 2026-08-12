@@ -193,12 +193,26 @@
     z-index:35;
     opacity:0;
     pointer-events:none;
-    transition: top .8s cubic-bezier(.4,0,.2,1), font-size .8s cubic-bezier(.4,0,.2,1), opacity .5s ease;
+    background: transparent;
+    padding: 0;
+    border-bottom: 0px solid transparent;
+    box-sizing:border-box;
+    transition: top .8s cubic-bezier(.4,0,.2,1), font-size .8s cubic-bezier(.4,0,.2,1),
+                opacity .5s ease, width .8s cubic-bezier(.4,0,.2,1), left .8s cubic-bezier(.4,0,.2,1),
+                transform .8s cubic-bezier(.4,0,.2,1),
+                padding .8s ease, background-color .5s ease, border-color .5s ease;
   }
   .wish-title.show{ opacity:1; }
   .wish-title.docked{
-    top:46px;
+    top:0;
+    left:0;
+    width:100%;
+    max-width:100%;
     font-size:19px;
+    padding: 16px 20px 14px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--line);
+    transform: translate(0,0);
   }
   .wish-title.tab-hidden{
     opacity:0;
@@ -241,10 +255,25 @@
     box-shadow: 2px 3px 6px rgba(43,33,24,0.22);
   }
   .gift-box:active{ transform: rotate(var(--tilt, 0deg)) scale(0.94); }
-  .gift-box .mark{
-    font-family: var(--font-display);
-    font-size:26px;
+  .gift-box .face{
+    display:none;
+    flex-direction:column;
+    align-items:center;
+    gap:7px;
+  }
+  .gift-box.opened .face{ display:flex; }
+  .gift-box .face-icon svg{
+    width:28px; height:28px;
+    color: var(--blush);
+  }
+  .gift-box .face-title{
+    font-family: var(--font-mono);
+    font-size:10px;
+    letter-spacing:.05em;
+    text-transform:uppercase;
     color: var(--text-muted);
+    text-align:center;
+    padding:0 6px;
   }
   .gift-box::before{
     content:"";
@@ -274,14 +303,13 @@
   .gift-box.opened{
     background: var(--bg-panel);
   }
-  .gift-box.opened .mark{ color: var(--blush); }
   .gift-box .lock-icon{
     display:none;
     position:absolute;
     width:20px; height:20px;
     color: var(--text-muted);
   }
-  .gift-box.locked .mark{ display:none; }
+  .gift-box.locked .face{ display:none; }
   .gift-box.locked .lock-icon{ display:block; }
   .gift-box.locked{ filter: grayscale(0.15); }
   .gift-box.spin-highlight{
@@ -326,16 +354,32 @@
   @keyframes fadeIn{ from{ opacity:0; } to{ opacity:1; } }
   .modal-card{
     position:relative;
-    max-width:340px;
+    max-width:300px;
     width:100%;
     background: var(--bg-panel);
-    border-radius: var(--radius);
-    padding: 28px 22px 22px;
-    font-size:15px;
-    line-height:1.6;
+    border-radius: 16px;
+    padding: 14px;
     animation: pop .25s ease;
   }
   .modal-card::before{
+    content:"";
+    position:absolute; inset:0;
+    border:2px solid var(--line);
+    border-radius:inherit;
+    filter:url(#sketchy);
+    pointer-events:none;
+  }
+  .modal-art{
+    background: repeating-linear-gradient(45deg, var(--bg-panel-2) 0 5px, var(--bg-panel) 5px 10px);
+    border-radius:10px;
+    padding: 26px 10px 18px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:8px;
+    position:relative;
+  }
+  .modal-art::before{
     content:"";
     position:absolute; inset:0;
     border:1.5px solid var(--line);
@@ -343,11 +387,42 @@
     filter:url(#sketchy);
     pointer-events:none;
   }
+  .modal-icon svg{
+    width:52px; height:52px;
+    color: var(--blush);
+  }
+  .modal-title{
+    font-family: var(--font-display);
+    font-weight:600;
+    font-size:17px;
+    color: var(--text);
+  }
   .modal-num{
     font-family: var(--font-mono);
-    font-size:11px;
-    color: var(--blush);
-    margin-bottom:8px;
+    font-size:10px;
+    letter-spacing:.04em;
+    color: var(--text-muted);
+  }
+  .modal-text-box{
+    background: var(--bg-panel-2);
+    border-radius:10px;
+    padding:14px;
+    margin-top:10px;
+    position:relative;
+  }
+  .modal-text-box::before{
+    content:"";
+    position:absolute; inset:0;
+    border:1.5px solid var(--line);
+    border-radius:inherit;
+    filter:url(#sketchy);
+    pointer-events:none;
+  }
+  .modal-text{
+    font-size:14px;
+    line-height:1.6;
+    color: var(--text);
+    position:relative;
   }
   .modal-close{
     position:absolute;
@@ -359,6 +434,7 @@
     border:1.5px solid var(--line);
     font-size:15px;
     display:flex; align-items:center; justify-content:center;
+    z-index:2;
   }
   @keyframes pop{ from{ opacity:0; transform:translateY(6px) scale(0.97);} to{opacity:1; transform:translateY(0) scale(1);} }
 
@@ -598,8 +674,14 @@
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal-card">
     <button class="modal-close" id="modalClose">✕</button>
-    <div class="modal-num" id="modalNum"></div>
-    <div class="modal-text" id="modalText"></div>
+    <div class="modal-art">
+      <span class="modal-icon" id="modalIcon"></span>
+      <div class="modal-title" id="modalTitle"></div>
+      <div class="modal-num" id="modalNum"></div>
+    </div>
+    <div class="modal-text-box">
+      <div class="modal-text" id="modalText"></div>
+    </div>
   </div>
 </div>
 
@@ -736,12 +818,16 @@ document.querySelectorAll('.nav-btn').forEach(btn => {
 const boxGrid = document.getElementById('boxGrid');
 const boxEls = [];
 const modalOverlay = document.getElementById('modalOverlay');
+const modalIcon = document.getElementById('modalIcon');
+const modalTitle = document.getElementById('modalTitle');
 const modalNum = document.getElementById('modalNum');
 const modalText = document.getElementById('modalText');
 const modalClose = document.getElementById('modalClose');
 
-function openModal(num, msg){
+function openModal(num, title, icon, msg){
   modalNum.textContent = num;
+  modalTitle.textContent = title;
+  modalIcon.innerHTML = icon;
   modalText.textContent = msg;
   modalOverlay.classList.add('show');
 }
@@ -753,13 +839,30 @@ modalOverlay.addEventListener('click', (e) => {
   if (e.target === modalOverlay) closeModal();
 });
 
-function revealBox(i){
+// tiap kartu punya "identitas" sendiri ala tarot — icon + judul tema.
+// urutannya ngikutin urutan GIFTS. ganti title/icon sesuai selera.
+const iconMoon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M17 4a8 8 0 1 0 0 16 9 9 0 0 1 0-16z"/></svg>';
+const iconFlame = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3c1 3-3 4-3 7a3 3 0 0 0 6 0c0-1.5-1-2-1-3.5 1.5 1 3 3 3 5.5a5 5 0 0 1-10 0c0-4 3-5 5-9z"/></svg>';
+const iconEnvelope = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 6l9 6 9-6"/></svg>';
+const iconGift = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="9" width="18" height="11" rx="1"/><path d="M3 9h18M12 9v11M12 9c-1.8 0-3.2-1.4-3.2-3.2S10.2 2.6 12 4.4c1.8-1.8 4.4-1.4 4.4.4S13.8 9 12 9zM12 9c1.8 0 3.2-1.4 3.2-3.2S13.8 2.6 12 4.4C10.2 2.6 7.6 3 7.6 4.8S10.2 9 12 9z"/></svg>';
+const iconStar = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3l2.3 5.9 6.2.5-4.8 4 1.5 6.1L12 16.6 6.8 19.5l1.5-6.1-4.8-4 6.2-.5z"/></svg>';
+const iconHeart = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 20s-7-4.4-9.5-9C.8 7.8 2.6 4 6.2 4c2 0 3.4 1.1 4 2.4C10.8 5.1 12.2 4 14.2 4c3.6 0 5.4 3.8 3.7 7-2.5 4.6-9.5 9-9.5 9z"/></svg>';
+
+const CARD_META = [
+  { title: 'Purnama',   icon: iconMoon },
+  { title: 'Api Kecil', icon: iconFlame },
+  { title: 'Amplop',    icon: iconEnvelope },
+  { title: 'Kado',      icon: iconGift },
+  { title: 'Bintang',   icon: iconStar },
+  { title: 'Hati',      icon: iconHeart }
+];
+
+// flip cuma munculin muka kartu (icon + judul tema). pesannya nggak
+// otomatis kebuka — modal baru muncul kalau kartu yang udah flip di-tap.
+function flipReveal(i){
   const box = boxEls[i];
-  const n = String(i+1).padStart(2,'0');
   box.classList.add('opened');
   box.style.setProperty('--tilt', '0deg');
-  box.querySelector('.mark').textContent = n;
-  openModal(`kado #${n}`, GIFTS[i]);
 }
 
 GIFTS.forEach((msg, i) => {
@@ -768,20 +871,24 @@ GIFTS.forEach((msg, i) => {
   const tilt = (Math.sin(i * 7.3) * 3.2).toFixed(2);
   box.style.setProperty('--tilt', tilt + 'deg');
   const n = String(i+1).padStart(2,'0');
-  const moonSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 4a8 8 0 1 0 0 16 9 9 0 0 1 0-16z"/></svg>';
+  const meta = CARD_META[i] || { title: `Kartu ${n}`, icon: iconMoon };
+  const cornerSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 4a8 8 0 1 0 0 16 9 9 0 0 1 0-16z"/></svg>';
   const lockSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
   box.innerHTML = `
-    <span class="idx tl">${n}${moonSvg}</span>
-    <span class="mark">?</span>
-    <span class="idx br">${n}${moonSvg}</span>
+    <span class="idx tl">${n}${cornerSvg}</span>
+    <span class="face">
+      <span class="face-icon">${meta.icon}</span>
+      <span class="face-title">${meta.title}</span>
+    </span>
+    <span class="idx br">${n}${cornerSvg}</span>
     <span class="lock-icon">${lockSvg}</span>`;
   box.addEventListener('click', () => {
     if (box.classList.contains('locked')) return;
-    if (box.classList.contains('opened')) {
-      openModal(`kado #${n}`, msg);
+    if (!box.classList.contains('opened')) {
+      flipReveal(i);
       return;
     }
-    revealBox(i);
+    openModal(`Kartu ${n}`, meta.title, meta.icon, msg);
   });
   boxEls[i] = box;
   boxGrid.appendChild(box);
@@ -845,8 +952,9 @@ spinBtn.addEventListener('click', () => {
       box.classList.add('flipping');
 
       // di tengah animasi flip kartu lagi "ngadep samping" (nggak keliatan) —
-      // pas itu baru diganti isinya biar kerasa kayak kartu remi kebalik
-      setTimeout(() => revealBox(result), 275);
+      // pas itu baru diganti isinya biar kerasa kayak kartu remi kebalik.
+      // popup pesannya nggak otomatis muncul, baru kebuka kalau kartunya di-tap.
+      setTimeout(() => flipReveal(result), 275);
 
       setTimeout(() => {
         box.classList.remove('flipping');
