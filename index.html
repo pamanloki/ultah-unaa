@@ -3,599 +3,143 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Untuk Elvira</title>
+<title>Kamar Elvira</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  /* ============================================================
-     DESAIN TOKEN — ubah palet/font di sini kalau mau
-     Tema: kertas kado & wax seal — bukan dark-mode-glow generik
-     ============================================================ */
   :root{
-    --bg: #efe2c4;
-    --bg-panel: #f8f0dd;
-    --bg-panel-2: #e7d7ae;
-    --gold: #a8763a;
-    --blush: #2b2118;
-    --text: #2b2118;
-    --text-muted: #8a7757;
-    --line: rgba(43,33,24,0.16);
-    --radius: 18px;
-    --font-display: "Fraunces", serif;
-    --font-body: "Plus Jakarta Sans", sans-serif;
-    --font-mono: "JetBrains Mono", monospace;
+    --bg:#efe2c4; --bg-panel:#f8f0dd; --bg-panel-2:#e7d7ae;
+    --gold:#a8763a; --blush:#a23b2e; --text:#2b2118; --text-muted:#8a7757;
+    --line:rgba(43,33,24,0.16);
+    --font-display:"Fraunces",serif; --font-body:"Plus Jakarta Sans",sans-serif; --font-mono:"JetBrains Mono",monospace;
+
+    /* ---- rasio gambar room asli: lebar / tinggi ---- */
+    --room-ar: 2000 / 989;
+    /* ---- lebar 1 frame kucing ---- */
+    --cat-fw: clamp(58px, 11vh, 96px);
   }
 
-  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
-  html,body{margin:0; padding:0; height:100%;}
-  body{
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--font-body);
-    min-height:100vh;
-    display:flex;
-    flex-direction:column;
-    overflow-x:hidden;
-    position:relative;
-  }
-  /* vignette kertas tipis, bukan glow layar */
-  body::before{
-    content:"";
-    position:fixed;
-    inset:0;
-    background: radial-gradient(900px 700px at 50% 0%, rgba(43,33,24,0.05), transparent 60%);
-    pointer-events:none;
-    z-index:0;
-  }
-  /* serat kertas halus */
-  body::after{
-    content:"";
-    position:fixed;
-    inset:0;
-    opacity:0.6;
-    mix-blend-mode: multiply;
-    pointer-events:none;
-    z-index:0;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='matrix' values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.05 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
-  }
-  .app{ position:relative; z-index:1; }
-  button{font-family:inherit; cursor:pointer;}
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent; margin:0; padding:0;}
+  html,body{height:100%; overflow:hidden;}
+  body{ background:#2b2118; color:var(--text); font-family:var(--font-body); }
+  img{ image-rendering:pixelated; image-rendering:crisp-edges; }
 
-  /* ---------- layout shell ---------- */
-  .app{
-    max-width:480px;
-    margin:0 auto;
-    width:100%;
-    flex:1;
-    display:flex;
-    flex-direction:column;
-    padding-top:76px;
-    padding-bottom:84px; /* space for bottom nav */
-  }
-
-  /* ---------- INTRO OVERLAY (start -> lilin -> gift) ---------- */
-  .intro-overlay{
+  /* ---------- VIEWPORT: geser horizontal ---------- */
+  .viewport{
     position:fixed; inset:0;
-    z-index:40;
-    transition: opacity .5s ease;
-  }
-  .intro-overlay.hide{ opacity:0; pointer-events:none; }
-  .intro-stage{
-    position:absolute; inset:0;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    gap:18px;
-    text-align:center;
-    padding:24px;
-    opacity:1;
-    transition: opacity .4s ease;
-  }
-  .intro-stage.hidden{ opacity:0; pointer-events:none; }
-
-  .start-btn{
-    background: var(--blush);
-    color: var(--bg-panel);
-    border:none;
-    border-radius:999px;
-    padding:16px 42px;
-    font-family: var(--font-display);
-    font-size:18px;
-    font-weight:600;
-    box-shadow: 0 4px 12px rgba(43,33,24,0.28);
-  }
-
-  .candle-wrap{
-    display:flex;
-    justify-content:center;
-    position:relative;
-  }
-  .moon{
-    position:absolute;
-    top:-2px; right:-46px;
-    width:34px; height:34px;
-    opacity:0.55;
-    pointer-events:none;
-  }
-  .candle{
-    width:34px; height:90px;
-    background: repeating-linear-gradient(50deg, #f8f0dd 0 6px, var(--blush) 6px 9px);
-    border-radius: 3px;
-    position:relative;
-    box-shadow: 0 3px 8px rgba(43,33,24,0.22);
-  }
-  .wick{
-    position:absolute; top:-14px; left:50%; transform:translateX(-50%);
-    width:3px; height:14px; background:#3a2a1a; border-radius:2px;
-  }
-  .flame{
-    position:absolute; top:-40px; left:50%; transform:translateX(-50%);
-    width:16px; height:26px;
-    background: radial-gradient(circle at 50% 70%, #fff6d0 0%, var(--gold) 55%, #8a5f28 95%);
-    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-    filter: drop-shadow(0 0 8px rgba(168,118,58,0.7));
-    animation: flicker 2.4s ease-in-out infinite;
-    transform-origin: bottom center;
-    transition: opacity .4s ease, transform .4s ease;
-  }
-  .flame.off{ opacity:0; transform: translateX(-50%) scaleY(0.2); }
-  @keyframes flicker{
-    0%,100%{ transform:translateX(-50%) rotate(-2deg) scaleY(1); }
-    25%{ transform:translateX(-50%) rotate(2deg) scaleY(1.05); }
-    50%{ transform:translateX(-50%) rotate(-1deg) scaleY(0.96); }
-    75%{ transform:translateX(-50%) rotate(3deg) scaleY(1.02); }
-  }
-  .hint{
-    font-family: var(--font-mono);
-    font-size:12px;
-    color: var(--text-muted);
-    letter-spacing:.04em;
-  }
-
-  .hero-gift{
-    width:126px; height:168px;
-    background: repeating-linear-gradient(45deg, var(--bg-panel-2) 0 5px, var(--bg-panel) 5px 10px);
-    border-radius:14px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    position:relative;
-    box-shadow: 2px 5px 12px rgba(43,33,24,0.28);
-  }
-  .hero-gift::before{
-    content:"";
-    position:absolute; inset:0;
-    border:1.5px solid var(--line);
-    border-radius:inherit;
-    filter:url(#sketchy);
-    pointer-events:none;
-  }
-  .hero-gift .gift-icon{
-    width:52px;
-    height:52px;
-  }
-
-  /* judul yang mulanya di tengah, lalu "pindah" ke atas jadi header tetap */
-  .wish-title{
-    position:fixed;
-    left:50%; top:50%;
-    transform:translate(-50%,-50%);
-    width:88%;
-    max-width:400px;
-    font-family: var(--font-display);
-    font-weight:600;
-    font-size: clamp(24px, 7.5vw, 32px);
-    line-height:1.2;
-    text-align:center;
-    color: var(--text);
-    z-index:35;
-    opacity:0;
-    pointer-events:none;
-    background: transparent;
-    padding: 0;
-    border-bottom: 0px solid transparent;
-    box-sizing:border-box;
-    transition: top .8s cubic-bezier(.4,0,.2,1), font-size .8s cubic-bezier(.4,0,.2,1),
-                opacity .5s ease, width .8s cubic-bezier(.4,0,.2,1), left .8s cubic-bezier(.4,0,.2,1),
-                transform .8s cubic-bezier(.4,0,.2,1),
-                padding .8s ease, background-color .5s ease, border-color .5s ease;
-  }
-  .wish-title.show{ opacity:1; }
-  .wish-title.docked{
-    top:0;
-    left:0;
-    width:100%;
-    max-width:100%;
-    font-size:19px;
-    padding: 16px 20px 14px;
-    background: var(--bg);
-    border-bottom: 1px solid var(--line);
-    transform: translate(0,0);
-  }
-  .wish-title.tab-hidden{
-    opacity:0;
-    pointer-events:none;
-  }
-
-  /* ---------- SECTION HEADERS ---------- */
-  .section{ padding: 6px 20px 28px; }
-  .section-eyebrow{
-    font-family: var(--font-mono);
-    font-size:11px;
-    letter-spacing:.08em;
-    color: var(--blush);
-    text-transform:uppercase;
-    margin-bottom:4px;
-  }
-  .section-title{
-    font-family: var(--font-display);
-    font-size:22px;
-    font-weight:600;
-    margin: 0 0 14px;
-  }
-
-  /* ---------- KADO (gift boxes) ---------- */
-  .box-grid{
-    display:grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap:10px;
-  }
-  .gift-box{
-    aspect-ratio: 0.7;
-    background: repeating-linear-gradient(45deg, var(--bg-panel-2) 0 5px, var(--bg-panel) 5px 10px);
-    border-radius: 10px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    position:relative;
-    transform: rotate(var(--tilt, 0deg));
-    transition: transform .25s ease;
-    box-shadow: 2px 3px 6px rgba(43,33,24,0.22);
-  }
-  .gift-box:active{ transform: rotate(var(--tilt, 0deg)) scale(0.94); }
-  .gift-box .face{
-    display:none;
-    flex-direction:column;
-    align-items:center;
-    gap:7px;
-  }
-  .gift-box.opened .face{ display:flex; }
-  .gift-box .face-icon svg{
-    width:28px; height:28px;
-    color: var(--blush);
-  }
-  .gift-box .face-title{
-    font-family: var(--font-mono);
-    font-size:10px;
-    letter-spacing:.05em;
-    text-transform:uppercase;
-    color: var(--text-muted);
-    text-align:center;
-    padding:0 6px;
-  }
-  .gift-box::before{
-    content:"";
-    position:absolute; inset:0;
-    border:1.5px solid var(--line);
-    border-radius:inherit;
-    filter:url(#sketchy);
-    pointer-events:none;
-    transition: border-color .25s ease;
-  }
-  .gift-box.opened::before{ border-color: var(--blush); }
-  .gift-box .idx{
-    position:absolute;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap:1px;
-    font-family: var(--font-mono);
-    font-size:10px;
-    color: var(--text-muted);
-    line-height:1;
-  }
-  .gift-box .idx svg{ width:9px; height:9px; }
-  .gift-box .idx.tl{ top:7px; left:8px; }
-  .gift-box .idx.br{ bottom:7px; right:8px; }
-  .gift-box.opened{
-    background: var(--bg-panel);
-  }
-  .gift-box .lock-icon{
-    display:none;
-    position:absolute;
-    width:20px; height:20px;
-    color: var(--text-muted);
-  }
-  .gift-box.locked .face{ display:none; }
-  .gift-box.locked .lock-icon{ display:block; }
-  .gift-box.locked{ filter: grayscale(0.15); }
-  .gift-box.spin-highlight{
-    transform: rotate(var(--tilt, 0deg)) scale(1.14);
-    z-index:2;
-  }
-  .gift-box.spin-highlight::before{
-    border-color: var(--gold);
-    border-width:3.5px;
-    box-shadow: 0 0 0 3px rgba(168,118,58,0.35);
-  }
-
-  @keyframes cardFlip{
-    0%{ transform: rotate(var(--tilt, 0deg)) scaleX(1); }
-    50%{ transform: rotate(var(--tilt, 0deg)) scaleX(0); }
-    100%{ transform: rotate(0deg) scaleX(1); }
-  }
-  .gift-box.flipping{
-    animation: cardFlip .55s ease;
-    z-index:3;
-  }
-
-  @keyframes dealIn{
-    0%{ opacity:0; transform: translateY(-170px) scale(0.4) rotate(-30deg); }
-    100%{ opacity:1; transform: translateY(0) scale(1) rotate(var(--tilt, 0deg)); }
-  }
-  .gift-box.dealing{ animation: dealIn .55s cubic-bezier(.2,.8,.2,1) both; }
-
-  .app.hidden{ display:none; }
-  .bottom-nav.hidden{ display:none; }
-  .modal-overlay{
-    position:fixed; inset:0;
-    background: rgba(43,33,24,0.5);
-    backdrop-filter: blur(2px);
-    display:none;
-    align-items:center;
-    justify-content:center;
-    padding: 24px;
-    z-index:30;
-  }
-  .modal-overlay.show{ display:flex; animation: fadeIn .2s ease; }
-  @keyframes fadeIn{ from{ opacity:0; } to{ opacity:1; } }
-  .modal-card{
-    position:relative;
-    max-width:300px;
-    width:100%;
-    background: var(--bg-panel);
-    border-radius: 16px;
-    padding: 14px;
-    animation: pop .25s ease;
-  }
-  .modal-card::before{
-    content:"";
-    position:absolute; inset:0;
-    border:2px solid var(--line);
-    border-radius:inherit;
-    filter:url(#sketchy);
-    pointer-events:none;
-  }
-  .modal-art{
-    background: repeating-linear-gradient(45deg, var(--bg-panel-2) 0 5px, var(--bg-panel) 5px 10px);
-    border-radius:10px;
-    padding: 26px 10px 18px;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap:8px;
-    position:relative;
-  }
-  .modal-art::before{
-    content:"";
-    position:absolute; inset:0;
-    border:1.5px solid var(--line);
-    border-radius:inherit;
-    filter:url(#sketchy);
-    pointer-events:none;
-  }
-  .modal-icon svg{
-    width:52px; height:52px;
-    color: var(--blush);
-  }
-  .modal-title{
-    font-family: var(--font-display);
-    font-weight:600;
-    font-size:17px;
-    color: var(--text);
-  }
-  .modal-num{
-    font-family: var(--font-mono);
-    font-size:10px;
-    letter-spacing:.04em;
-    color: var(--text-muted);
-  }
-  .modal-text-box{
-    background: var(--bg-panel-2);
-    border-radius:10px;
-    padding:14px;
-    margin-top:10px;
-    position:relative;
-  }
-  .modal-text-box::before{
-    content:"";
-    position:absolute; inset:0;
-    border:1.5px solid var(--line);
-    border-radius:inherit;
-    filter:url(#sketchy);
-    pointer-events:none;
-  }
-  .modal-text{
-    font-size:14px;
-    line-height:1.6;
-    color: var(--text);
-    position:relative;
-  }
-  .modal-close{
-    position:absolute;
-    top:-14px; right:-14px;
-    width:32px; height:32px;
-    border-radius:50%;
-    background: var(--bg-panel);
-    color: var(--text);
-    border:1.5px solid var(--line);
-    font-size:15px;
-    display:flex; align-items:center; justify-content:center;
-    z-index:2;
-  }
-  @keyframes pop{ from{ opacity:0; transform:translateY(6px) scale(0.97);} to{opacity:1; transform:translateY(0) scale(1);} }
-
-  /* ---------- GALERI ---------- */
-  .gallery-scroll{
-    display:flex;
-    gap:10px;
-    overflow-x:auto;
-    padding-bottom:6px;
+    overflow-x:auto; overflow-y:hidden;
+    -webkit-overflow-scrolling:touch;
     scrollbar-width:none;
+    cursor:grab;
+    background:#000;
+    white-space:nowrap;
   }
-  .gallery-scroll::-webkit-scrollbar{ display:none; }
-  .gallery-tile{
-    flex:0 0 auto;
-    width:140px; height:180px;
-    border-radius: var(--radius);
-    background: var(--bg-panel);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    text-align:center;
-    font-family: var(--font-mono);
-    font-size:11px;
-    color: var(--text-muted);
-    padding:10px;
+  .viewport::-webkit-scrollbar{ display:none; }
+  .viewport.grabbing{ cursor:grabbing; }
+
+  /* ---------- STAGE: kamar (setinggi layar, selebar rasio room) ---------- */
+  .stage{
     position:relative;
+    display:inline-block;
+    height:100%;
+    vertical-align:top;
   }
-  .gallery-tile::before{
-    content:"";
-    position:absolute; inset:0;
-    border:1.5px dashed var(--line);
-    border-radius:inherit;
-    filter:url(#sketchy);
-    pointer-events:none;
-  }
-
-  /* ---------- SPIN (nempel di tab Kado) ---------- */
-  .spin-btn{
-    display:block;
-    margin: 18px auto 0;
-    background: var(--blush);
-    color:#f8f0dd;
-    font-weight:600;
-    border: 1px solid rgba(43,33,24,0.15);
-    border-radius:12px;
-    padding:12px 30px;
-    font-size:14px;
-  }
-  .spin-btn:disabled{ opacity:0.55; }
-  .spin-note{
-    text-align:center;
-    font-family: var(--font-mono);
-    font-size:11px;
-    color: var(--text-muted);
-    margin-top:10px;
-    line-height:1.5;
+  .room-bg{
+    height:100%; width:auto; display:block;
+    aspect-ratio: var(--room-ar);
+    user-select:none; -webkit-user-drag:none;
   }
 
-  /* ---------- CAPSULE PESAN ---------- */
-  .capsule-box{
-    background: var(--bg-panel);
-    border-radius: var(--radius);
-    padding:18px;
-    position:relative;
-  }
-  .capsule-box::before{
-    content:"";
-    position:absolute; inset:0;
-    border:1.5px solid var(--line);
-    border-radius:inherit;
-    filter:url(#sketchy);
-    pointer-events:none;
-  }
-  .capsule-box textarea{
-    width:100%;
-    min-height:100px;
-    background: var(--bg-panel-2);
-    border:1px solid var(--line);
-    border-radius:12px;
-    color: var(--text);
-    font-family: var(--font-body);
-    font-size:14px;
-    padding:12px;
-    resize:vertical;
-  }
-  .capsule-box textarea::placeholder{ color: var(--text-muted); }
-  .seal-btn{
-    margin-top:12px;
-    width:100%;
-    background: var(--blush);
-    color:#f8f0dd;
-    font-weight:600;
-    border: 1px solid rgba(43,33,24,0.15);
-    border-radius:12px;
-    padding:13px;
-    font-size:14px;
-  }
-  .seal-note{
-    font-family: var(--font-mono);
-    font-size:11px;
-    color: var(--text-muted);
-    margin-top:10px;
-    line-height:1.5;
-  }
-  .sealed-view{
-    text-align:center;
-    padding:10px 0;
-  }
-  .wax{
-    width:56px; height:56px;
-    margin:0 auto 12px;
-    border-radius:50%;
-    background: radial-gradient(circle at 35% 30%, #453626, var(--blush) 75%);
-    display:flex; align-items:center; justify-content:center;
-    font-size:22px;
-    box-shadow: 0 4px 14px rgba(43,33,24,0.35);
+  /* debu/cahaya melayang */
+  .dust{ position:absolute; width:3px; height:3px; border-radius:50%;
+    background:rgba(255,240,190,0.85); pointer-events:none;
+    animation:floatUp linear infinite; opacity:0; }
+  @keyframes floatUp{
+    0%{ transform:translateY(20px); opacity:0; }
+    15%{ opacity:.9; } 85%{ opacity:.6; }
+    100%{ transform:translateY(-120px); opacity:0; }
   }
 
-  /* ---------- BOTTOM NAV ---------- */
-  .bottom-nav{
-    position:fixed;
-    bottom:0; left:0; right:0;
-    background: rgba(239,226,196,0.92);
-    backdrop-filter: blur(10px);
-    border-top:1px solid var(--line);
-    display:flex;
-    justify-content:center;
-    z-index:10;
+  /* ---------- OBJEK INTERAKTIF ---------- */
+  .obj{
+    position:absolute; transform:translate(-50%,-50%);
+    background:transparent; border:none; padding:0; cursor:pointer; display:block;
+    filter:drop-shadow(0 3px 4px rgba(0,0,0,0.28));
+    transition:transform .18s ease, filter .18s ease;
   }
-  .bottom-nav-inner{
-    max-width:480px;
-    width:100%;
-    display:flex;
-  }
-  .nav-btn{
-    flex:1;
-    background:none;
-    border:none;
-    color: var(--text-muted);
-    padding:12px 4px 10px;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap:3px;
-    font-size:10px;
-    font-family: var(--font-mono);
-  }
-  .nav-btn .ic{ width:19px; height:19px; }
-  .nav-btn.active{ color: var(--blush); }
+  .obj img{ width:100%; height:auto; display:block; pointer-events:none; -webkit-user-drag:none; }
+  .obj::after{ content:""; position:absolute; inset:-12%; border-radius:50%;
+    box-shadow:0 0 0 0 rgba(255,238,180,0); transition:box-shadow .2s ease; pointer-events:none; }
+  .obj:hover{ transform:translate(-50%,-50%) scale(1.06); filter:drop-shadow(0 4px 8px rgba(0,0,0,0.35)) brightness(1.06); }
+  .obj:hover::after,.obj:focus-visible::after{ box-shadow:0 0 22px 6px rgba(255,238,180,0.55); }
+  .obj:active{ transform:translate(-50%,-50%) scale(0.95); }
 
-  /* ---------- confetti bits ---------- */
-  .confetti{
-    position:fixed; top:-10px; pointer-events:none;
-    width:7px; height:10px; border-radius:2px;
-    animation: fall 1.4s linear forwards;
-    z-index:50;
-  }
-  @keyframes fall{
-    to{ transform: translateY(100vh) rotate(360deg); opacity:0.2; }
-  }
+  @keyframes wiggle{ 0%,100%{ transform:translate(-50%,-50%) rotate(-5deg);} 50%{ transform:translate(-50%,-50%) rotate(5deg);} }
+  .anim-wiggle{ animation:wiggle 1.4s ease-in-out infinite; transform-origin:center; }
+  .anim-wiggle:hover{ animation-play-state:paused; }
+  @keyframes bob{ 0%,100%{ transform:translate(-50%,-50%) translateY(0);} 50%{ transform:translate(-50%,-50%) translateY(-8px);} }
+  .anim-bob{ animation:bob 2.8s ease-in-out infinite; }
+  @keyframes pulseGlow{ 0%,100%{ filter:drop-shadow(0 0 2px rgba(255,238,180,0.2)) drop-shadow(0 3px 4px rgba(0,0,0,0.28)); }
+    50%{ filter:drop-shadow(0 0 11px rgba(255,238,180,0.75)) drop-shadow(0 3px 4px rgba(0,0,0,0.28)); } }
+  .anim-glow{ animation:pulseGlow 3s ease-in-out infinite; }
 
-  .hidden{ display:none !important; }
+  /* ---------- KUCING (sprite 8 frame) ---------- */
+  .cat{
+    position:absolute; transform:translate(-50%,-50%);
+    width:var(--cat-fw); aspect-ratio:259 / 232;
+    background-image:url("assets/cat.png"); background-repeat:no-repeat;
+    background-size:calc(var(--cat-fw) * 8) 100%; background-position:0 0;
+    image-rendering:pixelated; cursor:pointer;
+    filter:drop-shadow(0 3px 4px rgba(0,0,0,0.3));
+    animation:catIdle 1.15s steps(8) infinite;
+  }
+  @keyframes catIdle{ to{ background-position:calc(var(--cat-fw) * -8) 0; } }
+  .cat.happy{ animation:catIdle .55s steps(8) infinite; }
+
+  .bubble{ position:absolute; transform:translate(-50%,-100%);
+    background:var(--bg-panel); color:var(--text); font-family:var(--font-mono); font-size:11px;
+    padding:6px 10px; border-radius:10px; white-space:nowrap; border:1.5px solid var(--line);
+    opacity:0; pointer-events:none; transition:opacity .2s ease; z-index:6; }
+  .bubble.show{ opacity:1; }
+
+  /* ---------- OVERLAY UI (nempel di layar, nggak ikut geser) ---------- */
+  .banner{ position:fixed; top:0; left:0; right:0; text-align:center; padding:14px 16px 24px;
+    font-family:var(--font-display); font-weight:600; font-size:clamp(17px,4.6vw,22px); color:#fff;
+    text-shadow:0 2px 6px rgba(0,0,0,0.55);
+    background:linear-gradient(to bottom, rgba(43,33,24,0.5), transparent); z-index:15; pointer-events:none; }
+  .hint-tap{ position:fixed; bottom:16px; left:0; right:0; text-align:center;
+    font-family:var(--font-mono); font-size:12px; color:#fff; text-shadow:0 1px 4px rgba(0,0,0,0.6);
+    z-index:15; pointer-events:none; opacity:.9; transition:opacity .4s ease; }
+  .hint-tap .arrow{ display:inline-block; animation:nudge 1.4s ease-in-out infinite; }
+  @keyframes nudge{ 0%,100%{ transform:translateX(0);} 50%{ transform:translateX(6px);} }
+
+  /* ---------- MODAL ---------- */
+  .modal-overlay{ position:fixed; inset:0; background:rgba(43,33,24,0.55); backdrop-filter:blur(2px);
+    display:none; align-items:center; justify-content:center; padding:24px; z-index:30; }
+  .modal-overlay.show{ display:flex; animation:fadeIn .2s ease; }
+  @keyframes fadeIn{ from{opacity:0;} to{opacity:1;} }
+  .modal-card{ position:relative; max-width:300px; width:100%; background:var(--bg-panel);
+    border-radius:16px; padding:14px; animation:pop .25s ease; white-space:normal; }
+  .modal-card::before{ content:""; position:absolute; inset:0; border:2px solid var(--line);
+    border-radius:inherit; filter:url(#sketchy); pointer-events:none; }
+  .modal-art{ background:repeating-linear-gradient(45deg,var(--bg-panel-2) 0 5px,var(--bg-panel) 5px 10px);
+    border-radius:10px; padding:22px 10px 16px; display:flex; flex-direction:column; align-items:center; gap:8px; position:relative; }
+  .modal-art::before{ content:""; position:absolute; inset:0; border:1.5px solid var(--line); border-radius:inherit; filter:url(#sketchy); pointer-events:none; }
+  .modal-icon svg{ width:46px; height:46px; color:var(--blush); }
+  .modal-title{ font-family:var(--font-display); font-weight:600; font-size:17px; color:var(--text); }
+  .modal-num{ font-family:var(--font-mono); font-size:10px; letter-spacing:.04em; color:var(--text-muted); }
+  .modal-text-box{ background:var(--bg-panel-2); border-radius:10px; padding:14px; margin-top:10px; position:relative; }
+  .modal-text-box::before{ content:""; position:absolute; inset:0; border:1.5px solid var(--line); border-radius:inherit; filter:url(#sketchy); pointer-events:none; }
+  .modal-text{ font-size:14px; line-height:1.6; color:var(--text); position:relative; }
+  .modal-close{ position:absolute; top:-14px; right:-14px; width:32px; height:32px; border-radius:50%;
+    background:var(--bg-panel); color:var(--text); border:1.5px solid var(--line); font-size:15px;
+    display:flex; align-items:center; justify-content:center; z-index:2; cursor:pointer; }
+  @keyframes pop{ from{opacity:0; transform:translateY(6px) scale(0.97);} to{opacity:1; transform:translateY(0) scale(1);} }
+
+  .confetti{ position:fixed; top:-10px; pointer-events:none; width:7px; height:10px; border-radius:2px;
+    animation:fall 1.4s linear forwards; z-index:50; }
+  @keyframes fall{ to{ transform:translateY(100vh) rotate(360deg); opacity:.2; } }
 </style>
 </head>
 <body>
@@ -606,70 +150,17 @@
   </filter>
 </svg>
 
-<!-- ============ INTRO: mulai -> lilin -> gift ============ -->
-<div class="intro-overlay" id="introOverlay">
-  <div class="intro-stage" id="stageStart">
-    <button class="start-btn" id="startBtn">Mulai</button>
-  </div>
-
-  <div class="intro-stage hidden" id="stageCandle">
-    <div class="candle-wrap" id="candleWrap">
-      <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.3">
-        <path d="M17 4a8 8 0 1 0 0 16 9 9 0 0 1 0-16z"/>
-      </svg>
-      <div class="candle">
-        <div class="wick"></div>
-        <div class="flame" id="flame"></div>
-      </div>
-    </div>
-    <div class="hint">tap lilinnya</div>
-  </div>
-
-  <div class="intro-stage hidden" id="stageGift">
-    <button class="hero-gift" id="heroGiftBtn">
-      <svg class="gift-icon" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.4">
-        <rect x="3" y="9" width="18" height="11" rx="1"/>
-        <path d="M3 9h18M12 9v11M12 9c-1.8 0-3.2-1.4-3.2-3.2S10.2 2.6 12 4.4c1.8-1.8 4.4-1.4 4.4.4S13.8 9 12 9zM12 9c1.8 0 3.2-1.4 3.2-3.2S13.8 2.6 12 4.4C10.2 2.6 7.6 3 7.6 4.8S10.2 9 12 9z"/>
-      </svg>
-    </button>
-    <div class="hint">tap kadonya</div>
+<div class="viewport" id="viewport">
+  <div class="stage" id="stage">
+    <img class="room-bg" id="roomBg" src="assets/room.png" alt="kamar">
+    <!-- objek diisi lewat JS -->
   </div>
 </div>
 
-<h1 class="wish-title" id="wishTitle">Elvira, met ulang tahun ya.</h1>
+<div class="banner">Met ulang tahun, Elvira 🎂</div>
+<div class="hint-tap" id="hintTap">geser buat ubek-ubek kamar <span class="arrow">→</span></div>
 
-<div class="app hidden" id="mainApp">
-
-  <!-- ============ TAB: KADO ============ -->
-  <div class="section" id="tab-kado">
-    <div class="section-eyebrow">kartu kekunci, spin buat buka satu-satu</div>
-    <div class="section-title">Kado Kecil</div>
-    <div class="box-grid" id="boxGrid"></div>
-    <button class="spin-btn" id="spinBtn">Spin</button>
-    <div class="spin-note" id="spinNote">tiap spin buka satu kado secara acak.</div>
-  </div>
-
-  <!-- ============ TAB: GALERI ============ -->
-  <div class="section hidden" id="tab-galeri">
-    <div class="section-eyebrow">scroll ke samping</div>
-    <div class="section-title">Galeri</div>
-    <div class="gallery-scroll" id="galleryScroll"></div>
-  </div>
-
-  <!-- ============ TAB: PESAN ============ -->
-  <div class="section hidden" id="tab-pesan">
-    <div class="section-eyebrow">nggak wajib, tapi kalau mau</div>
-    <div class="section-title">Balas Kalau Sempat</div>
-    <div class="capsule-box" id="capsuleBox">
-      <textarea id="capsuleInput" placeholder="tulis ucapan / harapan / apapun buat aku di sini..."></textarea>
-      <button class="seal-btn" id="sealBtn">Segel Pesan 🔏</button>
-      <div class="seal-note">*catatan buat pembuat app: ini cuma tersimpan sementara di layar (belum ada server), jadi pesannya nggak otomatis terkirim ke kamu. kalau mau beneran nerima balasannya, sambungkan tombol ini ke bot Telegram-mu (lihat komentar di kode).</div>
-    </div>
-  </div>
-
-</div>
-
-<!-- ============ MODAL KADO ============ -->
+<!-- MODAL -->
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal-card">
     <button class="modal-close" id="modalClose">✕</button>
@@ -678,320 +169,122 @@
       <div class="modal-title" id="modalTitle"></div>
       <div class="modal-num" id="modalNum"></div>
     </div>
-    <div class="modal-text-box">
-      <div class="modal-text" id="modalText"></div>
-    </div>
-  </div>
-</div>
-
-<!-- ============ BOTTOM NAV ============ -->
-<div class="bottom-nav hidden" id="bottomNav">
-  <div class="bottom-nav-inner">
-    <button class="nav-btn active" data-tab="kado"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="9" width="18" height="11" rx="1.5"/><path d="M3 9h18M12 9v11M12 9c-1.8 0-3.2-1.4-3.2-3.2S10.2 2.6 12 4.4c1.8-1.8 4.4-1.4 4.4.4S13.8 9 12 9zM12 9c1.8 0 3.2-1.4 3.2-3.2S13.8 2.6 12 4.4C10.2 2.6 7.6 3 7.6 4.8S10.2 9 12 9z"/></svg>Kado</button>
-    <button class="nav-btn" data-tab="galeri"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="16" rx="1.5"/><circle cx="9" cy="10" r="1.6"/><path d="M3 17l5.5-5 4 3.5L17 11l4 4.5"/></svg>Galeri</button>
-    <button class="nav-btn" data-tab="pesan"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 6l9 6 9-6"/><rect x="3" y="5" width="18" height="14" rx="1.5"/></svg>Pesan</button>
+    <div class="modal-text-box"><div class="modal-text" id="modalText"></div></div>
   </div>
 </div>
 
 <script>
-/* ============================================================
-   TELEGRAM WEBAPP INIT
-   ============================================================ */
-if (window.Telegram && window.Telegram.WebApp) {
-  const tg = window.Telegram.WebApp;
-  tg.ready();
-  tg.expand();
-}
+if (window.Telegram && window.Telegram.WebApp) { const tg = window.Telegram.WebApp; tg.ready(); tg.expand(); }
 
 /* ============================================================
-   KONTEN — GANTI DI SINI SESUAI KEBUTUHAN
+   KONFIG OBJEK — tambah/ubah di sini (satu-satu)
+   x,y = posisi tengah objek dlm % dari kamar; w = lebar % dari kamar
+   anim = 'wiggle' | 'bob' | 'glow' | null
    ============================================================ */
+const iconEnvelope='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 6l9 6 9-6"/></svg>';
+const iconHeart='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 20s-7-4.4-9.5-9C.8 7.8 2.6 4 6.2 4c2 0 3.4 1.1 4 2.4C10.8 5.1 12.2 4 14.2 4c3.6 0 5.4 3.8 3.7 7-2.5 4.6-9.5 9-9.5 9z"/></svg>';
+const iconGift='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="9" width="18" height="11" rx="1"/><path d="M3 9h18M12 9v11"/></svg>';
 
-// isi tiap kotak kado (bisa 3, 6, 9 dst — kelipatan 3 biar grid rapi)
-const GIFTS = [
-  "Alasan random tapi jujur kenapa aku notice kamu: cara kamu ketawa waktu bahas hal receh.",
-  "Fun fact: dari sekian banyak chat, aku paling inget waktu kamu cerita soal [isi kenangan].",
-  "Kalau kamu jadi karakter game, kamu bakal jadi karakter yang [sifat lucu/positif].",
-  "Satu hal yang pengen aku bilang tapi belum sempat: [isi pesan].",
-  "Lagu yang selalu ngingetin aku sama kamu: [judul lagu].",
-  "PS: makasih udah jadi orang yang bikin hari-hari biasa jadi lebih seru."
+const OBJECTS = [
+  { id:'foto',    img:'assets/foto.png',     x:21, y:40, w:6.5, anim:'glow',
+    title:'Foto Kita', icon:iconHeart,
+    msg:'Alasan random tapi jujur kenapa aku notice kamu: cara kamu ketawa waktu bahas hal receh.' },
+  { id:'balon',   img:'assets/balon.png',    x:31, y:23, w:6.5, anim:'bob',
+    title:'Balon', icon:iconHeart,
+    msg:'Kalau kamu jadi karakter game, kamu bakal jadi karakter yang [sifat lucu/positif].' },
+  { id:'amplop',  img:'assets/envelope.png', x:45, y:58, w:6.5, anim:'wiggle',
+    title:'Amplop', icon:iconEnvelope,
+    msg:'Satu hal yang pengen aku bilang tapi belum sempat: [isi pesan].' },
+  { id:'kue',     img:'assets/kue.png',      x:58, y:55, w:6.5, anim:'glow',
+    title:'Kue', icon:iconHeart,
+    msg:'Met ulang tahun ya. Makasih udah jadi orang yang bikin hari-hari biasa jadi lebih seru.' },
+  { id:'kado',    img:'assets/kado.png',     x:45, y:86, w:7,   anim:'bob',
+    title:'Kado', icon:iconGift,
+    msg:'Fun fact: dari sekian banyak chat, aku paling inget waktu kamu cerita soal [isi kenangan].' },
 ];
 
-// isi galeri — ganti "img" dengan path/URL foto asli kalau sudah ada
-// contoh: { img: "https://.../foto1.jpg", caption: "waktu itu..." }
-const GALLERY = [
-  { img: null, caption: "taruh foto kenangan #1 di sini" },
-  { img: null, caption: "taruh foto kenangan #2 di sini" },
-  { img: null, caption: "taruh foto kenangan #3 di sini" }
-];
+const stage = document.getElementById('stage');
+const hintTap = document.getElementById('hintTap');
 
-// hadiah spin = nomor kado (1..jumlah GIFTS). tiap spin unlock satu kado acak
-// yang belum ke-unlock, sampai semua ke-unlock.
-
-/* ============================================================
-   LOGIKA — biasanya nggak perlu diubah
-   ============================================================ */
-
-// --- alur intro: mulai -> lilin -> wish pindah ke atas -> gift -> deal kartu ---
-const introOverlay = document.getElementById('introOverlay');
-const stageStart = document.getElementById('stageStart');
-const stageCandle = document.getElementById('stageCandle');
-const stageGift = document.getElementById('stageGift');
-const startBtn = document.getElementById('startBtn');
-const candleWrap = document.getElementById('candleWrap');
-const flame = document.getElementById('flame');
-const heroGiftBtn = document.getElementById('heroGiftBtn');
-const wishTitle = document.getElementById('wishTitle');
-const mainApp = document.getElementById('mainApp');
-const bottomNav = document.getElementById('bottomNav');
-
-startBtn.addEventListener('click', () => {
-  stageStart.classList.add('hidden');
-  stageCandle.classList.remove('hidden');
+OBJECTS.forEach(o => {
+  const btn = document.createElement('button');
+  btn.className = 'obj' + (o.anim ? ' anim-' + o.anim : '');
+  btn.style.left = o.x + '%'; btn.style.top = o.y + '%'; btn.style.width = o.w + '%';
+  btn.setAttribute('aria-label', o.title);
+  btn.innerHTML = `<img src="${o.img}" alt="${o.title}">`;
+  btn.addEventListener('click', () => { if (viewport._drag) return; openModal(o.title, o.icon, o.msg); });
+  stage.appendChild(btn);
 });
 
-let candleTapped = false;
-candleWrap.addEventListener('click', () => {
-  if (candleTapped) return;
-  candleTapped = true;
-
-  flame.classList.add('off');
-  burstConfetti();
-
-  setTimeout(() => {
-    stageCandle.classList.add('hidden');
-    wishTitle.classList.add('show');
-  }, 500);
-
-  setTimeout(() => {
-    wishTitle.classList.add('docked');
-  }, 2500);
-
-  setTimeout(() => {
-    stageGift.classList.remove('hidden');
-  }, 3300);
+/* ---------- KUCING ---------- */
+const CAT = { x:66, y:87, meows:['miaw ~','purr...','met ultah, majikan 🐾','😺'] };
+const cat = document.createElement('div');
+cat.className = 'cat'; cat.style.left = CAT.x + '%'; cat.style.top = CAT.y + '%';
+stage.appendChild(cat);
+const bubble = document.createElement('div'); bubble.className = 'bubble'; stage.appendChild(bubble);
+cat.addEventListener('click', () => {
+  if (viewport._drag) return;
+  cat.classList.add('happy');
+  bubble.textContent = CAT.meows[Math.floor(Math.random()*CAT.meows.length)];
+  bubble.style.left = CAT.x + '%'; bubble.style.top = (CAT.y - 11) + '%'; bubble.classList.add('show');
+  burstConfetti(10);
+  clearTimeout(cat._t);
+  cat._t = setTimeout(() => { cat.classList.remove('happy'); bubble.classList.remove('show'); }, 1600);
 });
 
-heroGiftBtn.addEventListener('click', () => {
-  introOverlay.classList.add('hide');
-  mainApp.classList.remove('hidden');
-  bottomNav.classList.remove('hidden');
-  dealCards();
-}, { once: true });
-
-function dealCards(){
-  document.querySelectorAll('#boxGrid .gift-box').forEach((box, i) => {
-    box.style.animationDelay = (i * 90) + 'ms';
-    box.classList.add('dealing');
-  });
+/* ---------- modal ---------- */
+const modalOverlay=document.getElementById('modalOverlay');
+const modalIcon=document.getElementById('modalIcon'), modalTitle=document.getElementById('modalTitle');
+const modalNum=document.getElementById('modalNum'), modalText=document.getElementById('modalText');
+document.getElementById('modalClose').addEventListener('click', closeModal);
+modalOverlay.addEventListener('click', e => { if (e.target === modalOverlay) closeModal(); });
+function openModal(title, icon, msg){
+  modalTitle.textContent=title; modalIcon.innerHTML=icon; modalNum.textContent=''; modalText.textContent=msg;
+  modalOverlay.classList.add('show'); hintTap.style.opacity=0; burstConfetti(16);
 }
+function closeModal(){ modalOverlay.classList.remove('show'); }
 
-function burstConfetti(){
-  const colors = ['#a8763a', '#2b2118', '#f8f0dd'];
-  for (let i = 0; i < 26; i++) {
-    const c = document.createElement('div');
-    c.className = 'confetti';
-    c.style.left = Math.random() * 100 + 'vw';
-    c.style.background = colors[Math.floor(Math.random()*colors.length)];
-    c.style.animationDelay = (Math.random()*0.4) + 's';
-    c.style.animationDuration = (1.1 + Math.random()*0.8) + 's';
-    document.body.appendChild(c);
-    setTimeout(() => c.remove(), 2200);
+/* ---------- geser horizontal (mouse drag; sentuh pakai scroll native) ---------- */
+const viewport = document.getElementById('viewport');
+viewport._drag = false;
+let down=false, startX=0, startLeft=0;
+viewport.addEventListener('pointerdown', e => {
+  if (e.pointerType !== 'mouse') return;
+  down=true; viewport._drag=false; startX=e.clientX; startLeft=viewport.scrollLeft;
+  viewport.classList.add('grabbing');
+});
+viewport.addEventListener('pointermove', e => {
+  if (!down) return;
+  const dx = e.clientX - startX;
+  if (Math.abs(dx) > 6) viewport._drag = true;
+  viewport.scrollLeft = startLeft - dx;
+});
+function endDrag(){ down=false; viewport.classList.remove('grabbing'); setTimeout(()=>viewport._drag=false, 30); }
+viewport.addEventListener('pointerup', endDrag);
+viewport.addEventListener('pointerleave', endDrag);
+// sembunyikan hint setelah user mulai geser
+viewport.addEventListener('scroll', () => { hintTap.style.opacity = 0; }, { once:true });
+
+/* ---------- debu ---------- */
+(function makeDust(){
+  for (let i=0;i<16;i++){
+    const d=document.createElement('div'); d.className='dust';
+    d.style.left=Math.random()*100+'%'; d.style.top=(40+Math.random()*55)+'%';
+    d.style.animationDuration=(5+Math.random()*6)+'s'; d.style.animationDelay=(Math.random()*6)+'s';
+    stage.appendChild(d);
+  }
+})();
+
+/* ---------- confetti ---------- */
+function burstConfetti(n){
+  const colors=['#a8763a','#a23b2e','#f8f0dd','#e7d7ae'];
+  for (let i=0;i<n;i++){
+    const c=document.createElement('div'); c.className='confetti';
+    c.style.left=Math.random()*100+'vw'; c.style.background=colors[Math.floor(Math.random()*colors.length)];
+    c.style.animationDelay=(Math.random()*0.4)+'s'; c.style.animationDuration=(1.1+Math.random()*0.8)+'s';
+    document.body.appendChild(c); setTimeout(()=>c.remove(),2200);
   }
 }
-
-// --- tab nav ---
-const tabs = ['kado','galeri','pesan'];
-document.querySelectorAll('.nav-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const target = btn.dataset.tab;
-    tabs.forEach(t => {
-      document.getElementById('tab-' + t).classList.toggle('hidden', t !== target);
-    });
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b === btn));
-    wishTitle.classList.toggle('tab-hidden', target !== 'kado');
-  });
-});
-
-// --- render kado boxes ---
-const boxGrid = document.getElementById('boxGrid');
-const boxEls = [];
-const modalOverlay = document.getElementById('modalOverlay');
-const modalIcon = document.getElementById('modalIcon');
-const modalTitle = document.getElementById('modalTitle');
-const modalNum = document.getElementById('modalNum');
-const modalText = document.getElementById('modalText');
-const modalClose = document.getElementById('modalClose');
-
-function openModal(num, title, icon, msg){
-  modalNum.textContent = num;
-  modalTitle.textContent = title;
-  modalIcon.innerHTML = icon;
-  modalText.textContent = msg;
-  modalOverlay.classList.add('show');
-}
-function closeModal(){
-  modalOverlay.classList.remove('show');
-}
-modalClose.addEventListener('click', closeModal);
-modalOverlay.addEventListener('click', (e) => {
-  if (e.target === modalOverlay) closeModal();
-});
-
-// tiap kartu punya "identitas" sendiri ala tarot — icon + judul tema.
-// urutannya ngikutin urutan GIFTS. ganti title/icon sesuai selera.
-const iconMoon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M17 4a8 8 0 1 0 0 16 9 9 0 0 1 0-16z"/></svg>';
-const iconFlame = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3c1 3-3 4-3 7a3 3 0 0 0 6 0c0-1.5-1-2-1-3.5 1.5 1 3 3 3 5.5a5 5 0 0 1-10 0c0-4 3-5 5-9z"/></svg>';
-const iconEnvelope = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 6l9 6 9-6"/></svg>';
-const iconGift = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="9" width="18" height="11" rx="1"/><path d="M3 9h18M12 9v11M12 9c-1.8 0-3.2-1.4-3.2-3.2S10.2 2.6 12 4.4c1.8-1.8 4.4-1.4 4.4.4S13.8 9 12 9zM12 9c1.8 0 3.2-1.4 3.2-3.2S13.8 2.6 12 4.4C10.2 2.6 7.6 3 7.6 4.8S10.2 9 12 9z"/></svg>';
-const iconStar = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3l2.3 5.9 6.2.5-4.8 4 1.5 6.1L12 16.6 6.8 19.5l1.5-6.1-4.8-4 6.2-.5z"/></svg>';
-const iconHeart = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 20s-7-4.4-9.5-9C.8 7.8 2.6 4 6.2 4c2 0 3.4 1.1 4 2.4C10.8 5.1 12.2 4 14.2 4c3.6 0 5.4 3.8 3.7 7-2.5 4.6-9.5 9-9.5 9z"/></svg>';
-
-const CARD_META = [
-  { title: 'Purnama',   icon: iconMoon },
-  { title: 'Api Kecil', icon: iconFlame },
-  { title: 'Amplop',    icon: iconEnvelope },
-  { title: 'Kado',      icon: iconGift },
-  { title: 'Bintang',   icon: iconStar },
-  { title: 'Hati',      icon: iconHeart }
-];
-
-// flip cuma munculin muka kartu (icon + judul tema). pesannya nggak
-// otomatis kebuka — modal baru muncul kalau kartu yang udah flip di-tap.
-function flipReveal(i){
-  const box = boxEls[i];
-  box.classList.add('opened');
-  box.style.setProperty('--tilt', '0deg');
-}
-
-GIFTS.forEach((msg, i) => {
-  const box = document.createElement('button');
-  box.className = 'gift-box locked';
-  const tilt = (Math.sin(i * 7.3) * 3.2).toFixed(2);
-  box.style.setProperty('--tilt', tilt + 'deg');
-  const n = String(i+1).padStart(2,'0');
-  const meta = CARD_META[i] || { title: `Kartu ${n}`, icon: iconMoon };
-  const cornerSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 4a8 8 0 1 0 0 16 9 9 0 0 1 0-16z"/></svg>';
-  const lockSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
-  box.innerHTML = `
-    <span class="idx tl">${n}${cornerSvg}</span>
-    <span class="face">
-      <span class="face-icon">${meta.icon}</span>
-      <span class="face-title">${meta.title}</span>
-    </span>
-    <span class="idx br">${n}${cornerSvg}</span>
-    <span class="lock-icon">${lockSvg}</span>`;
-  box.addEventListener('click', () => {
-    if (box.classList.contains('locked')) return;
-    if (!box.classList.contains('opened')) {
-      flipReveal(i);
-      return;
-    }
-    openModal(`Kartu ${n}`, meta.title, meta.icon, msg);
-  });
-  boxEls[i] = box;
-  boxGrid.appendChild(box);
-});
-
-// --- render galeri ---
-const galleryScroll = document.getElementById('galleryScroll');
-GALLERY.forEach(item => {
-  const tile = document.createElement('div');
-  tile.className = 'gallery-tile';
-  if (item.img) {
-    tile.style.backgroundImage = `url(${item.img})`;
-    tile.style.backgroundSize = 'cover';
-    tile.style.backgroundPosition = 'center';
-    tile.textContent = '';
-  } else {
-    tile.textContent = item.caption;
-  }
-  galleryScroll.appendChild(tile);
-});
-
-// --- spin: unlock kado ---
-// --- spin: animasi lompat acak antar kartu, lalu buka kartu yang kepilih ---
-const spinBtn = document.getElementById('spinBtn');
-const spinNote = document.getElementById('spinNote');
-
-spinBtn.addEventListener('click', () => {
-  const lockedIdx = boxEls
-    .map((_, i) => i)
-    .filter(i => boxEls[i].classList.contains('locked'));
-
-  if (lockedIdx.length === 0) {
-    spinNote.textContent = 'semua kado udah kebuka.';
-    return;
-  }
-
-  spinBtn.disabled = true;
-  spinNote.textContent = 'muter...';
-
-  const n = boxEls.length;
-  const result = lockedIdx[Math.floor(Math.random() * lockedIdx.length)];
-  const startIdx = Math.floor(Math.random() * n);
-  const loops = 2;
-  const totalSteps = loops * n + ((result - startIdx + n) % n);
-
-  let step = 0;
-  function tick(){
-    boxEls.forEach(b => b.classList.remove('spin-highlight'));
-    const idx = (startIdx + step) % n;
-    boxEls[idx].classList.add('spin-highlight');
-    step++;
-
-    if (step <= totalSteps) {
-      const progress = step / totalSteps;
-      const delay = 55 + progress * progress * 230; // makin lambat menjelang berhenti
-      setTimeout(tick, delay);
-    } else {
-      boxEls.forEach(b => b.classList.remove('spin-highlight'));
-      const box = boxEls[result];
-      box.classList.remove('locked');
-      box.classList.add('flipping');
-
-      // di tengah animasi flip kartu lagi "ngadep samping" (nggak keliatan) —
-      // pas itu baru diganti isinya biar kerasa kayak kartu remi kebalik.
-      // popup pesannya nggak otomatis muncul, baru kebuka kalau kartunya di-tap.
-      setTimeout(() => flipReveal(result), 275);
-
-      setTimeout(() => {
-        box.classList.remove('flipping');
-        spinBtn.disabled = false;
-      }, 550);
-
-      spinNote.textContent = `dapet kado #${String(result + 1).padStart(2, '0')}!`;
-    }
-  }
-  tick();
-});
-
-// --- capsule pesan ---
-const sealBtn = document.getElementById('sealBtn');
-const capsuleBox = document.getElementById('capsuleBox');
-const capsuleInput = document.getElementById('capsuleInput');
-
-sealBtn.addEventListener('click', () => {
-  const text = capsuleInput.value.trim();
-  if (!text) return;
-
-  capsuleBox.innerHTML = `
-    <div class="sealed-view">
-      <div class="wax"></div>
-      <p>disegel.</p>
-      <p style="color:var(--text-muted); font-size:13px;">makasih udah baca sampai sini.</p>
-    </div>`;
-
-  // sendData langsung ngirim data ini sebagai pesan ke bot kamu
-  // (ditangkep di kado_bot.py), terus otomatis nutup mini app.
-  // Makanya dikasih jeda dikit biar animasi segel di atas sempat kelihatan.
-  setTimeout(() => {
-    if (window.Telegram && window.Telegram.WebApp) {
-      window.Telegram.WebApp.sendData(JSON.stringify({ message: text }));
-    }
-  }, 900);
-});
 </script>
-
 </body>
 </html>
