@@ -14,10 +14,10 @@
     --line:rgba(43,33,24,0.16);
     --font-display:"Fraunces",serif; --font-body:"Plus Jakarta Sans",sans-serif; --font-mono:"JetBrains Mono",monospace;
 
-    /* ---- rasio gambar room asli: lebar / tinggi (samain nanti) ---- */
-    --room-ar: 1800 / 900;
+    /* ---- rasio gambar room asli: lebar / tinggi ---- */
+    --room-ar: 2000 / 989;
     /* ---- lebar 1 frame kucing ---- */
-    --cat-fw: clamp(64px, 12vh, 108px);
+    --cat-fw: clamp(58px, 11vh, 96px);
   }
 
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent; margin:0; padding:0;}
@@ -87,7 +87,7 @@
   /* ---------- KUCING (sprite 8 frame) ---------- */
   .cat{
     position:absolute; transform:translate(-50%,-50%);
-    width:var(--cat-fw); aspect-ratio:1;
+    width:var(--cat-fw); aspect-ratio:259 / 232;
     background-image:url("assets/cat.png"); background-repeat:no-repeat;
     background-size:calc(var(--cat-fw) * 8) 100%; background-position:0 0;
     image-rendering:pixelated; cursor:pointer;
@@ -186,11 +186,21 @@ const iconHeart='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stro
 const iconGift='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="9" width="18" height="11" rx="1"/><path d="M3 9h18M12 9v11"/></svg>';
 
 const OBJECTS = [
-  { id:'amplop', img:'assets/envelope.png', x:44, y:60, w:6, anim:'wiggle',
-    title:'Amplop', icon:iconEnvelope, msg:'Satu hal yang pengen aku bilang tapi belum sempat: [isi pesan].' },
-  // { id:'kue',   img:'assets/kue.png',   x:34, y:55, w:6,  anim:'glow',   title:'Kue',  icon:iconHeart, msg:'...' },
-  // { id:'foto',  img:'assets/foto.png',  x:11, y:28, w:7,  anim:'glow',   title:'Foto', icon:iconHeart, msg:'...' },
-  // { id:'kado',  img:'assets/kado.png',  x:52, y:82, w:6,  anim:'bob',    title:'Kado', icon:iconGift,  msg:'...' },
+  { id:'foto',    img:'assets/foto.png',     x:21, y:40, w:6.5, anim:'glow',
+    title:'Foto Kita', icon:iconHeart,
+    msg:'Alasan random tapi jujur kenapa aku notice kamu: cara kamu ketawa waktu bahas hal receh.' },
+  { id:'balon',   img:'assets/balon.png',    x:31, y:23, w:6.5, anim:'bob',
+    title:'Balon', icon:iconHeart,
+    msg:'Kalau kamu jadi karakter game, kamu bakal jadi karakter yang [sifat lucu/positif].' },
+  { id:'amplop',  img:'assets/envelope.png', x:45, y:58, w:6.5, anim:'wiggle',
+    title:'Amplop', icon:iconEnvelope,
+    msg:'Satu hal yang pengen aku bilang tapi belum sempat: [isi pesan].' },
+  { id:'kue',     img:'assets/kue.png',      x:58, y:55, w:6.5, anim:'glow',
+    title:'Kue', icon:iconHeart,
+    msg:'Met ulang tahun ya. Makasih udah jadi orang yang bikin hari-hari biasa jadi lebih seru.' },
+  { id:'kado',    img:'assets/kado.png',     x:45, y:86, w:7,   anim:'bob',
+    title:'Kado', icon:iconGift,
+    msg:'Fun fact: dari sekian banyak chat, aku paling inget waktu kamu cerita soal [isi kenangan].' },
 ];
 
 const stage = document.getElementById('stage');
@@ -207,7 +217,7 @@ OBJECTS.forEach(o => {
 });
 
 /* ---------- KUCING ---------- */
-const CAT = { x:86, y:84, meows:['miaw ~','purr...','met ultah, majikan 🐾','😺'] };
+const CAT = { x:66, y:87, meows:['miaw ~','purr...','met ultah, majikan 🐾','😺'] };
 const cat = document.createElement('div');
 cat.className = 'cat'; cat.style.left = CAT.x + '%'; cat.style.top = CAT.y + '%';
 stage.appendChild(cat);
