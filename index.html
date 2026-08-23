@@ -18,6 +18,8 @@
     --room-ar: 2000 / 989;
     /* ---- lebar 1 frame kucing ---- */
     --cat-fw: clamp(96px, 19vh, 165px);
+    /* ---- lebar 1 frame boneka (sprite 6 frame) ---- */
+    --bnk-fw: clamp(120px, 24vh, 205px);
   }
 
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent; margin:0; padding:0;}
@@ -96,6 +98,19 @@
   }
   @keyframes catIdle{ to{ background-position:calc(var(--cat-fw) * -8) 0; } }
   .cat.happy{ animation:catIdle .55s steps(8) infinite; }
+
+  /* ---------- BONEKA KUCING (sprite 6 frame: kedip + rambut goyang) ---------- */
+  .bnk{
+    position:absolute; transform:translate(-50%,-50%);
+    width:var(--bnk-fw); aspect-ratio:300 / 282;
+    background-image:url("assets/boneka.png"); background-repeat:no-repeat;
+    background-size:calc(var(--bnk-fw) * 6) 100%; background-position:0 0;
+    image-rendering:pixelated; cursor:pointer;
+    filter:drop-shadow(0 4px 5px rgba(0,0,0,0.28));
+    animation:bnkPlay 3.4s steps(6) infinite;
+  }
+  @keyframes bnkPlay{ to{ background-position:calc(var(--bnk-fw) * -6) 0; } }
+  .bnk:active{ transform:translate(-50%,-50%) scale(.96); }
 
   .bubble{ position:absolute; transform:translate(-50%,-100%);
     background:var(--bg-panel); color:var(--text); font-family:var(--font-mono); font-size:11px;
@@ -298,9 +313,8 @@
     <div class="map-tip" id="screenTip" style="left:51%; top:40%;">Setel musik &middot; colek aku</div>
 
     <!-- QUEST: boneka beruang (bawah foto) -->
-    <button class="quest" id="bearObj" aria-label="Boneka" style="left:15%; top:75%; width:11%;">
-      <img src="assets/boneka.png" alt="Boneka kucing" onerror="this.style.display='none';var h=document.getElementById('bearHint');if(h)h.style.display='none';"></button>
-    <div class="q-hint" id="bearHint" style="left:15%; top:64%;">pukpuk 3x ✨</div>
+    <div class="bnk" id="bearObj" role="button" tabindex="0" aria-label="Boneka" style="left:31%; top:66%;"></div>
+    <div class="q-hint" id="bearHint" style="left:31%; top:52%;">pukpuk 3x ✨</div>
 
     <!-- QUEST: kotak harta (muncul stlh boneka dipukpuk 3x) -->
     <button class="quest hidden-q" id="chestObj" aria-label="Kotak harta" style="left:37%; top:80%; width:9%;">
@@ -637,12 +651,10 @@ const chestObj = document.getElementById('chestObj');
 const paperObj = document.getElementById('paperObj');
 const bearHint = document.getElementById('bearHint');
 
-// boneka goyang + pukpuk 3x -> munculin kotak harta
-bearObj.classList.add('anim-wiggle');
+// boneka animasi sprite (kedip + rambut goyang); pukpuk 3x -> munculin kotak harta
 let bearTaps = 0, chestShown = false;
 bearObj.addEventListener('click', () => {
   if (viewport._drag) return;
-  bearObj.classList.remove('anim-wiggle'); void bearObj.offsetWidth; bearObj.classList.add('anim-wiggle');
   burstConfetti(6);
   if (!chestShown) {
     bearTaps++;
