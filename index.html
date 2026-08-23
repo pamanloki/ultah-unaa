@@ -103,6 +103,49 @@
     opacity:0; pointer-events:none; transition:opacity .2s ease; z-index:6; }
   .bubble.show{ opacity:1; }
 
+  /* ---------- HOTSPOT (peta dinding, tanpa gambar sendiri) ---------- */
+  .hotspot{ position:absolute; transform:translate(-50%,-50%);
+    background:transparent; border:none; padding:0; cursor:pointer; z-index:4; }
+  .hotspot::after{ content:""; position:absolute; inset:0; border-radius:6px;
+    box-shadow:0 0 0 0 rgba(255,238,180,0); transition:box-shadow .25s ease; }
+  .hotspot:hover::after,.hotspot:focus-visible::after{
+    box-shadow:0 0 0 3px rgba(255,238,180,.75), 0 0 24px 8px rgba(255,238,180,.4); }
+  .map-tip{ position:absolute; transform:translate(-50%,-135%);
+    background:var(--text); color:var(--bg-panel); font-family:var(--font-mono); font-size:11px;
+    padding:5px 9px; border-radius:8px; white-space:nowrap; opacity:0; pointer-events:none;
+    transition:opacity .2s ease; z-index:16; }
+  .map-tip.show{ opacity:1; }
+
+  /* ---------- MAP PANEL (slide-in ala referensi) ---------- */
+  .mappanel{ position:fixed; inset:0; z-index:45; display:none; }
+  .mappanel.show{ display:flex; }
+  .mappanel-backdrop{ position:absolute; inset:0; background:rgba(43,33,24,.55); backdrop-filter:blur(2px); }
+  .mappanel-inner{ position:relative; display:flex; width:100%; height:100%; }
+  .mappanel-info{ width:min(42%,420px); background:var(--bg); color:var(--text);
+    padding:40px 34px; overflow:auto; z-index:2;
+    transform:translateX(-100%); transition:transform .45s cubic-bezier(.2,.8,.2,1); }
+  .mappanel.show .mappanel-info{ transform:translateX(0); }
+  .mappanel-eyebrow{ font-family:var(--font-mono); font-size:12px; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--gold); margin-bottom:10px; }
+  .mappanel-title{ font-family:var(--font-display); font-weight:700; font-size:clamp(30px,6vw,48px);
+    line-height:1; margin-bottom:18px; }
+  .mappanel-body{ font-size:15px; line-height:1.7; color:var(--text); max-width:34ch; }
+  .mappanel-body b{ color:var(--blush); }
+  .mappanel-map{ flex:1; display:flex; align-items:center; justify-content:center; padding:24px;
+    min-width:0; overflow:hidden; }
+  .mappanel-map img{ max-width:100%; max-height:100%; object-fit:contain; image-rendering:pixelated;
+    animation:mapZoom .6s cubic-bezier(.2,.8,.2,1) both; filter:drop-shadow(0 8px 24px rgba(0,0,0,.4)); }
+  @keyframes mapZoom{ from{ opacity:0; transform:scale(1.18); } to{ opacity:1; transform:scale(1); } }
+  .mappanel-close{ position:absolute; top:16px; right:16px; width:38px; height:38px; border-radius:50%;
+    background:var(--bg-panel); color:var(--text); border:1.5px solid var(--line); font-size:17px;
+    display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:3; }
+  @media (max-width:640px){
+    .mappanel-inner{ flex-direction:column; }
+    .mappanel-info{ width:100%; transform:translateY(100%); padding:22px 22px 30px; }
+    .mappanel.show .mappanel-info{ transform:translateY(0); }
+    .mappanel-map{ padding:16px 16px 8px; }
+  }
+
   /* ---------- OVERLAY UI (nempel di layar, nggak ikut geser) ---------- */
   .banner{ position:fixed; top:0; left:0; right:0; text-align:center; padding:14px 16px 24px;
     font-family:var(--font-display); font-weight:600; font-size:clamp(17px,4.6vw,22px); color:#fff;
@@ -154,10 +197,32 @@
   <div class="stage" id="stage">
     <img class="room-bg" id="roomBg" src="assets/room.png" alt="kamar">
     <!-- objek diisi lewat JS -->
+    <button class="hotspot" id="mapHotspot" aria-label="Peta" style="left:50.5%; top:34%; width:17.5%; height:17%;"></button>
+    <div class="map-tip" id="mapTip" style="left:50.5%; top:26%;">Bekasi &middot; colek aku</div>
   </div>
 </div>
 
 <div class="hint-tap" id="hintTap">geser buat ubek-ubek kamar <span class="arrow">→</span></div>
+
+<!-- MAP PANEL -->
+<div class="mappanel" id="mapPanel">
+  <div class="mappanel-backdrop" id="mapBackdrop"></div>
+  <div class="mappanel-inner">
+    <div class="mappanel-info">
+      <div class="mappanel-eyebrow">di sini cerita kita</div>
+      <div class="mappanel-title">Bekasi</div>
+      <div class="mappanel-body">
+        Kota tempat semua ini bermula. [ganti teksnya sesukamu, Elvira —
+        cerita apa aja soal Bekasi buat kalian berdua].
+      </div>
+    </div>
+    <div class="mappanel-map">
+      <img id="petaImg" src="assets/peta.png" alt="Peta Bekasi"
+           onerror="this.style.display='none';">
+    </div>
+    <button class="mappanel-close" id="mapClose">✕</button>
+  </div>
+</div>
 
 <!-- MODAL -->
 <div class="modal-overlay" id="modalOverlay">
@@ -242,6 +307,25 @@ function openModal(title, icon, msg){
   modalOverlay.classList.add('show'); hintTap.style.opacity=0; burstConfetti(16);
 }
 function closeModal(){ modalOverlay.classList.remove('show'); }
+
+/* ---------- PETA DINDING: klik -> panel geser + zoom ---------- */
+const mapHotspot = document.getElementById('mapHotspot');
+const mapTip = document.getElementById('mapTip');
+const mapPanel = document.getElementById('mapPanel');
+const petaImg = document.getElementById('petaImg');
+mapHotspot.addEventListener('mouseenter', () => mapTip.classList.add('show'));
+mapHotspot.addEventListener('mouseleave', () => mapTip.classList.remove('show'));
+mapHotspot.addEventListener('click', () => {
+  if (viewport._drag) return;
+  mapTip.classList.remove('show');
+  // retrigger animasi zoom tiap dibuka
+  if (petaImg.style.display !== 'none') { petaImg.style.animation='none'; void petaImg.offsetWidth; petaImg.style.animation=''; }
+  mapPanel.classList.add('show');
+  hintTap.style.opacity = 0;
+});
+function closeMapPanel(){ mapPanel.classList.remove('show'); }
+document.getElementById('mapClose').addEventListener('click', closeMapPanel);
+document.getElementById('mapBackdrop').addEventListener('click', closeMapPanel);
 
 /* ---------- geser horizontal (mouse drag; sentuh pakai scroll native) ---------- */
 const viewport = document.getElementById('viewport');
