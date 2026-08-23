@@ -507,7 +507,8 @@ audio.addEventListener('error', () => { if (curTrack>=0){ isPlaying=false; plPla
 plBar.addEventListener('click', e => { if (audio.duration){ const r = plBar.getBoundingClientRect();
   audio.currentTime = (e.clientX - r.left)/r.width * audio.duration; } });
 
-function closePlayer(){ playerOverlay.classList.remove('show'); pauseAudio(); }
+// nutup player TIDAK menghentikan lagu — biar tetap main di background
+function closePlayer(){ playerOverlay.classList.remove('show'); }
 document.getElementById('plClose').addEventListener('click', closePlayer);
 document.getElementById('plBackdrop').addEventListener('click', closePlayer);
 
