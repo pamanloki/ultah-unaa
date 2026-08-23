@@ -209,19 +209,12 @@
   <div class="mappanel-backdrop" id="mapBackdrop"></div>
   <div class="mappanel-inner">
     <div class="mappanel-info">
-      <div class="mappanel-eyebrow">kota yang membesarkanmu</div>
-      <div class="mappanel-title">Bekasi</div>
-      <div class="mappanel-body">
-        Di sinilah kamu lahir dan tumbuh &mdash; di kota yang ramai tapi hangat ini.
-        Setiap sudutnya menyimpan potongan ceritamu: tawa kecilmu, langkah-langkah
-        pertamamu, dan mimpi yang kamu rawat diam-diam. Bekasi indah bukan cuma
-        karena petanya, tapi karena <b>kamu</b> bagian dari kota ini.
-        <br><br>Selamat ulang tahun, Elvira. 🎂
-      </div>
+      <div class="mappanel-eyebrow" id="panelEyebrow"></div>
+      <div class="mappanel-title" id="panelTitle"></div>
+      <div class="mappanel-body" id="panelBody"></div>
     </div>
     <div class="mappanel-map">
-      <img id="petaImg" src="assets/bekasi.png" alt="Peta Bekasi"
-           onerror="this.style.display='none';">
+      <img id="panelImg" alt="" onerror="this.style.display='none';">
     </div>
     <button class="mappanel-close" id="mapClose">✕</button>
   </div>
@@ -257,8 +250,7 @@ const OBJECTS = [
     title:'Balon', icon:iconHeart,
     msg:'Kalau kamu jadi karakter game, kamu bakal jadi karakter yang [sifat lucu/positif].' },
   { id:'foto',    img:'assets/foto.png',     x:31, y:43, w:6,   anim:'glow',
-    title:'Foto Kita', icon:iconHeart,
-    msg:'Alasan random tapi jujur kenapa aku notice kamu: cara kamu ketawa waktu bahas hal receh.' },
+    title:'Tentang Elvira', detail:'about' },
   { id:'kue',     img:'assets/kue.png',      x:43, y:56, w:4.5, anim:'glow',
     title:'Kue', icon:iconHeart,
     msg:'Met ulang tahun ya. Makasih udah jadi orang yang bikin hari-hari biasa jadi lebih seru.' },
@@ -279,7 +271,11 @@ OBJECTS.forEach(o => {
   btn.style.left = o.x + '%'; btn.style.top = o.y + '%'; btn.style.width = o.w + '%';
   btn.setAttribute('aria-label', o.title);
   btn.innerHTML = `<img src="${o.img}" alt="${o.title}">`;
-  btn.addEventListener('click', () => { if (viewport._drag) return; openModal(o.title, o.icon, o.msg); });
+  btn.addEventListener('click', () => {
+    if (viewport._drag) return;
+    if (o.detail) openDetail(DETAILS[o.detail]);
+    else openModal(o.title, o.icon, o.msg);
+  });
   stage.appendChild(btn);
 });
 
@@ -311,24 +307,63 @@ function openModal(title, icon, msg){
 }
 function closeModal(){ modalOverlay.classList.remove('show'); }
 
-/* ---------- PETA DINDING: klik -> panel geser + zoom ---------- */
+/* ---------- PANEL DETAIL (dipakai peta & foto) ---------- */
+const DETAILS = {
+  bekasi: {
+    eyebrow: 'kota yang membesarkanmu',
+    title: 'Bekasi',
+    img: 'assets/bekasi.png',
+    body: `Di sinilah kamu lahir dan tumbuh &mdash; di kota yang ramai tapi hangat ini.
+      Setiap sudutnya menyimpan potongan ceritamu: tawa kecilmu, langkah-langkah
+      pertamamu, dan mimpi yang kamu rawat diam-diam. Bekasi indah bukan cuma
+      karena petanya, tapi karena <b>kamu</b> bagian dari kota ini.
+      <br><br>Selamat ulang tahun, Elvira. 🎂`
+  },
+  about: {
+    eyebrow: 'about me',
+    title: 'Hai, aku Elvira',
+    img: 'assets/foto.png',
+    body: `Lahir <b>11 September 2000</b>, gede di Bekasi.
+      Orangnya lebih sering dengerin daripada ngomong, gampang ketawa buat hal-hal
+      receh, dan diam-diam nyimpen banyak mimpi. Suka hal-hal kecil yang bikin hari
+      terasa cukup &mdash; [isi: musik/film/makanan favoritmu].
+      <br><br>Kadang overthinking, tapi selalu nyoba jadi versi yang lebih baik dari
+      kemarin. Ya... segitu dulu tentang aku. Makasih udah mampir. :)`
+  }
+};
+
+const mapPanel = document.getElementById('mapPanel');
+const panelEyebrow = document.getElementById('panelEyebrow');
+const panelTitle = document.getElementById('panelTitle');
+const panelBody = document.getElementById('panelBody');
+const panelImg = document.getElementById('panelImg');
+
+function openDetail(data){
+  if (!data) return;
+  panelEyebrow.textContent = data.eyebrow;
+  panelTitle.textContent = data.title;
+  panelBody.innerHTML = data.body;
+  panelImg.style.display = '';
+  panelImg.src = data.img;
+  // retrigger animasi zoom tiap dibuka
+  panelImg.style.animation='none'; void panelImg.offsetWidth; panelImg.style.animation='';
+  mapPanel.classList.add('show');
+  hintTap.style.opacity = 0;
+}
+function closeMapPanel(){ mapPanel.classList.remove('show'); }
+document.getElementById('mapClose').addEventListener('click', closeMapPanel);
+document.getElementById('mapBackdrop').addEventListener('click', closeMapPanel);
+
+/* peta dinding */
 const mapHotspot = document.getElementById('mapHotspot');
 const mapTip = document.getElementById('mapTip');
-const mapPanel = document.getElementById('mapPanel');
-const petaImg = document.getElementById('petaImg');
 mapHotspot.addEventListener('mouseenter', () => mapTip.classList.add('show'));
 mapHotspot.addEventListener('mouseleave', () => mapTip.classList.remove('show'));
 mapHotspot.addEventListener('click', () => {
   if (viewport._drag) return;
   mapTip.classList.remove('show');
-  // retrigger animasi zoom tiap dibuka
-  if (petaImg.style.display !== 'none') { petaImg.style.animation='none'; void petaImg.offsetWidth; petaImg.style.animation=''; }
-  mapPanel.classList.add('show');
-  hintTap.style.opacity = 0;
+  openDetail(DETAILS.bekasi);
 });
-function closeMapPanel(){ mapPanel.classList.remove('show'); }
-document.getElementById('mapClose').addEventListener('click', closeMapPanel);
-document.getElementById('mapBackdrop').addEventListener('click', closeMapPanel);
 
 /* ---------- geser horizontal (mouse drag; sentuh pakai scroll native) ---------- */
 const viewport = document.getElementById('viewport');
