@@ -17,7 +17,7 @@
     /* ---- rasio gambar room asli: lebar / tinggi ---- */
     --room-ar: 2000 / 989;
     /* ---- lebar 1 frame kucing ---- */
-    --cat-fw: clamp(78px, 15vh, 128px);
+    --cat-fw: clamp(96px, 19vh, 165px);
   }
 
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent; margin:0; padding:0;}
@@ -190,6 +190,57 @@
   .pl-track .tt{ font-size:12px; line-height:1.2; }
   .pl-track .tt small{ display:block; color:var(--text-muted); font-size:10px; }
 
+  /* ---------- QUEST: boneka, kertas, kotak harta ---------- */
+  .quest{ position:absolute; transform:translate(-50%,-50%); background:transparent; border:none; padding:0;
+    cursor:pointer; display:block; filter:drop-shadow(0 3px 5px rgba(0,0,0,.3)); }
+  .quest img{ width:100%; height:auto; display:block; pointer-events:none; -webkit-user-drag:none; image-rendering:pixelated; }
+  .quest:active{ transform:translate(-50%,-50%) scale(.95); }
+  .quest.hidden-q{ opacity:0; pointer-events:none; transform:translate(-50%,-50%) scale(.3); }
+  .quest.pop{ animation:chestPop .55s cubic-bezier(.2,.8,.2,1); }
+  @keyframes chestPop{ 0%{opacity:0; transform:translate(-50%,-50%) scale(.3) translateY(-24px);}
+    60%{ transform:translate(-50%,-50%) scale(1.12);} 100%{opacity:1; transform:translate(-50%,-50%) scale(1);} }
+  .quest.chest-idle{ animation:chestIdle 2.6s ease-in-out infinite; }
+  @keyframes chestIdle{ 0%,100%{ transform:translate(-50%,-50%) scale(1);} 50%{ transform:translate(-50%,-50%) scale(1.05);} }
+
+  /* label hint yang keliatan terus (buat quest) */
+  .q-hint{ position:absolute; transform:translate(-50%,-100%); background:var(--text); color:var(--bg-panel);
+    font-family:var(--font-mono); font-size:10px; padding:4px 8px; border-radius:8px; white-space:nowrap;
+    z-index:16; opacity:.92; pointer-events:none; }
+  .q-hint::after{ content:""; position:absolute; left:50%; bottom:-4px; transform:translateX(-50%);
+    border-left:4px solid transparent; border-right:4px solid transparent; border-top:5px solid var(--text); }
+  .q-hint.gone{ opacity:0; transition:opacity .4s ease; }
+
+  /* ---------- CHEST PANEL (password) ---------- */
+  .chest-overlay{ position:fixed; inset:0; z-index:47; display:none; align-items:center; justify-content:center; padding:22px; }
+  .chest-overlay.show{ display:flex; animation:fadeIn .2s ease; }
+  .chest-overlay .ch-backdrop{ position:absolute; inset:0; background:rgba(43,33,24,.6); backdrop-filter:blur(2px); }
+  .chest-card{ position:relative; width:100%; max-width:330px; background:var(--bg-panel); border-radius:16px;
+    padding:20px 18px 18px; z-index:2; animation:pop .3s ease; text-align:center; }
+  .chest-card::before{ content:""; position:absolute; inset:0; border:2px solid var(--line); border-radius:inherit;
+    filter:url(#sketchy); pointer-events:none; }
+  .ch-close{ position:absolute; top:-14px; right:-14px; width:32px; height:32px; border-radius:50%;
+    background:var(--bg-panel); color:var(--text); border:1.5px solid var(--line); font-size:15px;
+    display:flex; align-items:center; justify-content:center; z-index:3; cursor:pointer; }
+  .ch-img{ width:150px; height:auto; margin:4px auto 10px; display:block; image-rendering:pixelated;
+    filter:drop-shadow(0 6px 14px rgba(43,33,24,.35)); }
+  .ch-img.shake{ animation:shake .4s ease; }
+  @keyframes shake{ 0%,100%{transform:translateX(0);} 25%{transform:translateX(-7px);} 75%{transform:translateX(7px);} }
+  .ch-title{ font-family:var(--font-display); font-weight:600; font-size:19px; color:var(--text); }
+  .ch-sub{ font-family:var(--font-mono); font-size:11px; color:var(--text-muted); margin:6px 0 12px; line-height:1.5; }
+  .ch-form{ display:flex; gap:8px; }
+  .ch-input{ flex:1; background:var(--bg-panel-2); border:1.5px solid var(--line); border-radius:10px;
+    padding:11px 12px; font-family:var(--font-mono); font-size:14px; color:var(--text); text-align:center; letter-spacing:.15em; }
+  .ch-input::placeholder{ letter-spacing:normal; color:var(--text-muted); }
+  .ch-go{ background:var(--blush); color:#f8f0dd; border:1px solid rgba(43,33,24,.15); border-radius:10px;
+    padding:0 16px; font-weight:600; cursor:pointer; }
+  .ch-err{ color:var(--blush); font-family:var(--font-mono); font-size:11px; min-height:15px; margin-top:8px; }
+  .ch-loot{ display:flex; gap:12px; justify-content:center; margin-top:6px; }
+  .ch-loot button{ background:var(--bg-panel-2); border:1.5px solid var(--line); border-radius:12px;
+    padding:14px 10px; width:110px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:6px; color:var(--text); }
+  .ch-loot button:hover{ border-color:var(--blush); }
+  .ch-loot svg{ width:30px; height:30px; color:var(--blush); }
+  .ch-loot .lb{ font-family:var(--font-mono); font-size:11px; }
+
   /* ---------- OVERLAY UI (nempel di layar, nggak ikut geser) ---------- */
   .banner{ position:fixed; top:0; left:0; right:0; text-align:center; padding:14px 16px 24px;
     font-family:var(--font-display); font-weight:600; font-size:clamp(17px,4.6vw,22px); color:#fff;
@@ -245,6 +296,21 @@
     <div class="map-tip" id="mapTip" style="left:50.5%; top:26%;">Bekasi &middot; colek aku</div>
     <button class="hotspot" id="screenHotspot" aria-label="Layar" style="left:51%; top:47%; width:9%; height:11%;"></button>
     <div class="map-tip" id="screenTip" style="left:51%; top:40%;">Setel musik &middot; colek aku</div>
+
+    <!-- QUEST: boneka beruang (bawah foto) -->
+    <button class="quest" id="bearObj" aria-label="Boneka" style="left:24%; top:74%; width:11%;">
+      <img src="assets/boneka.png" alt="Boneka beruang" onerror="this.style.display='none';var h=document.getElementById('bearHint');if(h)h.style.display='none';"></button>
+    <div class="q-hint" id="bearHint" style="left:24%; top:64%;">pukpuk 3x ✨</div>
+
+    <!-- QUEST: kotak harta (muncul stlh boneka dipukpuk 3x) -->
+    <button class="quest hidden-q" id="chestObj" aria-label="Kotak harta" style="left:37%; top:80%; width:9%;">
+      <img src="assets/harta.png" alt="Kotak harta karun" onerror="this.style.display='none';"></button>
+
+    <!-- QUEST: kertas password (muncul stlh kucing dipukpuk 3x) -->
+    <button class="quest hidden-q" id="paperObj" aria-label="Kertas" style="left:66%; top:90%; width:4.5%;">
+      <img src="assets/kertas.png" alt="Kertas password" onerror="this.style.display='none';"></button>
+
+    <div class="q-hint" id="catHint" style="left:66%; top:77%;">pukpuk 3x ✨</div>
   </div>
 </div>
 
@@ -290,6 +356,31 @@
   </div>
 </div>
 
+<!-- CHEST PANEL -->
+<div class="chest-overlay" id="chestOverlay">
+  <div class="ch-backdrop" id="chBackdrop"></div>
+  <div class="chest-card">
+    <button class="ch-close" id="chClose">✕</button>
+    <img class="ch-img" id="chImg" src="assets/harta.png" alt="Kotak harta" onerror="this.style.display='none';">
+    <!-- locked -->
+    <div id="chLocked">
+      <div class="ch-title">Kotak Harta Karun 🔒</div>
+      <div class="ch-sub">Ada isinya buat kamu. Tapi kekunci &mdash; butuh password.<br>psst… petunjuknya ada di kertas bawah kucing.</div>
+      <div class="ch-form">
+        <input class="ch-input" id="chInput" type="text" placeholder="ketik password…" autocomplete="off" spellcheck="false">
+        <button class="ch-go" id="chGo">Buka</button>
+      </div>
+      <div class="ch-err" id="chErr"></div>
+    </div>
+    <!-- unlocked -->
+    <div id="chUnlocked" style="display:none;">
+      <div class="ch-title">Kebuka! 🎉</div>
+      <div class="ch-sub">Ini isinya &mdash; colek satu-satu ya.</div>
+      <div class="ch-loot" id="chLoot"></div>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL -->
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal-card">
@@ -324,13 +415,14 @@ const OBJECTS = [
   { id:'kue',     img:'assets/kue.png',      x:43, y:56, w:4.5, anim:'glow',
     title:'Kue', icon:iconHeart,
     msg:'Met ulang tahun ya. Makasih udah jadi orang yang bikin hari-hari biasa jadi lebih seru.' },
-  { id:'amplop',  img:'assets/envelope.png', x:71, y:81, w:3.5, anim:'wiggle',
-    title:'Amplop', icon:iconEnvelope,
-    msg:'Satu hal yang pengen aku bilang tapi belum sempat: [isi pesan].' },
-  { id:'kado',    img:'assets/kado.png',     x:50, y:74, w:4.5, anim:'bob',
-    title:'Kado', icon:iconGift,
-    msg:'Fun fact: dari sekian banyak chat, aku paling inget waktu kamu cerita soal [isi kenangan].' },
 ];
+
+// isi harta karun (keluar dari kotak setelah password bener)
+const TREASURE = [
+  { title:'Amplop', icon:iconEnvelope, msg:'Satu hal yang pengen aku bilang tapi belum sempat: [isi pesan].' },
+  { title:'Kado',   icon:iconGift,     msg:'Fun fact: dari sekian banyak chat, aku paling inget waktu kamu cerita soal [isi kenangan].' },
+];
+const PASSWORD = 'unaaa';
 
 const stage = document.getElementById('stage');
 const hintTap = document.getElementById('hintTap');
@@ -355,14 +447,29 @@ const cat = document.createElement('div');
 cat.className = 'cat'; cat.style.left = CAT.x + '%'; cat.style.top = CAT.y + '%';
 stage.appendChild(cat);
 const bubble = document.createElement('div'); bubble.className = 'bubble'; stage.appendChild(bubble);
+cat.style.transition = 'left .55s cubic-bezier(.2,.8,.2,1), transform .18s ease';
+let catTaps = 0, catMoved = false;
 cat.addEventListener('click', () => {
   if (viewport._drag) return;
   cat.classList.add('happy');
   bubble.textContent = CAT.meows[Math.floor(Math.random()*CAT.meows.length)];
-  bubble.style.left = CAT.x + '%'; bubble.style.top = (CAT.y - 11) + '%'; bubble.classList.add('show');
-  burstConfetti(10);
+  bubble.style.left = cat.style.left; bubble.style.top = (parseFloat(cat.style.left)? (CAT.y - 11):(CAT.y-11)) + '%';
+  bubble.style.top = (CAT.y - 11) + '%';
+  bubble.classList.add('show');
+  burstConfetti(8);
   clearTimeout(cat._t);
-  cat._t = setTimeout(() => { cat.classList.remove('happy'); bubble.classList.remove('show'); }, 1600);
+  cat._t = setTimeout(() => { cat.classList.remove('happy'); bubble.classList.remove('show'); }, 1500);
+
+  if (!catMoved) {
+    catTaps++;
+    if (catTaps >= 3) {
+      catMoved = true;
+      cat.style.left = (CAT.x + 8) + '%';          // kucing geser ke kanan
+      document.getElementById('catHint').classList.add('gone');
+      const paper = document.getElementById('paperObj');
+      paper.classList.remove('hidden-q'); paper.classList.add('pop');
+    }
+  }
 });
 
 /* ---------- modal ---------- */
@@ -521,6 +628,85 @@ screenHotspot.addEventListener('click', () => {
   screenTip.classList.remove('show');
   playerOverlay.classList.add('show'); hintTap.style.opacity = 0;
 });
+
+/* ---------- QUEST: boneka -> kotak harta; kertas -> password ---------- */
+const bearObj = document.getElementById('bearObj');
+const chestObj = document.getElementById('chestObj');
+const paperObj = document.getElementById('paperObj');
+const bearHint = document.getElementById('bearHint');
+
+// boneka goyang + pukpuk 3x -> munculin kotak harta
+bearObj.classList.add('anim-wiggle');
+let bearTaps = 0, chestShown = false;
+bearObj.addEventListener('click', () => {
+  if (viewport._drag) return;
+  bearObj.classList.remove('anim-wiggle'); void bearObj.offsetWidth; bearObj.classList.add('anim-wiggle');
+  burstConfetti(6);
+  if (!chestShown) {
+    bearTaps++;
+    if (bearTaps >= 3) {
+      chestShown = true;
+      bearHint.classList.add('gone');
+      chestObj.classList.remove('hidden-q'); chestObj.classList.add('pop');
+      setTimeout(() => chestObj.classList.add('chest-idle'), 600);
+      burstConfetti(18);
+    }
+  }
+});
+
+// kertas -> zoom lihat password
+paperObj.addEventListener('click', () => {
+  if (viewport._drag) return;
+  openDetail({
+    eyebrow: 'petunjuk rahasia',
+    title: 'Password',
+    img: 'assets/kertas.png',
+    body: `Di kertasnya ketulis:<br><br>
+      <span style="font-family:var(--font-mono); font-size:30px; letter-spacing:.25em; color:var(--blush); font-weight:600;">${PASSWORD}</span>
+      <br><br>Pakai ini buat buka kotak harta karunnya. 🔑`
+  });
+});
+
+// kotak harta -> panel password
+const chestOverlay = document.getElementById('chestOverlay');
+const chInput = document.getElementById('chInput');
+const chErr = document.getElementById('chErr');
+const chImg = document.getElementById('chImg');
+const chLocked = document.getElementById('chLocked');
+const chUnlocked = document.getElementById('chUnlocked');
+const chLoot = document.getElementById('chLoot');
+let chestUnlocked = false;
+
+// isi loot (muncul stlh kebuka)
+TREASURE.forEach(it => {
+  const btn = document.createElement('button');
+  btn.innerHTML = `<span>${it.icon}</span><span class="lb">${it.title}</span>`;
+  btn.addEventListener('click', () => openModal(it.title, it.icon, it.msg));
+  chLoot.appendChild(btn);
+});
+
+chestObj.addEventListener('click', () => {
+  if (viewport._drag) return;
+  chestOverlay.classList.add('show'); hintTap.style.opacity = 0;
+  if (!chestUnlocked) { chLocked.style.display=''; chUnlocked.style.display='none'; chErr.textContent=''; setTimeout(()=>chInput.focus(),200); }
+});
+function tryUnlock(){
+  const val = (chInput.value || '').trim().toLowerCase();
+  if (val === PASSWORD) {
+    chestUnlocked = true;
+    chLocked.style.display='none'; chUnlocked.style.display='';
+    chImg.classList.remove('shake');
+    burstConfetti(28);
+  } else {
+    chErr.textContent = 'Password salah, coba lagi ya 🙈';
+    chImg.classList.remove('shake'); void chImg.offsetWidth; chImg.classList.add('shake');
+  }
+}
+document.getElementById('chGo').addEventListener('click', tryUnlock);
+chInput.addEventListener('keydown', e => { if (e.key === 'Enter') tryUnlock(); });
+function closeChest(){ chestOverlay.classList.remove('show'); }
+document.getElementById('chClose').addEventListener('click', closeChest);
+document.getElementById('chBackdrop').addEventListener('click', closeChest);
 
 /* ---------- geser horizontal (mouse drag; sentuh pakai scroll native) ---------- */
 const viewport = document.getElementById('viewport');
