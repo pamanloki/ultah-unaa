@@ -298,9 +298,9 @@
     <div class="map-tip" id="screenTip" style="left:51%; top:40%;">Setel musik &middot; colek aku</div>
 
     <!-- QUEST: boneka beruang (bawah foto) -->
-    <button class="quest" id="bearObj" aria-label="Boneka" style="left:24%; top:74%; width:11%;">
-      <img src="assets/boneka.png" alt="Boneka beruang" onerror="this.style.display='none';var h=document.getElementById('bearHint');if(h)h.style.display='none';"></button>
-    <div class="q-hint" id="bearHint" style="left:24%; top:64%;">pukpuk 3x ✨</div>
+    <button class="quest" id="bearObj" aria-label="Boneka" style="left:15%; top:75%; width:11%;">
+      <img src="assets/boneka.png" alt="Boneka kucing" onerror="this.style.display='none';var h=document.getElementById('bearHint');if(h)h.style.display='none';"></button>
+    <div class="q-hint" id="bearHint" style="left:15%; top:64%;">pukpuk 3x ✨</div>
 
     <!-- QUEST: kotak harta (muncul stlh boneka dipukpuk 3x) -->
     <button class="quest hidden-q" id="chestObj" aria-label="Kotak harta" style="left:37%; top:80%; width:9%;">
@@ -419,8 +419,10 @@ const OBJECTS = [
 
 // isi harta karun (keluar dari kotak setelah password bener)
 const TREASURE = [
-  { title:'Amplop', icon:iconEnvelope, msg:'Satu hal yang pengen aku bilang tapi belum sempat: [isi pesan].' },
-  { title:'Kado',   icon:iconGift,     msg:'Fun fact: dari sekian banyak chat, aku paling inget waktu kamu cerita soal [isi kenangan].' },
+  { title:'Amplop', img:'assets/envelope.png', x:33, y:83, w:4.5, icon:iconEnvelope,
+    msg:'Satu hal yang pengen aku bilang tapi belum sempat: [isi pesan].' },
+  { title:'Kado',   img:'assets/kado.png',     x:43, y:82, w:5.5, icon:iconGift,
+    msg:'Fun fact: dari sekian banyak chat, aku paling inget waktu kamu cerita soal [isi kenangan].' },
 ];
 const PASSWORD = 'unaaa';
 
@@ -661,9 +663,8 @@ paperObj.addEventListener('click', () => {
     eyebrow: 'petunjuk rahasia',
     title: 'Password',
     img: 'assets/kertas.png',
-    body: `Di kertasnya ketulis:<br><br>
-      <span style="font-family:var(--font-mono); font-size:30px; letter-spacing:.25em; color:var(--blush); font-weight:600;">${PASSWORD}</span>
-      <br><br>Pakai ini buat buka kotak harta karunnya. 🔑`
+    body: `Coba baca tulisan di kertasnya baik-baik 👀
+      <br><br>Itu password buat buka kotak harta karunnya. 🔑`
   });
 });
 
@@ -672,31 +673,36 @@ const chestOverlay = document.getElementById('chestOverlay');
 const chInput = document.getElementById('chInput');
 const chErr = document.getElementById('chErr');
 const chImg = document.getElementById('chImg');
-const chLocked = document.getElementById('chLocked');
-const chUnlocked = document.getElementById('chUnlocked');
-const chLoot = document.getElementById('chLoot');
 let chestUnlocked = false;
 
-// isi loot (muncul stlh kebuka)
-TREASURE.forEach(it => {
-  const btn = document.createElement('button');
-  btn.innerHTML = `<span>${it.icon}</span><span class="lb">${it.title}</span>`;
-  btn.addEventListener('click', () => openModal(it.title, it.icon, it.msg));
-  chLoot.appendChild(btn);
+chestObj.addEventListener('click', () => {
+  if (viewport._drag || chestUnlocked) return;
+  chestOverlay.classList.add('show'); hintTap.style.opacity = 0;
+  chErr.textContent=''; setTimeout(()=>chInput.focus(),200);
 });
 
-chestObj.addEventListener('click', () => {
-  if (viewport._drag) return;
-  chestOverlay.classList.add('show'); hintTap.style.opacity = 0;
-  if (!chestUnlocked) { chLocked.style.display=''; chUnlocked.style.display='none'; chErr.textContent=''; setTimeout(()=>chInput.focus(),200); }
-});
+// spawn amplop + kado ke kamar (keluar dari kotak)
+function spawnLoot(){
+  TREASURE.forEach((it, k) => {
+    const btn = document.createElement('button');
+    btn.className = 'quest pop';
+    btn.style.left = it.x + '%'; btn.style.top = it.y + '%'; btn.style.width = it.w + '%';
+    btn.style.animationDelay = (k * 140) + 'ms';
+    btn.setAttribute('aria-label', it.title);
+    btn.innerHTML = `<img src="${it.img}" alt="${it.title}" onerror="this.style.display='none';">`;
+    btn.addEventListener('click', () => { if (viewport._drag) return; openModal(it.title, it.icon, it.msg); });
+    stage.appendChild(btn);
+  });
+}
+
 function tryUnlock(){
   const val = (chInput.value || '').trim().toLowerCase();
   if (val === PASSWORD) {
     chestUnlocked = true;
-    chLocked.style.display='none'; chUnlocked.style.display='';
-    chImg.classList.remove('shake');
-    burstConfetti(28);
+    burstConfetti(30);
+    chestOverlay.classList.remove('show');   // tutup panel
+    chestObj.remove();                        // kotak hilang
+    spawnLoot();                              // keluar amplop + kado
   } else {
     chErr.textContent = 'Password salah, coba lagi ya 🙈';
     chImg.classList.remove('shake'); void chImg.offsetWidth; chImg.classList.add('shake');
