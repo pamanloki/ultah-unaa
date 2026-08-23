@@ -146,6 +146,50 @@
     .mappanel-map{ padding:16px 16px 8px; }
   }
 
+  /* ---------- MEDIA PLAYER (layar komputer) ---------- */
+  .player-overlay{ position:fixed; inset:0; z-index:46; display:none; align-items:center;
+    justify-content:center; padding:22px; }
+  .player-overlay.show{ display:flex; animation:fadeIn .2s ease; }
+  .player-overlay .pl-backdrop{ position:absolute; inset:0; background:rgba(43,33,24,.55); backdrop-filter:blur(2px); }
+  .player-card{ position:relative; width:100%; max-width:330px; background:var(--bg-panel);
+    border-radius:16px; padding:18px 16px 16px; z-index:2; animation:pop .3s ease; }
+  .player-card::before{ content:""; position:absolute; inset:0; border:2px solid var(--line);
+    border-radius:inherit; filter:url(#sketchy); pointer-events:none; }
+  .pl-close{ position:absolute; top:-14px; right:-14px; width:32px; height:32px; border-radius:50%;
+    background:var(--bg-panel); color:var(--text); border:1.5px solid var(--line); font-size:15px;
+    display:flex; align-items:center; justify-content:center; z-index:3; cursor:pointer; }
+  .pl-screen-label{ font-family:var(--font-mono); font-size:10px; letter-spacing:.1em; text-transform:uppercase;
+    color:var(--gold); text-align:center; margin-bottom:12px; }
+  .pl-vinyl{ width:150px; height:150px; margin:0 auto 14px; border-radius:50%; position:relative;
+    background:radial-gradient(circle at 50% 50%, #3a2c1e 0 30%, #241a12 30% 32%, #3a2c1e 32% 46%, #241a12 46% 48%, #3a2c1e 48% 62%, #241a12 62% 64%, #3a2c1e 64%);
+    box-shadow:0 6px 16px rgba(43,33,24,.4); }
+  .pl-vinyl::after{ content:""; position:absolute; inset:38%; border-radius:50%;
+    background:radial-gradient(circle at 40% 35%, var(--blush), #7a2a20); border:2px solid rgba(255,255,255,.15); }
+  .pl-vinyl.spin{ animation:spin 4s linear infinite; }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+  .pl-title{ font-family:var(--font-display); font-weight:600; font-size:17px; text-align:center; color:var(--text); }
+  .pl-artist{ font-family:var(--font-mono); font-size:11px; text-align:center; color:var(--text-muted); margin-top:2px; }
+  .pl-prog{ display:flex; align-items:center; gap:8px; margin:14px 2px 4px; }
+  .pl-bar{ flex:1; height:6px; background:var(--bg-panel-2); border-radius:6px; position:relative; cursor:pointer; }
+  .pl-fill{ position:absolute; left:0; top:0; bottom:0; width:0%; background:var(--blush); border-radius:6px; }
+  .pl-time{ font-family:var(--font-mono); font-size:9px; color:var(--text-muted); min-width:30px; text-align:center; }
+  .pl-controls{ display:flex; align-items:center; justify-content:center; gap:20px; margin:10px 0 6px; }
+  .pl-btn{ background:none; border:none; color:var(--text); cursor:pointer; display:flex; }
+  .pl-btn svg{ width:22px; height:22px; }
+  .pl-play{ width:52px; height:52px; border-radius:50%; background:var(--blush); color:#f8f0dd;
+    display:flex; align-items:center; justify-content:center; border:1px solid rgba(43,33,24,.15); cursor:pointer; }
+  .pl-play svg{ width:24px; height:24px; }
+  .pl-note{ font-family:var(--font-mono); font-size:10px; color:var(--text-muted); text-align:center;
+    line-height:1.5; margin-top:8px; min-height:14px; }
+  .pl-list{ margin-top:10px; border-top:1px solid var(--line); padding-top:8px; max-height:132px; overflow:auto; }
+  .pl-track{ display:flex; align-items:center; gap:8px; width:100%; text-align:left; background:none; border:none;
+    padding:7px 6px; border-radius:8px; cursor:pointer; color:var(--text); font-family:var(--font-body); }
+  .pl-track:hover{ background:var(--bg-panel-2); }
+  .pl-track.active{ background:var(--bg-panel-2); }
+  .pl-track .n{ font-family:var(--font-mono); font-size:10px; color:var(--text-muted); width:16px; }
+  .pl-track .tt{ font-size:12px; line-height:1.2; }
+  .pl-track .tt small{ display:block; color:var(--text-muted); font-size:10px; }
+
   /* ---------- OVERLAY UI (nempel di layar, nggak ikut geser) ---------- */
   .banner{ position:fixed; top:0; left:0; right:0; text-align:center; padding:14px 16px 24px;
     font-family:var(--font-display); font-weight:600; font-size:clamp(17px,4.6vw,22px); color:#fff;
@@ -199,6 +243,8 @@
     <!-- objek diisi lewat JS -->
     <button class="hotspot" id="mapHotspot" aria-label="Peta" style="left:50.5%; top:34%; width:17.5%; height:17%;"></button>
     <div class="map-tip" id="mapTip" style="left:50.5%; top:26%;">Bekasi &middot; colek aku</div>
+    <button class="hotspot" id="screenHotspot" aria-label="Layar" style="left:51%; top:47%; width:9%; height:11%;"></button>
+    <div class="map-tip" id="screenTip" style="left:51%; top:40%;">Setel musik &middot; colek aku</div>
   </div>
 </div>
 
@@ -217,6 +263,30 @@
       <img id="panelImg" alt="" onerror="this.style.display='none';">
     </div>
     <button class="mappanel-close" id="mapClose">✕</button>
+  </div>
+</div>
+
+<!-- MEDIA PLAYER -->
+<div class="player-overlay" id="playerOverlay">
+  <div class="pl-backdrop" id="plBackdrop"></div>
+  <div class="player-card">
+    <button class="pl-close" id="plClose">✕</button>
+    <div class="pl-screen-label">♪ now playing</div>
+    <div class="pl-vinyl" id="plVinyl"></div>
+    <div class="pl-title" id="plTitle">—</div>
+    <div class="pl-artist" id="plArtist">pilih lagu di bawah</div>
+    <div class="pl-prog">
+      <span class="pl-time" id="plCur">0:00</span>
+      <div class="pl-bar" id="plBar"><div class="pl-fill" id="plFill"></div></div>
+      <span class="pl-time" id="plDur">0:00</span>
+    </div>
+    <div class="pl-controls">
+      <button class="pl-btn" id="plPrev" aria-label="Sebelumnya"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h2v14H6zM20 5v14l-11-7z"/></svg></button>
+      <button class="pl-play" id="plPlay" aria-label="Play"><svg id="plPlayIcon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button>
+      <button class="pl-btn" id="plNext" aria-label="Berikutnya"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 5h2v14h-2zM4 5l11 7-11 7z"/></svg></button>
+    </div>
+    <div class="pl-note" id="plNote"></div>
+    <div class="pl-list" id="plList"></div>
   </div>
 </div>
 
@@ -363,6 +433,91 @@ mapHotspot.addEventListener('click', () => {
   if (viewport._drag) return;
   mapTip.classList.remove('show');
   openDetail(DETAILS.bekasi);
+});
+
+/* ---------- MEDIA PLAYER (layar komputer) ----------
+   PLAYLIST — upload file lagunya ke assets/ dg nama 'src' di bawah (.mp3).
+   Cukup upload yang kamu mau; yang belum ada tetap muncul tapi nggak bisa diputar. */
+const TRACKS = [
+  { title: 'Teman Hidup',   artist: 'Tulus',          src: 'assets/lagu1.mp3' },
+  { title: 'Bertaut',       artist: 'Nadin Amizah',   src: 'assets/lagu2.mp3' },
+  { title: 'Akad',          artist: 'Payung Teduh',   src: 'assets/lagu3.mp3' },
+  { title: 'Rehat',         artist: 'Kunto Aji',      src: 'assets/lagu4.mp3' },
+];
+
+const audio = new Audio();
+audio.preload = 'none';
+let curTrack = -1, isPlaying = false;
+
+const playerOverlay = document.getElementById('playerOverlay');
+const plVinyl = document.getElementById('plVinyl');
+const plTitle = document.getElementById('plTitle');
+const plArtist = document.getElementById('plArtist');
+const plCur = document.getElementById('plCur');
+const plDur = document.getElementById('plDur');
+const plBar = document.getElementById('plBar');
+const plFill = document.getElementById('plFill');
+const plPlayIcon = document.getElementById('plPlayIcon');
+const plNote = document.getElementById('plNote');
+const plList = document.getElementById('plList');
+const ICON_PLAY = '<path d="M8 5v14l11-7z"/>';
+const ICON_PAUSE = '<path d="M6 5h4v14H6zM14 5h4v14h-4z"/>';
+
+// render daftar lagu
+TRACKS.forEach((t, i) => {
+  const b = document.createElement('button');
+  b.className = 'pl-track'; b.dataset.i = i;
+  b.innerHTML = `<span class="n">${String(i+1).padStart(2,'0')}</span>
+    <span class="tt">${t.title}<small>${t.artist}</small></span>`;
+  b.addEventListener('click', () => selectTrack(i, true));
+  plList.appendChild(b);
+});
+function highlight(){ plList.querySelectorAll('.pl-track').forEach(el =>
+  el.classList.toggle('active', Number(el.dataset.i) === curTrack)); }
+
+function selectTrack(i, autoplay){
+  curTrack = i; const t = TRACKS[i];
+  plTitle.textContent = t.title; plArtist.textContent = t.artist;
+  plNote.textContent = ''; plFill.style.width = '0%'; plCur.textContent = '0:00'; plDur.textContent = '0:00';
+  audio.src = t.src; audio.load(); highlight();
+  if (autoplay) playAudio();
+}
+function playAudio(){
+  if (curTrack < 0) { selectTrack(0, true); return; }
+  audio.play().then(() => {
+    isPlaying = true; plPlayIcon.innerHTML = ICON_PAUSE; plVinyl.classList.add('spin'); plNote.textContent = '';
+  }).catch(() => {
+    plNote.textContent = 'lagunya belum diupload (' + TRACKS[curTrack].src.split('/').pop() + ')';
+  });
+}
+function pauseAudio(){ audio.pause(); isPlaying = false; plPlayIcon.innerHTML = ICON_PLAY; plVinyl.classList.remove('spin'); }
+document.getElementById('plPlay').addEventListener('click', () => isPlaying ? pauseAudio() : playAudio());
+document.getElementById('plPrev').addEventListener('click', () => selectTrack((curTrack<=0?TRACKS.length-1:curTrack-1), true));
+document.getElementById('plNext').addEventListener('click', () => selectTrack((curTrack+1)%TRACKS.length, true));
+
+const fmt = s => (isNaN(s)?'0:00':Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0'));
+audio.addEventListener('timeupdate', () => {
+  if (audio.duration) { plFill.style.width = (audio.currentTime/audio.duration*100)+'%'; plCur.textContent = fmt(audio.currentTime); }
+});
+audio.addEventListener('loadedmetadata', () => plDur.textContent = fmt(audio.duration));
+audio.addEventListener('ended', () => selectTrack((curTrack+1)%TRACKS.length, true));
+audio.addEventListener('error', () => { if (curTrack>=0){ isPlaying=false; plPlayIcon.innerHTML=ICON_PLAY; plVinyl.classList.remove('spin');
+  plNote.textContent = 'lagunya belum diupload (' + TRACKS[curTrack].src.split('/').pop() + ')'; } });
+plBar.addEventListener('click', e => { if (audio.duration){ const r = plBar.getBoundingClientRect();
+  audio.currentTime = (e.clientX - r.left)/r.width * audio.duration; } });
+
+function closePlayer(){ playerOverlay.classList.remove('show'); pauseAudio(); }
+document.getElementById('plClose').addEventListener('click', closePlayer);
+document.getElementById('plBackdrop').addEventListener('click', closePlayer);
+
+const screenHotspot = document.getElementById('screenHotspot');
+const screenTip = document.getElementById('screenTip');
+screenHotspot.addEventListener('mouseenter', () => screenTip.classList.add('show'));
+screenHotspot.addEventListener('mouseleave', () => screenTip.classList.remove('show'));
+screenHotspot.addEventListener('click', () => {
+  if (viewport._drag) return;
+  screenTip.classList.remove('show');
+  playerOverlay.classList.add('show'); hintTap.style.opacity = 0;
 });
 
 /* ---------- geser horizontal (mouse drag; sentuh pakai scroll native) ---------- */
