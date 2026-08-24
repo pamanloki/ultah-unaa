@@ -224,6 +224,8 @@
   .q-hint::after{ content:""; position:absolute; left:50%; bottom:-4px; transform:translateX(-50%);
     border-left:4px solid transparent; border-right:4px solid transparent; border-top:5px solid var(--text); }
   .q-hint.gone{ opacity:0; transition:opacity .4s ease; }
+  .q-hint.wait{ opacity:0; }                       /* sembunyi sblm diketuk 1x */
+  .q-hint.reveal{ opacity:.92; transition:opacity .3s ease; }
 
   /* ---------- CHEST PANEL (password) ---------- */
   .chest-overlay{ position:fixed; inset:0; z-index:47; display:none; align-items:center; justify-content:center; padding:22px; }
@@ -255,6 +257,26 @@
   .ch-loot button:hover{ border-color:var(--blush); }
   .ch-loot svg{ width:30px; height:30px; color:var(--blush); }
   .ch-loot .lb{ font-family:var(--font-mono); font-size:11px; }
+
+  /* ---------- LETTER PANEL (surat di kertas) ---------- */
+  .letter-overlay{ position:fixed; inset:0; z-index:48; display:none; align-items:center; justify-content:center; padding:20px; }
+  .letter-overlay.show{ display:flex; animation:fadeIn .2s ease; }
+  .letter-backdrop{ position:absolute; inset:0; background:rgba(43,33,24,.6); backdrop-filter:blur(2px); }
+  .letter-wrap{ position:relative; z-index:2; width:min(92vw, 430px);
+    animation:mapZoom .5s cubic-bezier(.2,.8,.2,1); }
+  .letter-wrap .paper{ width:100%; display:block; image-rendering:pixelated;
+    filter:drop-shadow(0 10px 26px rgba(0,0,0,.45)); user-select:none; -webkit-user-drag:none; }
+  .letter-text{ position:absolute; inset:13% 15% 12% 15%; overflow:auto;
+    font-family:var(--font-body); color:#5a3f28; text-align:center; line-height:1.5;
+    font-size:clamp(10px, 2.7vw, 15px);
+    display:flex; flex-direction:column; justify-content:center; scrollbar-width:none; }
+  .letter-text::-webkit-scrollbar{ display:none; }
+  .letter-text .ttd{ margin-top:12px; font-family:var(--font-display); font-style:italic; color:#7a4a24; }
+  .heart-icon{ display:inline-block; animation:heartBeat 1s ease-in-out infinite; }
+  @keyframes heartBeat{ 0%,100%{ transform:scale(1);} 50%{ transform:scale(1.25);} }
+  .letter-close{ position:absolute; top:-14px; right:-14px; width:34px; height:34px; border-radius:50%;
+    background:var(--bg-panel); color:var(--text); border:1.5px solid var(--line); font-size:16px;
+    display:flex; align-items:center; justify-content:center; z-index:3; cursor:pointer; }
 
   /* ---------- OVERLAY UI (nempel di layar, nggak ikut geser) ---------- */
   .banner{ position:fixed; top:0; left:0; right:0; text-align:center; padding:14px 16px 24px;
@@ -313,8 +335,8 @@
     <div class="map-tip" id="screenTip" style="left:51%; top:40%;">Setel musik &middot; colek aku</div>
 
     <!-- QUEST: boneka beruang (bawah foto) -->
-    <div class="bnk" id="bearObj" role="button" tabindex="0" aria-label="Boneka" style="left:31%; top:66%;"></div>
-    <div class="q-hint" id="bearHint" style="left:31%; top:52%;">pukpuk 3x ✨</div>
+    <div class="bnk" id="bearObj" role="button" tabindex="0" aria-label="Boneka" style="left:31%; top:69%;"></div>
+    <div class="q-hint wait" id="bearHint" style="left:31%; top:55%;">pukpuk 3x ✨</div>
 
     <!-- QUEST: kotak harta (muncul stlh boneka dipukpuk 3x) -->
     <button class="quest hidden-q" id="chestObj" aria-label="Kotak harta" style="left:37%; top:80%; width:9%;">
@@ -324,7 +346,7 @@
     <button class="quest hidden-q" id="paperObj" aria-label="Kertas" style="left:66%; top:90%; width:4.5%;">
       <img src="assets/kertas.png" alt="Kertas password" onerror="this.style.display='none';"></button>
 
-    <div class="q-hint" id="catHint" style="left:66%; top:77%;">pukpuk 3x ✨</div>
+    <div class="q-hint wait" id="catHint" style="left:66%; top:77%;">pukpuk 3x ✨</div>
   </div>
 </div>
 
@@ -395,6 +417,16 @@
   </div>
 </div>
 
+<!-- LETTER PANEL (surat amplop) -->
+<div class="letter-overlay" id="letterOverlay">
+  <div class="letter-backdrop" id="letterBackdrop"></div>
+  <div class="letter-wrap">
+    <img class="paper" src="assets/kertasamplop.png" alt="Surat">
+    <div class="letter-text" id="letterText"></div>
+    <button class="letter-close" id="letterClose">✕</button>
+  </div>
+</div>
+
 <!-- MODAL -->
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal-card">
@@ -426,24 +458,37 @@ const OBJECTS = [
     msg:'Kalau kamu jadi karakter game, kamu bakal jadi karakter yang [sifat lucu/positif].' },
   { id:'foto',    img:'assets/elvira.png',     x:31, y:43, w:6,   anim:'glow',
     title:'Tentang Elvira', detail:'about' },
-  { id:'kue',     img:'assets/kue.png',      x:43, y:56, w:4.5, anim:'glow',
-    title:'Kue', icon:iconHeart,
-    msg:'Met ulang tahun ya. Makasih udah jadi orang yang bikin hari-hari biasa jadi lebih seru.' },
+  { id:'kue',     img:'assets/kue.png',      x:43, y:56, w:4.5, static:true, title:'Kue' },
 ];
 
 // isi harta karun (keluar dari kotak setelah password bener)
 const TREASURE = [
-  { title:'Amplop', img:'assets/envelope.png', x:33, y:83, w:4.5, icon:iconEnvelope,
-    msg:'Satu hal yang pengen aku bilang tapi belum sempat: [isi pesan].' },
+  { title:'Amplop', img:'assets/envelope.png', x:33, y:83, w:4.5, icon:iconEnvelope, letter:true },
   { title:'Kado',   img:'assets/kado.png',     x:43, y:82, w:5.5, icon:iconGift,
     msg:'Fun fact: dari sekian banyak chat, aku paling inget waktu kamu cerita soal [isi kenangan].' },
 ];
+
+// isi surat di amplop (ditampilin di atas kertasamplop.png)
+const LETTER_MSG = `Di hari ulang tahunmu ini, aku cuma mau bilang makasi buat semuanya. Uda nemenin aku juga. Semoga di umur yang baru ini kamu makin bahagia, makin sukses juga, dan yang penting tetep jadi Una yang ceria kayak biasanya.
+  <br><br>
+  Selamat ulang tahun ya Unaaa! <span class="heart-icon">💖</span> Semoga panjang umur, sehat selalu, dan semua impianmu bisa tercapai!
+  <br><br><span class="ttd">— ttd, Imron</span>`;
 const PASSWORD = 'unaaa';
 
 const stage = document.getElementById('stage');
 const hintTap = document.getElementById('hintTap');
 
 OBJECTS.forEach(o => {
+  if (o.static) {
+    // objek pajangan aja (nggak bisa diklik), mis. kue tart
+    const el = document.createElement('div');
+    el.className = 'obj';
+    el.style.left = o.x + '%'; el.style.top = o.y + '%'; el.style.width = o.w + '%';
+    el.style.pointerEvents = 'none'; el.style.cursor = 'default';
+    el.innerHTML = `<img src="${o.img}" alt="${o.title}">`;
+    stage.appendChild(el);
+    return;
+  }
   const btn = document.createElement('button');
   btn.className = 'obj' + (o.anim ? ' anim-' + o.anim : '');
   btn.style.left = o.x + '%'; btn.style.top = o.y + '%'; btn.style.width = o.w + '%';
@@ -477,11 +522,13 @@ cat.addEventListener('click', () => {
   cat._t = setTimeout(() => { cat.classList.remove('happy'); bubble.classList.remove('show'); }, 1500);
 
   if (!catMoved) {
+    const catHint = document.getElementById('catHint');
+    catHint.classList.remove('wait'); catHint.classList.add('reveal'); // muncul stlh ketuk 1x
     catTaps++;
     if (catTaps >= 3) {
       catMoved = true;
       cat.style.left = (CAT.x + 8) + '%';          // kucing geser ke kanan
-      document.getElementById('catHint').classList.add('gone');
+      catHint.classList.add('gone');
       const paper = document.getElementById('paperObj');
       paper.classList.remove('hidden-q'); paper.classList.add('pop');
     }
@@ -657,6 +704,7 @@ bearObj.addEventListener('click', () => {
   if (viewport._drag) return;
   burstConfetti(6);
   if (!chestShown) {
+    bearHint.classList.remove('wait'); bearHint.classList.add('reveal'); // muncul stlh ketuk 1x
     bearTaps++;
     if (bearTaps >= 3) {
       chestShown = true;
@@ -702,10 +750,26 @@ function spawnLoot(){
     btn.style.animationDelay = (k * 140) + 'ms';
     btn.setAttribute('aria-label', it.title);
     btn.innerHTML = `<img src="${it.img}" alt="${it.title}" onerror="this.style.display='none';">`;
-    btn.addEventListener('click', () => { if (viewport._drag) return; openModal(it.title, it.icon, it.msg); });
+    btn.addEventListener('click', () => {
+      if (viewport._drag) return;
+      if (it.letter) openLetter();
+      else openModal(it.title, it.icon, it.msg);
+    });
     stage.appendChild(btn);
   });
 }
+
+/* ---------- SURAT (amplop) -> panel kertas ---------- */
+const letterOverlay = document.getElementById('letterOverlay');
+const letterText = document.getElementById('letterText');
+function openLetter(){
+  letterText.innerHTML = LETTER_MSG;
+  letterOverlay.classList.add('show'); hintTap.style.opacity = 0;
+  burstConfetti(20);
+}
+function closeLetter(){ letterOverlay.classList.remove('show'); }
+document.getElementById('letterClose').addEventListener('click', closeLetter);
+document.getElementById('letterBackdrop').addEventListener('click', closeLetter);
 
 function tryUnlock(){
   const val = (chInput.value || '').trim().toLowerCase();
