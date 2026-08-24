@@ -102,14 +102,14 @@
   /* ---------- BONEKA KUCING (sprite 6 frame: kedip + rambut goyang) ---------- */
   .bnk{
     position:absolute; transform:translate(-50%,-50%);
-    width:var(--bnk-fw); aspect-ratio:300 / 282;
+    width:var(--bnk-fw); aspect-ratio:300 / 299;
     background-image:url("assets/boneka.png"); background-repeat:no-repeat;
-    background-size:calc(var(--bnk-fw) * 6) 100%; background-position:0 0;
+    background-size:calc(var(--bnk-fw) * 10) 100%; background-position:0 0;
     image-rendering:pixelated; cursor:pointer;
     filter:drop-shadow(0 4px 5px rgba(0,0,0,0.28));
-    animation:bnkPlay 3.4s steps(6) infinite;
+    animation:bnkPlay 2.2s steps(10) infinite;
   }
-  @keyframes bnkPlay{ to{ background-position:calc(var(--bnk-fw) * -6) 0; } }
+  @keyframes bnkPlay{ to{ background-position:calc(var(--bnk-fw) * -10) 0; } }
   .bnk:active{ transform:translate(-50%,-50%) scale(.96); }
 
   .bubble{ position:absolute; transform:translate(-50%,-100%);
