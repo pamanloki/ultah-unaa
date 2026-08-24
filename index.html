@@ -294,19 +294,22 @@
     display:none; align-items:center; justify-content:center; padding:24px; z-index:30; }
   .modal-overlay.show{ display:flex; animation:fadeIn .2s ease; }
   @keyframes fadeIn{ from{opacity:0;} to{opacity:1;} }
-  .modal-card{ position:relative; max-width:300px; width:100%; background:var(--bg-panel);
-    border-radius:16px; padding:14px; animation:pop .25s ease; white-space:normal; }
-  .modal-card::before{ content:""; position:absolute; inset:0; border:2px solid var(--line);
-    border-radius:inherit; filter:url(#sketchy); pointer-events:none; }
-  .modal-art{ background:repeating-linear-gradient(45deg,var(--bg-panel-2) 0 5px,var(--bg-panel) 5px 10px);
-    border-radius:10px; padding:22px 10px 16px; display:flex; flex-direction:column; align-items:center; gap:8px; position:relative; }
-  .modal-art::before{ content:""; position:absolute; inset:0; border:1.5px solid var(--line); border-radius:inherit; filter:url(#sketchy); pointer-events:none; }
-  .modal-icon svg{ width:46px; height:46px; color:var(--blush); }
-  .modal-title{ font-family:var(--font-display); font-weight:600; font-size:17px; color:var(--text); }
+  .modal-card{ position:relative; max-width:308px; width:100%; background:var(--bg-panel);
+    border:1px solid var(--line); border-radius:18px; padding:16px;
+    box-shadow:0 18px 44px rgba(43,33,24,0.30); animation:pop .25s ease; white-space:normal; }
+  .modal-art{ background:linear-gradient(160deg,#fbf3df,#f0e1c1);
+    border:1px solid var(--line); border-radius:14px;
+    padding:22px 12px 18px; display:flex; flex-direction:column; align-items:center; gap:9px; position:relative; }
+  .modal-icon{ width:60px; height:60px; border-radius:50%; background:rgba(162,59,46,0.10);
+    display:flex; align-items:center; justify-content:center; }
+  .modal-icon svg{ width:32px; height:32px; color:var(--blush); }
+  .modal-title{ font-family:var(--font-display); font-weight:600; font-size:18px; color:var(--text); }
   .modal-num{ font-family:var(--font-mono); font-size:10px; letter-spacing:.04em; color:var(--text-muted); }
-  .modal-text-box{ background:var(--bg-panel-2); border-radius:10px; padding:14px; margin-top:10px; position:relative; }
-  .modal-text-box::before{ content:""; position:absolute; inset:0; border:1.5px solid var(--line); border-radius:inherit; filter:url(#sketchy); pointer-events:none; }
-  .modal-text{ font-size:14px; line-height:1.6; color:var(--text); position:relative; }
+  .modal-text-box{ background:var(--bg-panel-2); border:1px solid var(--line); border-radius:12px;
+    padding:14px 15px; margin-top:12px; position:relative; }
+  .modal-text{ font-size:14px; line-height:1.65; color:var(--text); position:relative; }
+  .modal-text .ttd{ display:block; margin-top:10px; font-family:var(--font-display); font-style:italic;
+    color:var(--blush); text-align:right; }
   .modal-close{ position:absolute; top:-14px; right:-14px; width:32px; height:32px; border-radius:50%;
     background:var(--bg-panel); color:var(--text); border:1.5px solid var(--line); font-size:15px;
     display:flex; align-items:center; justify-content:center; z-index:2; cursor:pointer; }
@@ -463,16 +466,13 @@ const OBJECTS = [
 
 // isi harta karun (keluar dari kotak setelah password bener)
 const TREASURE = [
-  { title:'Amplop', img:'assets/envelope.png', x:33, y:83, w:4.5, icon:iconEnvelope, letter:true },
+  { title:'Buat Unaaa', img:'assets/envelope.png', x:33, y:83, w:4.5, icon:iconEnvelope,
+    msg:`Di hari ulang tahunmu ini, aku cuma mau bilang makasi buat semuanya. Uda nemenin aku juga. Semoga di umur yang baru ini kamu makin bahagia, makin sukses juga, dan yang penting tetep jadi Una yang ceria kayak biasanya.
+      <br><br>Selamat ulang tahun ya Unaaa! <span class="heart-icon">💖</span> Semoga panjang umur, sehat selalu, dan semua impianmu bisa tercapai!
+      <br><br><span class="ttd">— ttd, Imron</span>` },
   { title:'Kado',   img:'assets/kado.png',     x:43, y:82, w:5.5, icon:iconGift,
     msg:'Fun fact: dari sekian banyak chat, aku paling inget waktu kamu cerita soal [isi kenangan].' },
 ];
-
-// isi surat di amplop (ditampilin di atas kertasamplop.png)
-const LETTER_MSG = `Di hari ulang tahunmu ini, aku cuma mau bilang makasi buat semuanya. Uda nemenin aku juga. Semoga di umur yang baru ini kamu makin bahagia, makin sukses juga, dan yang penting tetep jadi Una yang ceria kayak biasanya.
-  <br><br>
-  Selamat ulang tahun ya Unaaa! <span class="heart-icon">💖</span> Semoga panjang umur, sehat selalu, dan semua impianmu bisa tercapai!
-  <br><br><span class="ttd">— ttd, Imron</span>`;
 const PASSWORD = 'unaaa';
 
 const stage = document.getElementById('stage');
@@ -542,7 +542,7 @@ const modalNum=document.getElementById('modalNum'), modalText=document.getElemen
 document.getElementById('modalClose').addEventListener('click', closeModal);
 modalOverlay.addEventListener('click', e => { if (e.target === modalOverlay) closeModal(); });
 function openModal(title, icon, msg){
-  modalTitle.textContent=title; modalIcon.innerHTML=icon; modalNum.textContent=''; modalText.textContent=msg;
+  modalTitle.textContent=title; modalIcon.innerHTML=icon; modalNum.textContent=''; modalText.innerHTML=msg;
   modalOverlay.classList.add('show'); hintTap.style.opacity=0; burstConfetti(16);
 }
 function closeModal(){ modalOverlay.classList.remove('show'); }
@@ -752,8 +752,7 @@ function spawnLoot(){
     btn.innerHTML = `<img src="${it.img}" alt="${it.title}" onerror="this.style.display='none';">`;
     btn.addEventListener('click', () => {
       if (viewport._drag) return;
-      if (it.letter) openLetter();
-      else openModal(it.title, it.icon, it.msg);
+      openModal(it.title, it.icon, it.msg);
     });
     stage.appendChild(btn);
   });
