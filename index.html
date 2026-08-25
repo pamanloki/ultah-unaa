@@ -13,62 +13,31 @@
     --gold:#a8763a; --blush:#a23b2e; --text:#2b2118; --text-muted:#8a7757;
     --line:rgba(43,33,24,0.16);
     --font-display:"Fraunces",serif; --font-body:"Plus Jakarta Sans",sans-serif; --font-mono:"JetBrains Mono",monospace;
+    --room-ar: 2914 / 1440;
   }
   *{ box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
   html,body{ height:100%; overflow:hidden; }
   body{ font-family:var(--font-body); color:var(--text); background:#2b2118; }
-  img{ image-rendering:pixelated; }
+  img{ image-rendering:pixelated; image-rendering:crisp-edges; }
 
-  /* ---------- RUANGAN DEPAN ---------- */
-  .hall{ position:fixed; inset:0; overflow:hidden; display:flex; align-items:flex-end; justify-content:center;
-    background:
-      radial-gradient(900px 520px at 50% 26%, rgba(255,228,170,.55) 0%, rgba(255,228,170,0) 60%),
-      linear-gradient(180deg, #d8bd8f 0%, #cdae7c 46%, #b98f57 62%, #a97e49 100%); }
-  /* kalau kamu punya gambar ruangan depan sendiri, taruh assets/depan.png */
-  .hall-img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
-  /* lantai kayu */
-  .floor{ position:absolute; left:0; right:0; bottom:0; height:26%;
-    background:repeating-linear-gradient(90deg, #9c6f3e 0 40px, #8f6537 40px 80px);
-    box-shadow:inset 0 12px 24px rgba(0,0,0,.22); }
-  .rug{ position:absolute; left:50%; bottom:2%; transform:translateX(-50%);
-    width:min(62vw,420px); height:9%; border-radius:50%;
-    background:radial-gradient(ellipse at center, #a23b2e 0 38%, #c98b46 38% 62%, #7f5a30 62% 100%);
-    box-shadow:0 6px 18px rgba(0,0,0,.28); opacity:.92; }
+  .viewport{ position:fixed; inset:0; overflow-x:auto; overflow-y:hidden; -webkit-overflow-scrolling:touch;
+    scrollbar-width:none; cursor:grab; background:#1c140c; white-space:nowrap; }
+  .viewport::-webkit-scrollbar{ display:none; }
+  .viewport.grabbing{ cursor:grabbing; }
+  .stage{ position:relative; display:inline-block; height:100%; vertical-align:top; }
+  .room-bg{ height:100%; width:auto; display:block; aspect-ratio:var(--room-ar);
+    user-select:none; -webkit-user-drag:none; }
 
-  /* ---------- PINTU ---------- */
-  .door-wrap{ position:relative; z-index:3; width:min(52vw,300px); margin-bottom:9%;
-    display:flex; flex-direction:column; align-items:center; }
-  .plaque{ font-family:var(--font-mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase;
-    color:#5a3f28; background:var(--bg-panel); border:1.5px solid var(--line); border-radius:8px;
-    padding:5px 12px; margin-bottom:14px; box-shadow:0 3px 8px rgba(0,0,0,.2); }
-  .door{ position:relative; width:100%; aspect-ratio:1/1.85; cursor:pointer; border:none; padding:0;
-    background:linear-gradient(180deg,#8a5a2f,#6f471f); border-radius:10px 10px 6px 6px;
-    box-shadow:0 0 0 8px #5c3a19, 0 0 0 12px #7a5228, 0 18px 34px rgba(0,0,0,.45), inset 0 0 30px rgba(0,0,0,.28);
-    transition:transform .18s ease, filter .18s ease; }
-  .door:hover{ filter:brightness(1.07); transform:translateY(-2px); }
-  .door:active{ transform:scale(.99); }
-  .door::before{ /* panel atas */ content:""; position:absolute; left:14%; right:14%; top:8%; height:34%;
-    border-radius:8px; background:linear-gradient(180deg,#7a5228,#5f3f1f);
-    box-shadow:inset 0 0 0 3px rgba(0,0,0,.25), inset 0 6px 12px rgba(0,0,0,.3); }
-  .door::after{ /* panel bawah */ content:""; position:absolute; left:14%; right:14%; bottom:10%; height:38%;
-    border-radius:8px; background:linear-gradient(180deg,#7a5228,#5f3f1f);
-    box-shadow:inset 0 0 0 3px rgba(0,0,0,.25), inset 0 6px 12px rgba(0,0,0,.3); }
-  .knob{ position:absolute; right:12%; top:52%; width:14px; height:14px; border-radius:50%;
-    background:radial-gradient(circle at 35% 30%, #ffe9a8, #c79a3f); box-shadow:0 0 10px rgba(255,220,140,.6);
-    z-index:2; }
-  .door-glow{ position:absolute; inset:-6% -10%; z-index:-1; border-radius:50%;
-    background:radial-gradient(circle, rgba(255,224,150,.5), rgba(255,224,150,0) 70%);
-    animation:doorPulse 3s ease-in-out infinite; }
-  @keyframes doorPulse{ 0%,100%{ opacity:.5; } 50%{ opacity:.9; } }
+  /* hotspot pintu — area klik tak terlihat di atas pintu gambar (tanpa hiasan CSS) */
+  .door-hot{ position:absolute; transform:translate(-50%,-50%); background:transparent; border:none;
+    padding:0; cursor:pointer; z-index:4; }
 
-  .tap-hint{ position:fixed; bottom:20px; left:0; right:0; text-align:center; z-index:4;
-    font-family:var(--font-mono); font-size:12px; color:#3c2a17; opacity:.85; pointer-events:none; }
-  .tap-hint .k{ display:inline-block; animation:bob 1.5s ease-in-out infinite; }
-  @keyframes bob{ 0%,100%{ transform:translateY(0);} 50%{ transform:translateY(-4px);} }
-
-  .title-top{ position:fixed; top:0; left:0; right:0; text-align:center; padding:20px 16px;
-    font-family:var(--font-display); font-weight:600; font-size:clamp(18px,5vw,26px); color:#4a3320;
-    z-index:4; pointer-events:none; text-shadow:0 2px 6px rgba(255,240,200,.5); }
+  .banner{ position:fixed; top:0; left:0; right:0; text-align:center; padding:14px 16px 24px;
+    font-family:var(--font-display); font-weight:600; font-size:clamp(17px,4.6vw,24px); color:#fff;
+    text-shadow:0 2px 6px rgba(0,0,0,.55); background:linear-gradient(to bottom, rgba(43,33,24,.45), transparent);
+    z-index:15; pointer-events:none; }
+  .hint-tap{ position:fixed; bottom:16px; left:0; right:0; text-align:center; font-family:var(--font-mono);
+    font-size:12px; color:#fff; text-shadow:0 1px 4px rgba(0,0,0,.6); z-index:15; pointer-events:none; opacity:.9; }
 
   /* ---------- MODAL PASSWORD ---------- */
   .lock-overlay{ position:fixed; inset:0; background:rgba(43,33,24,.6); backdrop-filter:blur(3px);
@@ -103,23 +72,15 @@
 </style>
 </head>
 <body>
-<div class="title-top">Kamar Elvira</div>
-
-<div class="hall">
-  <img class="hall-img" src="assets/depan.png" alt="" onerror="this.style.display='none';">
-  <div class="floor"></div>
-  <div class="rug"></div>
-
-  <div class="door-wrap">
-    <div class="plaque">✦ Elvira's Room ✦</div>
-    <button class="door" id="door" aria-label="Pintu kamar">
-      <span class="door-glow"></span>
-      <span class="knob"></span>
-    </button>
+<div class="viewport" id="viewport">
+  <div class="stage" id="stage">
+    <img class="room-bg" src="assets/depan.png" alt="Depan kamar">
+    <button class="door-hot" id="door" aria-label="Pintu kamar" style="left:49%; top:52%; width:17.5%; height:64%;"></button>
   </div>
 </div>
 
-<div class="tap-hint">ketuk pintunya buat masuk <span class="k">👆</span></div>
+<div class="banner">Kamar Elvira</div>
+<div class="hint-tap" id="hintTap">geser buat lihat-lihat &middot; ketuk pintu buat masuk</div>
 
 <!-- MODAL PASSWORD -->
 <div class="lock-overlay" id="lockOverlay">
@@ -143,20 +104,29 @@
 if (window.Telegram && window.Telegram.WebApp) { const tg = window.Telegram.WebApp; tg.ready(); tg.expand(); }
 
 const PASSWORD = 'elvira';
+const viewport = document.getElementById('viewport');
 const lockOverlay = document.getElementById('lockOverlay');
 const lockCard = document.getElementById('lockCard');
 const lockInput = document.getElementById('lockInput');
 const lockErr = document.getElementById('lockErr');
 const enterFade = document.getElementById('enterFade');
+const hintTap = document.getElementById('hintTap');
+
+// pas buka, geser biar pintunya di tengah layar
+function centerDoor(){
+  const s = document.getElementById('stage');
+  viewport.scrollLeft = (s.scrollWidth - viewport.clientWidth) / 2;
+}
+window.addEventListener('load', () => setTimeout(centerDoor, 60));
+window.addEventListener('resize', centerDoor);
 
 function openLock(){
-  lockOverlay.classList.add('show');
-  lockErr.textContent = '';
+  lockOverlay.classList.add('show'); lockErr.textContent = '';
   setTimeout(() => lockInput.focus(), 200);
 }
 function closeLock(){ lockOverlay.classList.remove('show'); }
 
-document.getElementById('door').addEventListener('click', openLock);
+document.getElementById('door').addEventListener('click', () => { if (!viewport._drag) openLock(); });
 document.getElementById('lockClose').addEventListener('click', closeLock);
 lockOverlay.addEventListener('click', e => { if (e.target === lockOverlay) closeLock(); });
 
@@ -176,6 +146,24 @@ function tryEnter(){
 }
 document.getElementById('lockGo').addEventListener('click', tryEnter);
 lockInput.addEventListener('keydown', e => { if (e.key === 'Enter') tryEnter(); });
+
+/* ---------- geser horizontal (mouse drag) ---------- */
+viewport._drag = false;
+let down=false, startX=0, startLeft=0;
+viewport.addEventListener('pointerdown', e => {
+  if (e.pointerType !== 'mouse') return;
+  down=true; viewport._drag=false; startX=e.clientX; startLeft=viewport.scrollLeft; viewport.classList.add('grabbing');
+});
+viewport.addEventListener('pointermove', e => {
+  if (!down) return;
+  const dx = e.clientX - startX;
+  if (Math.abs(dx) > 6) viewport._drag = true;
+  viewport.scrollLeft = startLeft - dx;
+});
+function endDrag(){ down=false; viewport.classList.remove('grabbing'); setTimeout(()=>viewport._drag=false, 30); }
+viewport.addEventListener('pointerup', endDrag);
+viewport.addEventListener('pointerleave', endDrag);
+viewport.addEventListener('scroll', () => { hintTap.style.opacity = 0; }, { once:true });
 </script>
 </body>
 </html>
