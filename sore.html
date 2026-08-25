@@ -15,7 +15,7 @@
     --font-display:"Fraunces",serif; --font-body:"Plus Jakarta Sans",sans-serif; --font-mono:"JetBrains Mono",monospace;
 
     /* ---- rasio gambar room asli: lebar / tinggi ---- */
-    --room-ar: 2000 / 989;
+    --room-ar: 2914 / 1440;
     /* ---- lebar 1 frame kucing ---- */
     --cat-fw: clamp(96px, 19vh, 165px);
     /* ---- lebar 1 frame boneka (sprite 6 frame) ---- */
@@ -376,18 +376,12 @@
 
 <div class="viewport" id="viewport">
   <div class="stage" id="stage">
-    <img class="room-bg" id="roomBg" src="assets/room.png" alt="kamar">
+    <img class="room-bg" id="roomBg" src="assets/room1.png" alt="kamar">
     <!-- objek diisi lewat JS -->
     <button class="hotspot" id="mapHotspot" aria-label="Peta" style="left:50.5%; top:34%; width:17.5%; height:17%;"></button>
     <div class="map-tip" id="mapTip" style="left:50.5%; top:26%;">Bekasi &middot; colek aku</div>
     <button class="hotspot" id="screenHotspot" aria-label="Layar" style="left:51%; top:47%; width:9%; height:11%;"></button>
     <div class="map-tip" id="screenTip" style="left:51%; top:40%;">Setel musik &middot; colek aku</div>
-
-    <!-- LAMPU langit-langit (sore = mati) -->
-    <div class="lamp-glow" id="lampGlow" style="left:50%; top:11%;"></div>
-    <div class="lampu" id="lampu" style="left:50%; top:-1%; width:15%;">
-      <img src="assets/lampu_mati.png" alt="Lampu" onerror="this.style.display='none';">
-    </div>
 
     <!-- SAKLAR di dinding, sebelah foto -->
     <button class="saklar" id="saklar" aria-label="Saklar lampu" style="left:22%; top:45%; width:10%;">
@@ -936,7 +930,6 @@ saklar.addEventListener('click', () => {
   if (viewport._drag || switching) return;
   switching = true;
   saklar.classList.add('on');
-  document.getElementById('lampGlow').classList.add('on');
   burstConfetti(10);
   setTimeout(() => nightFade.classList.add('show'), 260);
   setTimeout(() => { location.href = 'malam.html'; }, 950);

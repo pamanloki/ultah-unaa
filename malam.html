@@ -15,7 +15,7 @@
     --font-display:"Fraunces",serif; --font-body:"Plus Jakarta Sans",sans-serif; --font-mono:"JetBrains Mono",monospace;
 
     /* ---- rasio gambar room asli: lebar / tinggi ---- */
-    --room-ar: 2000 / 989;
+    --room-ar: 2912 / 1440;
     /* ---- lebar 1 frame kucing ---- */
     --cat-fw: clamp(96px, 19vh, 165px);
     /* ---- lebar 1 frame boneka (sprite 6 frame) ---- */
@@ -344,40 +344,8 @@
   .night-fade.gone{ opacity:0; }
   .night-fade.show{ opacity:1; pointer-events:all; }
 
-  /* ===== SUASANA MALAM ===== */
+  /* ===== SUASANA MALAM ===== (room2.png sudah malam, tinggal dipakai) */
   body{ background:#0a0e22; }
-  .room-bg{ filter:brightness(.5) saturate(.85) contrast(1.04); }
-  /* tint biru gelap nutup kamar */
-  .night-tint{ position:absolute; inset:0; pointer-events:none; z-index:1;
-    background:linear-gradient(rgba(10,16,44,.55), rgba(8,12,34,.66)); mix-blend-mode:multiply; }
-  /* cahaya hangat dari lampu yg nyala */
-  .night-lamplight{ position:absolute; left:50%; top:8%; transform:translate(-50%,-50%);
-    width:70%; aspect-ratio:1.3/1; pointer-events:none; z-index:1;
-    background:radial-gradient(ellipse at center, rgba(255,214,140,.34) 0%, rgba(255,206,120,.16) 34%, rgba(255,206,120,0) 66%); }
-  .banner-night{ color:#f3e9d0; }
-
-  /* jendela malam: nutup kaca yg aslinya siang, ganti jadi langit malam */
-  .night-window{ position:absolute; transform:translate(-50%,-50%); z-index:2; pointer-events:none;
-    border-radius:5px; overflow:hidden; box-shadow:inset 0 0 26px rgba(0,0,0,.55);
-    background:linear-gradient(165deg,#0a1536 0%, #122451 52%, #1b2f62 100%); }
-  .night-window .nw-moon{ position:absolute; top:14%; right:15%; width:24%; aspect-ratio:1; border-radius:50%;
-    background:radial-gradient(circle at 38% 34%, #fdf6d8, #ecd98f 72%);
-    box-shadow:0 0 16px 4px rgba(255,240,190,.5); }
-  .night-window .nw-star{ position:absolute; width:3px; height:3px; border-radius:50%; background:#fff;
-    opacity:.85; animation:twinkle 3s ease-in-out infinite; }
-  @keyframes twinkle{ 0%,100%{ opacity:.3; transform:scale(.7);} 50%{ opacity:1; transform:scale(1);} }
-  .night-window .nw-v{ position:absolute; left:50%; top:0; bottom:0; width:4%; transform:translateX(-50%);
-    background:#6f4f2c; box-shadow:0 0 2px rgba(0,0,0,.4); }
-  .night-window .nw-h{ position:absolute; top:50%; left:0; right:0; height:5%; transform:translateY(-50%);
-    background:#6f4f2c; box-shadow:0 0 2px rgba(0,0,0,.4); }
-  /* sinar dari jendela pas malam: dingin & lembut (bukan sinar matahari) */
-  .night-lamplight{ mix-blend-mode:screen; }
-
-  /* kalau pakai gambar kamar malam sendiri (room_malam.png):
-     matiin efek gelap CSS + jendela CSS, biar gambarnya yg tampil apa adanya */
-  body.nightroom .room-bg{ filter:none; }
-  body.nightroom .night-tint{ display:none; }
-  body.nightroom .night-window{ display:none; }
 
   /* ---------- CLAIM (kirim alamat ke Telegram) ---------- */
   .claim-overlay{ position:fixed; inset:0; background:rgba(43,33,24,0.55); backdrop-filter:blur(2px);
@@ -412,40 +380,16 @@
 
 <div class="viewport" id="viewport">
   <div class="stage" id="stage">
-    <!-- kalau kamu upload assets/room_malam.png, itu yg dipakai; kalau nggak, room.png digelapin CSS -->
-    <img class="room-bg" id="roomBg" src="assets/room_malam.png" alt="kamar"
-      onload="if(this.src.indexOf('room_malam')>-1) document.body.classList.add('nightroom');"
-      onerror="this.onerror=null; this.src='assets/room.png';">
-    <div class="night-tint"></div>
-    <div class="night-lamplight"></div>
-
-    <!-- KACA JENDELA jadi langit malam (nutup sinar siang aslinya) -->
-    <div class="night-window" id="nightWindow" style="left:10%; top:40.5%; width:10.6%; height:51.5%;">
-      <span class="nw-moon"></span>
-      <span class="nw-star" style="left:18%; top:22%;"></span>
-      <span class="nw-star" style="left:32%; top:12%; animation-delay:.6s;"></span>
-      <span class="nw-star" style="left:22%; top:60%; animation-delay:1.1s;"></span>
-      <span class="nw-star" style="left:60%; top:55%; animation-delay:.3s;"></span>
-      <span class="nw-star" style="left:44%; top:74%; animation-delay:1.6s;"></span>
-      <span class="nw-star" style="left:70%; top:34%; animation-delay:.9s;"></span>
-      <span class="nw-v"></span>
-      <span class="nw-h"></span>
-    </div>
+    <img class="room-bg" id="roomBg" src="assets/room2.png" alt="kamar">
 
     <!-- JENDELA (masked) — muncul stlh amplop dibuka -->
-    <button class="hotspot" id="windowHotspot" aria-label="Jendela" style="left:10%; top:41%; width:15%; height:58%; display:none;"></button>
-    <div class="map-tip" id="windowTip" style="left:10%; top:14%; display:none;">tolong klik jendela ✨</div>
+    <button class="hotspot" id="windowHotspot" aria-label="Jendela" style="left:10.5%; top:40%; width:13%; height:56%; display:none;"></button>
+    <div class="map-tip" id="windowTip" style="left:10.5%; top:12%; display:none;">tolong klik jendela ✨</div>
     <!-- objek diisi lewat JS -->
     <button class="hotspot" id="mapHotspot" aria-label="Peta" style="left:50.5%; top:34%; width:17.5%; height:17%;"></button>
     <div class="map-tip" id="mapTip" style="left:50.5%; top:26%;">Bekasi &middot; colek aku</div>
     <button class="hotspot" id="screenHotspot" aria-label="Layar" style="left:51%; top:47%; width:9%; height:11%;"></button>
     <div class="map-tip" id="screenTip" style="left:51%; top:40%;">Setel musik &middot; colek aku</div>
-
-    <!-- LAMPU langit-langit (malam = nyala) -->
-    <div class="lamp-glow on" id="lampGlow" style="left:50%; top:12%;"></div>
-    <div class="lampu" id="lampu" style="left:50%; top:-1%; width:15%;">
-      <img src="assets/lampu_idup.png" alt="Lampu" onerror="this.style.display='none';">
-    </div>
 
     <!-- SAKLAR di dinding, sebelah foto -->
     <button class="saklar on" id="saklar" aria-label="Saklar lampu" style="left:22%; top:45%; width:10%;">
@@ -992,6 +936,19 @@ viewport.addEventListener('scroll', () => { hintTap.style.opacity = 0; }, { once
 const nightFade = document.getElementById('nightFade');
 requestAnimationFrame(() => setTimeout(() => nightFade.classList.add('gone'), 40));
 
+/* ---------- MALAM: musik auto-play ---------- */
+(function autoplayMusic(){
+  function start(){ if (curTrack < 0) selectTrack(0, true); else playAudio(); }
+  start(); // coba langsung
+  // fallback: kalau browser blokir autoplay, mulai pas interaksi pertama
+  const kick = () => {
+    if (!isPlaying) start();
+    if (isPlaying){ window.removeEventListener('pointerdown', kick); window.removeEventListener('keydown', kick); }
+  };
+  window.addEventListener('pointerdown', kick);
+  window.addEventListener('keydown', kick);
+})();
+
 /* ---------- SAKLAR: matiin lampu -> balik ke sore ---------- */
 const saklar = document.getElementById('saklar');
 let switching = false;
@@ -999,7 +956,6 @@ saklar.addEventListener('click', () => {
   if (viewport._drag || switching) return;
   switching = true;
   saklar.classList.remove('on');
-  document.getElementById('lampGlow').classList.remove('on');
   nightFade.classList.remove('gone');
   setTimeout(() => { location.href = 'sore.html'; }, 750);
 });
