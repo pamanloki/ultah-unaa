@@ -332,14 +332,14 @@
     width:52%; height:34%; border-radius:20%; background:#b8905a;
     box-shadow:inset 0 2px 0 rgba(255,255,255,.5), 0 2px 3px rgba(0,0,0,.35); transition:top .18s ease, background .18s ease; }
   .saklar.on::after{ top:36%; background:#e7b45a; }
-  .saklar .lbl{ position:absolute; left:50%; top:-14px; transform:translate(-50%,-100%);
+  .saklar .lbl{ position:absolute; left:50%; top:15%; transform:translate(-50%,-115%);
     background:var(--text); color:var(--bg-panel); font-family:var(--font-mono); font-size:10px;
     padding:4px 8px; border-radius:8px; white-space:nowrap; opacity:.92; pointer-events:none; }
   .saklar .lbl::after{ content:""; position:absolute; left:50%; bottom:-4px; transform:translateX(-50%);
     border-left:4px solid transparent; border-right:4px solid transparent; border-top:5px solid var(--text); }
 
-  /* ---------- LAMPU LANGIT-LANGIT (dinding atas) ---------- */
-  .lampu{ position:absolute; transform:translate(-50%,-50%); z-index:3; pointer-events:none;
+  /* ---------- LAMPU LANGIT-LANGIT (gantung dari atas) ---------- */
+  .lampu{ position:absolute; transform:translate(-50%,0); z-index:3; pointer-events:none;
     filter:drop-shadow(0 3px 5px rgba(0,0,0,.28)); }
   .lampu img{ width:100%; height:auto; display:block; -webkit-user-drag:none; image-rendering:pixelated; }
   /* fallback CSS lampu mati */
@@ -450,13 +450,13 @@
     <div class="map-tip" id="screenTip" style="left:51%; top:40%;">Setel musik &middot; colek aku</div>
 
     <!-- LAMPU langit-langit (malam = nyala) -->
-    <div class="lamp-glow on" id="lampGlow" style="left:50%; top:9%;"></div>
-    <div class="lampu" id="lampu" style="left:50%; top:7%; width:9%;">
+    <div class="lamp-glow on" id="lampGlow" style="left:50%; top:12%;"></div>
+    <div class="lampu" id="lampu" style="left:50%; top:-1%; width:15%;">
       <img src="assets/lampu_idup.png" alt="Lampu" onerror="this.closest('.lampu').classList.add('noimg');">
     </div>
 
     <!-- SAKLAR di dinding, sebelah foto -->
-    <button class="saklar on" id="saklar" aria-label="Saklar lampu" style="left:23%; top:45%; width:2.6%;">
+    <button class="saklar on" id="saklar" aria-label="Saklar lampu" style="left:22%; top:45%; width:10%;">
       <span class="lbl">matiin lampu? 🌙</span>
       <img src="assets/saklar.png" alt="Saklar" onerror="this.closest('.saklar').classList.add('noimg');">
     </button>
