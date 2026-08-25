@@ -28,22 +28,9 @@
   .room-bg{ height:100%; width:auto; display:block; aspect-ratio:var(--room-ar);
     user-select:none; -webkit-user-drag:none; }
 
-  /* hotspot pintu */
+  /* hotspot pintu — area klik tak terlihat di atas pintu gambar (tanpa hiasan CSS) */
   .door-hot{ position:absolute; transform:translate(-50%,-50%); background:transparent; border:none;
-    padding:0; cursor:pointer; z-index:4; border-radius:10px; }
-  .door-hot::after{ content:""; position:absolute; inset:0; border-radius:10px;
-    box-shadow:0 0 0 0 rgba(255,224,150,0); animation:doorPulse 2.6s ease-in-out infinite; }
-  @keyframes doorPulse{ 0%,100%{ box-shadow:0 0 0 0 rgba(255,224,150,0); }
-    50%{ box-shadow:0 0 0 3px rgba(255,224,150,.7), 0 0 30px 8px rgba(255,224,150,.4); } }
-  .door-hot:hover::after,.door-hot:focus-visible::after{
-    box-shadow:0 0 0 4px rgba(255,224,150,.85), 0 0 34px 10px rgba(255,224,150,.5); animation:none; }
-  .door-tip{ position:absolute; transform:translate(-50%,-135%);
-    background:var(--text); color:var(--bg-panel); font-family:var(--font-mono); font-size:12px;
-    padding:6px 11px; border-radius:9px; white-space:nowrap; z-index:16; opacity:.95; pointer-events:none; }
-  .door-tip::after{ content:""; position:absolute; left:50%; bottom:-5px; transform:translateX(-50%);
-    border-left:5px solid transparent; border-right:5px solid transparent; border-top:6px solid var(--text); }
-  .door-tip .k{ display:inline-block; animation:bob 1.5s ease-in-out infinite; }
-  @keyframes bob{ 0%,100%{ transform:translateY(0);} 50%{ transform:translateY(-4px);} }
+    padding:0; cursor:pointer; z-index:4; }
 
   .banner{ position:fixed; top:0; left:0; right:0; text-align:center; padding:14px 16px 24px;
     font-family:var(--font-display); font-weight:600; font-size:clamp(17px,4.6vw,24px); color:#fff;

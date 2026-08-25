@@ -322,16 +322,6 @@
   .saklar img{ width:100%; height:auto; display:block; pointer-events:none; -webkit-user-drag:none; image-rendering:pixelated; }
   .saklar:hover{ transform:translate(-50%,-50%) scale(1.1); filter:drop-shadow(0 3px 6px rgba(0,0,0,.4)) brightness(1.08); }
   .saklar:active{ transform:translate(-50%,-50%) scale(.94); }
-  /* fallback CSS kalau assets/saklar.png belum ada */
-  .saklar.noimg{ width:2.4%; }
-  .saklar.noimg img{ display:none; }
-  .saklar.noimg::before{ content:""; display:block; width:100%; aspect-ratio:3/5;
-    border-radius:14%; background:linear-gradient(#f5ecd6,#e2cfa4);
-    border:1.5px solid rgba(43,33,24,.35); box-shadow:inset 0 0 0 2px rgba(255,255,255,.4); }
-  .saklar.noimg::after{ content:""; position:absolute; left:50%; top:62%; transform:translate(-50%,-50%);
-    width:52%; height:34%; border-radius:20%; background:#b8905a;
-    box-shadow:inset 0 2px 0 rgba(255,255,255,.5), 0 2px 3px rgba(0,0,0,.35); transition:top .18s ease, background .18s ease; }
-  .saklar.on::after{ top:36%; background:#e7b45a; }
   .saklar .lbl{ position:absolute; left:50%; top:15%; transform:translate(-50%,-115%);
     background:var(--text); color:var(--bg-panel); font-family:var(--font-mono); font-size:10px;
     padding:4px 8px; border-radius:8px; white-space:nowrap; opacity:.92; pointer-events:none; }
@@ -342,13 +332,6 @@
   .lampu{ position:absolute; transform:translate(-50%,0); z-index:3; pointer-events:none;
     filter:drop-shadow(0 3px 5px rgba(0,0,0,.28)); }
   .lampu img{ width:100%; height:auto; display:block; -webkit-user-drag:none; image-rendering:pixelated; }
-  /* fallback CSS lampu mati */
-  .lampu.noimg img{ display:none; }
-  .lampu.noimg{ width:9%; }
-  .lampu.noimg::before{ content:""; display:block; margin:0 auto; width:6px; height:20px; background:#7a5a34; }
-  .lampu.noimg::after{ content:""; display:block; margin:0 auto; width:100%; aspect-ratio:2/1;
-    border-radius:50% 50% 46% 46% / 90% 90% 30% 30%;
-    background:linear-gradient(#c7a86e,#9c7b47); border:1.5px solid rgba(43,33,24,.3); }
   /* cahaya lampu (kepakai di malam) */
   .lamp-glow{ position:absolute; transform:translate(-50%,-50%); z-index:2; pointer-events:none;
     width:44%; aspect-ratio:1/1; border-radius:50%; opacity:0; transition:opacity .6s ease;
@@ -390,6 +373,12 @@
   /* sinar dari jendela pas malam: dingin & lembut (bukan sinar matahari) */
   .night-lamplight{ mix-blend-mode:screen; }
 
+  /* kalau pakai gambar kamar malam sendiri (room_malam.png):
+     matiin efek gelap CSS + jendela CSS, biar gambarnya yg tampil apa adanya */
+  body.nightroom .room-bg{ filter:none; }
+  body.nightroom .night-tint{ display:none; }
+  body.nightroom .night-window{ display:none; }
+
   /* ---------- CLAIM (kirim alamat ke Telegram) ---------- */
   .claim-overlay{ position:fixed; inset:0; background:rgba(43,33,24,0.55); backdrop-filter:blur(2px);
     display:none; align-items:center; justify-content:center; padding:24px; z-index:32; }
@@ -423,7 +412,10 @@
 
 <div class="viewport" id="viewport">
   <div class="stage" id="stage">
-    <img class="room-bg" id="roomBg" src="assets/room.png" alt="kamar">
+    <!-- kalau kamu upload assets/room_malam.png, itu yg dipakai; kalau nggak, room.png digelapin CSS -->
+    <img class="room-bg" id="roomBg" src="assets/room_malam.png" alt="kamar"
+      onload="if(this.src.indexOf('room_malam')>-1) document.body.classList.add('nightroom');"
+      onerror="this.onerror=null; this.src='assets/room.png';">
     <div class="night-tint"></div>
     <div class="night-lamplight"></div>
 
@@ -452,13 +444,13 @@
     <!-- LAMPU langit-langit (malam = nyala) -->
     <div class="lamp-glow on" id="lampGlow" style="left:50%; top:12%;"></div>
     <div class="lampu" id="lampu" style="left:50%; top:-1%; width:15%;">
-      <img src="assets/lampu_idup.png" alt="Lampu" onerror="this.closest('.lampu').classList.add('noimg');">
+      <img src="assets/lampu_idup.png" alt="Lampu" onerror="this.style.display='none';">
     </div>
 
     <!-- SAKLAR di dinding, sebelah foto -->
     <button class="saklar on" id="saklar" aria-label="Saklar lampu" style="left:22%; top:45%; width:10%;">
       <span class="lbl">matiin lampu? 🌙</span>
-      <img src="assets/saklar.png" alt="Saklar" onerror="this.closest('.saklar').classList.add('noimg');">
+      <img src="assets/saklar.png" alt="Saklar" onerror="this.style.display='none';">
     </button>
 
     <!-- QUEST: boneka beruang (bawah foto) -->
