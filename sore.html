@@ -431,7 +431,7 @@
     <div class="pl-screen-label">♪ now playing</div>
     <div class="pl-vinyl" id="plVinyl"></div>
     <div class="pl-title" id="plTitle">—</div>
-    <div class="pl-artist" id="plArtist">pilih lagu di bawah</div>
+    <div class="pl-artist" id="plArtist">pilih lagu di bawah yuk</div>
     <div class="pl-prog">
       <span class="pl-time" id="plCur">0:00</span>
       <div class="pl-bar" id="plBar"><div class="pl-fill" id="plFill"></div></div>
@@ -455,18 +455,18 @@
     <img class="ch-img" id="chImg" src="assets/harta.png" alt="Kotak harta" onerror="this.style.display='none';">
     <!-- locked -->
     <div id="chLocked">
-      <div class="ch-title">Kotak Harta Karun 🔒</div>
-      <div class="ch-sub">Ada isinya buat kamu. Tapi kekunci &mdash; butuh password.<br>psst… petunjuknya ada di kertas bawah kucing.</div>
+      <div class="ch-title">Kotak Harta 🔒</div>
+      <div class="ch-sub">Ada sesuatu buat kamu di dalem~ tapi kekunci, butuh password dulu.<br>psst… petunjuknya ada di kertas bawah kucing 👀</div>
       <div class="ch-form">
         <input class="ch-input" id="chInput" type="text" placeholder="ketik password…" autocomplete="off" spellcheck="false">
-        <button class="ch-go" id="chGo">Buka</button>
+        <button class="ch-go" id="chGo">Buka~</button>
       </div>
       <div class="ch-err" id="chErr"></div>
     </div>
     <!-- unlocked -->
     <div id="chUnlocked" style="display:none;">
       <div class="ch-title">Kebuka! 🎉</div>
-      <div class="ch-sub">Ini isinya &mdash; colek satu-satu ya.</div>
+      <div class="ch-sub">Nih isinya, colek satu-satu ya 🥰</div>
       <div class="ch-loot" id="chLoot"></div>
     </div>
   </div>
@@ -504,7 +504,7 @@
       <div class="modal-title">Klaim Hadiah 🎁</div>
     </div>
     <div id="claimForm">
-      <p class="claim-note">Isi alamat lengkap kamu buat klaim hadiahnya ya~ nanti langsung masuk ke Imron.</p>
+      <p class="claim-note">Isi alamat lengkap kamu ya, biar hadiahnya bisa dikirim~ nanti langsung nyampe ke Imron kok.</p>
       <input class="claim-field" id="claimName" type="text" placeholder="Nama kamu" autocomplete="off">
       <textarea class="claim-field" id="claimAddr" placeholder="Alamat lengkap + no. HP (jalan, kota, kode pos)"></textarea>
       <button class="claim-send" id="claimSend">Kirim ke Imron ✈️</button>
@@ -513,7 +513,7 @@
     <div id="claimDone" style="display:none;">
       <div class="claim-done">
         <div class="big">Terkirim! 🎉</div>
-        <p>Alamatnya udah masuk ke Imron. Hadiahnya segera meluncur ya~</p>
+        <p>Sip! alamatnya udah nyampe ke Imron. Ditunggu ya, hadiahnya cus meluncur~</p>
       </div>
     </div>
   </div>
@@ -541,8 +541,8 @@ const OBJECTS = [
 // isi harta karun (keluar dari kotak setelah password bener)
 const TREASURE = [
   { title:'Buat Unaaa', img:'assets/envelope.png', x:33, y:83, w:4.5, icon:iconEnvelope,
-    msg:`Di hari ulang tahunmu ini, aku cuma mau bilang makasi buat semuanya. Uda nemenin aku juga. Semoga di umur yang baru ini kamu makin bahagia, makin sukses juga, dan yang penting tetep jadi Una yang ceria kayak biasanya.
-      <br><br>Selamat ulang tahun ya Unaaa! <span class="heart-icon">💖</span> Semoga panjang umur, sehat selalu, dan semua impianmu bisa tercapai!
+    msg:`Met ulang tahun ya Unaaa! 🥳 Makasih banyak buat semuanya, uda mau nemenin aku selama ini.
+      <br><br>Semoga di umur baru ini kamu makin bahagia, makin sukses, dan tetep jadi Una yang cerewet-ceria kayak biasanya hehe. Sehat terus, panjang umur, semoga apa yang kamu mau kesampaian semua. <span class="heart-icon">💖</span>
       <br><br><span class="ttd">— ttd, Imron</span>` },
   { title:'Kado',   img:'assets/kado.png',     x:43, y:82, w:5.5, icon:iconGift, claim:true },
 ];
@@ -623,25 +623,24 @@ function closeModal(){ modalOverlay.classList.remove('show'); }
 /* ---------- PANEL DETAIL (dipakai peta & foto) ---------- */
 const DETAILS = {
   bekasi: {
-    eyebrow: 'kota yang membesarkanmu',
+    eyebrow: 'kota tempat kamu gede',
     title: 'Bekasi',
     img: 'assets/bekasi.png',
-    body: `Di sinilah kamu lahir dan tumbuh &mdash; di kota yang ramai tapi hangat ini.
-      Setiap sudutnya menyimpan potongan ceritamu: tawa kecilmu, langkah-langkah
-      pertamamu, dan mimpi yang kamu rawat diam-diam. Bekasi indah bukan cuma
-      karena petanya, tapi karena <b>kamu</b> bagian dari kota ini.
-      <br><br>Selamat ulang tahun, Elvira. 🎂`
+    body: `Di sini kamu lahir dan gede &mdash; di kota yang rame tapi anget ini.
+      Tiap sudutnya nyimpen cerita kamu: ketawa-ketawa kecil, langkah pertama kamu,
+      sama mimpi-mimpi yang kamu simpen diem-diem. Bekasi bagus bukan cuma karena
+      petanya, tapi karena ada <b>kamu</b> di sini.
+      <br><br>Met ulang tahun ya, Elvira 🎂`
   },
   about: {
-    eyebrow: 'about me',
+    eyebrow: 'soal aku',
     title: 'Hai, aku Elvira',
     img: 'assets/elvira.png',
     body: `Lahir <b>11 September 2000</b>, gede di Bekasi.
-      Orangnya lebih sering dengerin daripada ngomong, gampang ketawa buat hal-hal
-      receh, dan diam-diam nyimpen banyak mimpi. Suka hal-hal kecil yang bikin hari
-      terasa cukup &mdash; [isi: musik/film/makanan favoritmu].
-      <br><br>Kadang overthinking, tapi selalu nyoba jadi versi yang lebih baik dari
-      kemarin. Ya... segitu dulu tentang aku. Makasih udah mampir. :)`
+      Orangnya lebih sering dengerin daripada ngomong, gampang ketawa buat hal receh,
+      dan diem-diem nyimpen banyak mimpi. Suka hal-hal kecil yang bikin hari berasa cukup.
+      <br><br>Kadang overthinking sih, tapi selalu nyoba jadi versi yang lebih baik dari
+      kemarin. Yaudah, segitu dulu soal aku. Makasih uda mampir ya :)`
   }
 };
 
@@ -796,8 +795,8 @@ paperObj.addEventListener('click', () => {
     eyebrow: 'petunjuk rahasia',
     title: 'Password',
     img: 'assets/kertas.png',
-    body: `Coba baca tulisan di kertasnya baik-baik 👀
-      <br><br>Itu password buat buka kotak harta karunnya. 🔑`
+    body: `Baca baik-baik tulisan di kertasnya 👀
+      <br><br>itu password buat buka kotak hartanya 🔑`
   });
 });
 
@@ -865,14 +864,14 @@ claimSend.addEventListener('click', async () => {
   const address = (claimAddr.value||'').trim();
   const name = (claimName.value||'').trim();
   if (!address) { claimStatus.textContent='Alamatnya diisi dulu ya 🙏'; claimStatus.classList.add('err'); return; }
-  claimSend.disabled = true; claimStatus.classList.remove('err'); claimStatus.textContent='Mengirim…';
+  claimSend.disabled = true; claimStatus.classList.remove('err'); claimStatus.textContent='Lagi ngirim…';
   try {
     const r = await fetch('/api/claim', { method:'POST', headers:{'content-type':'application/json'},
       body: JSON.stringify({ name, address }) });
     const j = await r.json().catch(() => ({}));
     if (r.ok && j.ok) { claimForm.style.display='none'; claimDone.style.display=''; burstConfetti(28); }
     else if (j.error === 'not_configured') {
-      claimStatus.textContent='Fitur kirim belum diaktifin (set token bot di Vercel).'; claimStatus.classList.add('err'); claimSend.disabled=false;
+      claimStatus.textContent='Yah, fitur kirimnya belum nyala 😅'; claimStatus.classList.add('err'); claimSend.disabled=false;
     } else {
       claimStatus.textContent='Gagal kirim, coba lagi bentar ya.'; claimStatus.classList.add('err'); claimSend.disabled=false;
     }
