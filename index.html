@@ -55,12 +55,14 @@
   .lock-sub{ font-family:var(--font-mono); font-size:11px; color:var(--text-muted); margin:8px 0 4px; line-height:1.5; }
   .lock-hint{ font-size:12px; color:var(--blush); margin-bottom:14px; }
   .lock-hint b{ font-weight:600; }
-  .lock-form{ display:flex; gap:8px; }
-  .lock-input{ flex:1; background:var(--bg-panel-2); border:1.5px solid var(--line); border-radius:10px;
-    padding:12px; font-family:var(--font-mono); font-size:15px; color:var(--text); text-align:center; letter-spacing:.14em; }
+  .lock-form{ display:flex; flex-direction:column; gap:10px; }
+  .lock-input{ width:100%; background:var(--bg-panel-2); border:1.5px solid var(--line); border-radius:10px;
+    padding:12px 14px; font-family:var(--font-mono); font-size:15px; color:var(--text); text-align:center; letter-spacing:.14em; }
+  .lock-input:focus{ outline:none; border-color:var(--blush); }
   .lock-input::placeholder{ letter-spacing:normal; color:var(--text-muted); }
-  .lock-go{ background:var(--blush); color:#f8f0dd; border:none; border-radius:10px; padding:0 18px;
+  .lock-go{ width:100%; background:var(--blush); color:#f8f0dd; border:none; border-radius:10px; padding:12px;
     font-weight:600; cursor:pointer; font-size:14px; }
+  .lock-go:hover{ filter:brightness(1.06); }
   .lock-err{ color:var(--blush); font-family:var(--font-mono); font-size:11px; min-height:16px; margin-top:10px; }
   .lock-close{ position:absolute; top:-14px; right:-14px; width:32px; height:32px; border-radius:50%;
     background:var(--bg-panel); color:var(--text); border:1.5px solid var(--line); font-size:15px;
