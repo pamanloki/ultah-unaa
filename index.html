@@ -77,6 +77,32 @@
   .enter-fade{ position:fixed; inset:0; background:#1c140c; z-index:40; opacity:0; pointer-events:none;
     transition:opacity .7s ease; }
   .enter-fade.show{ opacity:1; pointer-events:all; }
+
+/* ================= SKIN DIALOG RPG (bingkai kayu pixel) ================= */
+:root{ --wood-a:#8a5a2b; --wood-line:#c79753; --wood-out:#241304; --rivet:#efd9a2; --rivet-d:#6f4a1f; --paper1:#f4e4bf; --paper2:#efdcb0; --ink:#43290f; --card-border:#4d3016; }
+.lock-card{
+  background:repeating-linear-gradient(0deg,var(--paper1) 0 4px,var(--paper2) 4px 8px) !important;
+  border:3px solid var(--card-border) !important; border-radius:0 !important;
+  color:var(--ink) !important; font-family:var(--font-mono) !important;
+  box-shadow:0 0 0 3px var(--wood-line), 0 0 0 8px var(--wood-a), 0 0 0 11px var(--wood-out),11px 13px 0 rgba(0,0,0,.32), inset 0 3px 0 rgba(255,255,255,.14), inset 0 -4px 0 rgba(0,0,0,.10) !important; }
+.lock-card::before{ display:none !important; }
+.lock-card::after{
+  content:"" !important; display:block !important; position:absolute; inset:-8px; pointer-events:none;
+  background:radial-gradient(circle at 5px 5px, var(--rivet) 0 2.5px, var(--rivet-d) 2.5px 3.6px, transparent 4.3px),radial-gradient(circle at calc(100% - 5px) 5px, var(--rivet) 0 2.5px, var(--rivet-d) 2.5px 3.6px, transparent 4.3px),radial-gradient(circle at 5px calc(100% - 5px), var(--rivet) 0 2.5px, var(--rivet-d) 2.5px 3.6px, transparent 4.3px),radial-gradient(circle at calc(100% - 5px) calc(100% - 5px), var(--rivet) 0 2.5px, var(--rivet-d) 2.5px 3.6px, transparent 4.3px); background-repeat:no-repeat; box-shadow:none !important;
+  border:none !important; transform:none !important; width:auto; height:auto; opacity:1; }
+.lock-title{ font-family:var(--font-mono) !important; font-weight:700 !important; color:var(--ink) !important; }
+
+.lock-input{ background:#fbf1d8 !important; border:3px solid var(--card-border) !important; border-radius:0 !important;
+  color:var(--ink) !important; font-family:var(--font-mono) !important; box-shadow:inset 2px 2px 0 rgba(0,0,0,.12) !important; }
+.lock-go{ background:linear-gradient(#b6813f,#8a5a2b) !important; color:#fff5df !important;
+  border:3px solid var(--card-border) !important; border-radius:0 !important; font-family:var(--font-mono) !important;
+  font-weight:700 !important; box-shadow:inset 0 3px 0 rgba(255,255,255,.22), inset 0 -3px 0 rgba(0,0,0,.28), 3px 3px 0 rgba(0,0,0,.2) !important; }
+.lock-close{ background:linear-gradient(#b6813f,#8a5a2b) !important; color:#fff5df !important;
+  border:2px solid var(--card-border) !important; border-radius:0 !important; box-shadow:2px 2px 0 rgba(0,0,0,.28) !important; }
+.lock-sub,.lock-hint{ font-family:var(--font-mono) !important; }
+
+/* ======================================================================= */
+
 </style>
 </head>
 <body>
