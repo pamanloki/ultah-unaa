@@ -165,12 +165,14 @@
   .player-overlay.show{ display:flex; animation:fadeIn .2s ease; }
   .player-overlay .pl-backdrop{ position:absolute; inset:0; background:rgba(43,33,24,.55); backdrop-filter:blur(2px); }
   .player-card{ position:relative; width:100%; max-width:330px; background:var(--bg-panel);
-    border-radius:16px; padding:18px 16px 16px; z-index:2; animation:pop .3s ease; }
-  .player-card::before{ content:""; position:absolute; inset:0; border:2px solid var(--line);
-    border-radius:inherit; filter:url(#sketchy); pointer-events:none; }
-  .pl-close{ position:absolute; top:-14px; right:-14px; width:32px; height:32px; border-radius:50%;
-    background:var(--bg-panel); color:var(--text); border:1.5px solid var(--line); font-size:15px;
-    display:flex; align-items:center; justify-content:center; z-index:3; cursor:pointer; }
+    border:2.5px solid var(--text); border-radius:3px; padding:18px 16px 16px; z-index:2;
+    animation:pop .3s ease; box-shadow:6px 7px 0 rgba(43,33,24,.22); }
+  .player-card::before{ content:""; position:absolute; inset:0; border:2.5px solid var(--text);
+    border-radius:3px; filter:url(#sketchy); pointer-events:none; }
+  .pl-close{ position:absolute; top:-13px; right:-13px; width:30px; height:30px; border-radius:50%;
+    background:var(--bg-panel); color:var(--text); border:2px solid var(--text); font-size:14px;
+    display:flex; align-items:center; justify-content:center; z-index:4; cursor:pointer;
+    box-shadow:2px 2px 0 rgba(43,33,24,.2); }
   .pl-screen-label{ font-family:var(--font-mono); font-size:10px; letter-spacing:.1em; text-transform:uppercase;
     color:var(--gold); text-align:center; margin-bottom:12px; }
   .pl-vinyl{ width:150px; height:150px; margin:0 auto 14px; border-radius:50%; position:relative;
@@ -229,13 +231,19 @@
   .chest-overlay{ position:fixed; inset:0; z-index:47; display:none; align-items:center; justify-content:center; padding:22px; }
   .chest-overlay.show{ display:flex; animation:fadeIn .2s ease; }
   .chest-overlay .ch-backdrop{ position:absolute; inset:0; background:rgba(43,33,24,.6); backdrop-filter:blur(2px); }
-  .chest-card{ position:relative; width:100%; max-width:330px; background:var(--bg-panel); border-radius:16px;
-    padding:20px 18px 18px; z-index:2; animation:pop .3s ease; text-align:center; }
-  .chest-card::before{ content:""; position:absolute; inset:0; border:2px solid var(--line); border-radius:inherit;
+  .chest-card{ position:relative; width:100%; max-width:330px; background:var(--bg-panel);
+    border:2.5px solid var(--text); border-radius:3px;
+    padding:20px 18px 18px; z-index:2; animation:pop .3s ease; text-align:center;
+    box-shadow:6px 7px 0 rgba(43,33,24,.22); }
+  .chest-card::before{ content:""; position:absolute; inset:0; border:2.5px solid var(--text); border-radius:3px;
     filter:url(#sketchy); pointer-events:none; }
-  .ch-close{ position:absolute; top:-14px; right:-14px; width:32px; height:32px; border-radius:50%;
-    background:var(--bg-panel); color:var(--text); border:1.5px solid var(--line); font-size:15px;
-    display:flex; align-items:center; justify-content:center; z-index:3; cursor:pointer; }
+  .chest-card::after{ content:""; position:absolute; top:-11px; left:50%; width:112px; height:22px;
+    transform:translateX(-50%) rotate(-3deg); background:rgba(168,118,58,.35);
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.25); }
+  .ch-close{ position:absolute; top:-13px; right:-13px; width:30px; height:30px; border-radius:50%;
+    background:var(--bg-panel); color:var(--text); border:2px solid var(--text); font-size:14px;
+    display:flex; align-items:center; justify-content:center; z-index:4; cursor:pointer;
+    box-shadow:2px 2px 0 rgba(43,33,24,.2); }
   .ch-img{ width:150px; height:auto; margin:4px auto 10px; display:block; image-rendering:pixelated;
     filter:drop-shadow(0 6px 14px rgba(43,33,24,.35)); }
   .ch-img.shake{ animation:shake .4s ease; }
@@ -272,9 +280,10 @@
   .letter-text .ttd{ margin-top:12px; font-family:var(--font-display); font-style:italic; color:#7a4a24; }
   .heart-icon{ display:inline-block; animation:heartBeat 1s ease-in-out infinite; }
   @keyframes heartBeat{ 0%,100%{ transform:scale(1);} 50%{ transform:scale(1.25);} }
-  .letter-close{ position:absolute; top:-14px; right:-14px; width:34px; height:34px; border-radius:50%;
-    background:var(--bg-panel); color:var(--text); border:1.5px solid var(--line); font-size:16px;
-    display:flex; align-items:center; justify-content:center; z-index:3; cursor:pointer; }
+  .letter-close{ position:absolute; top:-13px; right:-13px; width:32px; height:32px; border-radius:50%;
+    background:var(--bg-panel); color:var(--text); border:2px solid var(--text); font-size:15px;
+    display:flex; align-items:center; justify-content:center; z-index:4; cursor:pointer;
+    box-shadow:2px 2px 0 rgba(43,33,24,.2); }
 
   /* ---------- OVERLAY UI (nempel di layar, nggak ikut geser) ---------- */
   .banner{ position:fixed; top:0; left:0; right:0; text-align:center; padding:14px 16px 24px;
@@ -292,25 +301,30 @@
     display:none; align-items:center; justify-content:center; padding:24px; z-index:30; }
   .modal-overlay.show{ display:flex; animation:fadeIn .2s ease; }
   @keyframes fadeIn{ from{opacity:0;} to{opacity:1;} }
-  .modal-card{ position:relative; max-width:308px; width:100%; background:var(--bg-panel);
-    border:1px solid var(--line); border-radius:18px; padding:16px;
-    box-shadow:0 18px 44px rgba(43,33,24,0.30); animation:pop .25s ease; white-space:normal; }
-  .modal-art{ background:linear-gradient(160deg,#fbf3df,#f0e1c1);
-    border:1px solid var(--line); border-radius:14px;
-    padding:22px 12px 18px; display:flex; flex-direction:column; align-items:center; gap:9px; position:relative; }
-  .modal-icon{ width:60px; height:60px; border-radius:50%; background:rgba(162,59,46,0.10);
+  .modal-card{ position:relative; max-width:312px; width:100%; background:var(--bg-panel);
+    border:2.5px solid var(--text); border-radius:3px; padding:22px 18px 18px;
+    box-shadow:6px 7px 0 rgba(43,33,24,.22); animation:pop .25s ease; white-space:normal; }
+  .modal-card::before{ content:""; position:absolute; inset:0; border:2.5px solid var(--text);
+    border-radius:3px; filter:url(#sketchy); pointer-events:none; }
+  .modal-card::after{ content:""; position:absolute; top:-11px; left:50%; width:112px; height:22px;
+    transform:translateX(-50%) rotate(-3deg); background:rgba(168,118,58,.35);
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.25); }
+  .modal-art{ background:none; border:none; border-radius:0;
+    padding:2px 2px 0; display:flex; flex-direction:column; align-items:center; gap:7px; position:relative; }
+  .modal-icon{ width:auto; height:auto; border-radius:0; background:none;
     display:flex; align-items:center; justify-content:center; }
-  .modal-icon svg{ width:32px; height:32px; color:var(--blush); }
-  .modal-title{ font-family:var(--font-display); font-weight:600; font-size:18px; color:var(--text); }
+  .modal-icon svg{ width:30px; height:30px; color:var(--blush); }
+  .modal-title{ font-family:var(--font-display); font-weight:700; font-size:19px; color:var(--text); text-align:center; }
   .modal-num{ font-family:var(--font-mono); font-size:10px; letter-spacing:.04em; color:var(--text-muted); }
-  .modal-text-box{ background:var(--bg-panel-2); border:1px solid var(--line); border-radius:12px;
-    padding:14px 15px; margin-top:12px; position:relative; }
-  .modal-text{ font-size:14px; line-height:1.65; color:var(--text); position:relative; }
+  .modal-text-box{ background:none; border:none; border-top:1.5px dashed rgba(43,33,24,.24); border-radius:0;
+    padding:13px 2px 2px; margin-top:13px; position:relative; }
+  .modal-text{ font-size:14px; line-height:1.7; color:var(--text); position:relative; }
   .modal-text .ttd{ display:block; margin-top:10px; font-family:var(--font-display); font-style:italic;
     color:var(--blush); text-align:right; }
-  .modal-close{ position:absolute; top:-14px; right:-14px; width:32px; height:32px; border-radius:50%;
-    background:var(--bg-panel); color:var(--text); border:1.5px solid var(--line); font-size:15px;
-    display:flex; align-items:center; justify-content:center; z-index:2; cursor:pointer; }
+  .modal-close{ position:absolute; top:-13px; right:-13px; width:30px; height:30px; border-radius:50%;
+    background:var(--bg-panel); color:var(--text); border:2px solid var(--text); font-size:14px;
+    display:flex; align-items:center; justify-content:center; z-index:4; cursor:pointer;
+    box-shadow:2px 2px 0 rgba(43,33,24,.2); }
   @keyframes pop{ from{opacity:0; transform:translateY(6px) scale(0.97);} to{opacity:1; transform:translateY(0) scale(1);} }
 
   /* ---------- SAKLAR LAMPU (di dinding, sebelah foto) ---------- */

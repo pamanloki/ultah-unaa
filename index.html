@@ -44,13 +44,18 @@
     display:none; align-items:center; justify-content:center; padding:24px; z-index:20; }
   .lock-overlay.show{ display:flex; animation:fadeIn .2s ease; }
   @keyframes fadeIn{ from{opacity:0;} to{opacity:1;} }
-  .lock-card{ position:relative; width:100%; max-width:330px; background:var(--bg-panel); border-radius:18px;
-    padding:24px 20px 20px; text-align:center; box-shadow:0 20px 48px rgba(0,0,0,.4); animation:pop .28s ease; }
+  .lock-card{ position:relative; width:100%; max-width:320px; background:var(--bg-panel);
+    border:2.5px solid var(--text); border-radius:3px; padding:24px 20px 20px; text-align:center;
+    box-shadow:6px 7px 0 rgba(43,33,24,.24); animation:pop .28s ease; }
+  .lock-card::before{ content:""; position:absolute; inset:0; border:2.5px solid var(--text);
+    border-radius:3px; filter:url(#sketchy); pointer-events:none; }
+  .lock-card::after{ content:""; position:absolute; top:-11px; left:50%; width:112px; height:22px;
+    transform:translateX(-50%) rotate(-3deg); background:rgba(168,118,58,.35);
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.25); }
   @keyframes pop{ from{opacity:0; transform:translateY(8px) scale(.97);} to{opacity:1; transform:translateY(0) scale(1);} }
   .lock-card.shake{ animation:shake .4s ease; }
   @keyframes shake{ 0%,100%{transform:translateX(0);} 25%{transform:translateX(-8px);} 75%{transform:translateX(8px);} }
-  .lock-icon{ width:56px; height:56px; margin:0 auto 10px; border-radius:50%;
-    background:rgba(162,59,46,.1); display:flex; align-items:center; justify-content:center; font-size:26px; }
+  .lock-icon{ margin:0 auto 4px; font-size:30px; line-height:1; }
   .lock-title{ font-family:var(--font-display); font-weight:600; font-size:20px; color:var(--text); }
   .lock-sub{ font-family:var(--font-mono); font-size:11px; color:var(--text-muted); margin:8px 0 4px; line-height:1.5; }
   .lock-hint{ font-size:12px; color:var(--blush); margin-bottom:14px; }
@@ -64,9 +69,10 @@
     font-weight:600; cursor:pointer; font-size:14px; }
   .lock-go:hover{ filter:brightness(1.06); }
   .lock-err{ color:var(--blush); font-family:var(--font-mono); font-size:11px; min-height:16px; margin-top:10px; }
-  .lock-close{ position:absolute; top:-14px; right:-14px; width:32px; height:32px; border-radius:50%;
-    background:var(--bg-panel); color:var(--text); border:1.5px solid var(--line); font-size:15px;
-    display:flex; align-items:center; justify-content:center; cursor:pointer; }
+  .lock-close{ position:absolute; top:-13px; right:-13px; width:30px; height:30px; border-radius:50%;
+    background:var(--bg-panel); color:var(--text); border:2px solid var(--text); font-size:14px;
+    display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:4;
+    box-shadow:2px 2px 0 rgba(43,33,24,.2); }
 
   .enter-fade{ position:fixed; inset:0; background:#1c140c; z-index:40; opacity:0; pointer-events:none;
     transition:opacity .7s ease; }
@@ -74,6 +80,13 @@
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute">
+  <filter id="sketchy">
+    <feTurbulence type="fractalNoise" baseFrequency="0.045 0.09" numOctaves="2" seed="4" result="noise"/>
+    <feDisplacementMap in="SourceGraphic" in2="noise" scale="3.2"/>
+  </filter>
+</svg>
+
 <div class="viewport" id="viewport">
   <div class="stage" id="stage">
     <img class="room-bg" src="assets/depan.png" alt="Depan kamar">
@@ -89,7 +102,7 @@
   <div class="lock-card" id="lockCard">
     <button class="lock-close" id="lockClose">✕</button>
     <div class="lock-icon">🔒</div>
-    <div class="lock-title">Eh, kekunci 🔒</div>
+    <div class="lock-title">Eh, kekunci nih</div>
     <div class="lock-sub">ketik password dulu ya biar bisa masuk 😚</div>
     <div class="lock-hint">💡 Hint: <b>nama depan kamu</b></div>
     <div class="lock-form">
