@@ -423,6 +423,11 @@
 .q-hint::after{ border-top:5px solid var(--card-border) !important; bottom:-5px !important; }
 /* =================================================================== */
 
+
+/* ================= mode SIANG: sembunyikan kue, boneka, kucing, & quest-nya ================= */
+.bnk, .cat, .bubble, #chestObj, #paperObj, #bearHint, #catHint{ display:none !important; }
+/* ============================================================================= */
+
 </style>
 </head>
 <body>
@@ -594,7 +599,6 @@ const OBJECTS = [
   { id:'balon',   img:'assets/balon.png',    x:31, y:23, w:6.5, anim:'bob', static:true, title:'Balon' },
   { id:'foto',    img:'assets/elvira.png',     x:31, y:43, w:6,   anim:'glow',
     title:'Tentang Elvira', detail:'about' },
-  { id:'kue',     img:'assets/kue.png',      x:43, y:56, w:4.5, static:true, title:'Kue' },
 ];
 
 // isi harta karun (keluar dari kotak setelah password bener)
