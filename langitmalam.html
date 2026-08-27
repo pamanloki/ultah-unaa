@@ -30,8 +30,8 @@
   /* ---------- KEMBANG API ---------- */
   .fx-layer{ position:absolute; inset:0; pointer-events:none; z-index:3; }
   .firework{ position:absolute; width:0; height:0; }
-  .spark{ position:absolute; left:0; top:0; width:5px; height:5px; border-radius:50%;
-    background:var(--c,#ffd166); box-shadow:0 0 8px 1px var(--c,#ffd166);
+  .spark{ position:absolute; left:0; top:0; width:7px; height:7px; border-radius:50%;
+    background:var(--c,#ffd166); box-shadow:0 0 14px 3px var(--c,#ffd166);
     transform:rotate(var(--a)) translateY(0); opacity:1;
     animation:burst var(--dur,1.15s) ease-out forwards; }
   @keyframes burst{
@@ -63,6 +63,10 @@
     100%{ opacity:1; transform:translateY(0) scale(1); filter:brightness(1); } }
   @keyframes fadeUp{ from{ opacity:0; transform:translateY(16px);} to{ opacity:1; transform:translateY(0);} }
 
+  .greet .sub{ font-family:var(--font-display); font-style:italic; font-size:clamp(15px,3.8vw,24px);
+    color:#f7ead0; margin-top:16px; opacity:0; text-shadow:0 2px 12px rgba(0,0,0,.7); }
+  .greet .sub.show{ animation:fadeUp 1s ease forwards; }
+
   /* kilatan pas meledak */
   .flash{ position:fixed; inset:0; z-index:4; pointer-events:none;
     background:radial-gradient(circle at 50% 42%, rgba(255,240,200,.3), rgba(255,240,200,0) 55%);
@@ -83,11 +87,11 @@
 </div>
 
 <div class="greet">
-  <div class="eyebrow">✦ make a wish ✦</div>
   <h1 class="hbd">
     <span class="w">HAPPY</span> <span class="w">BIRTHDAY</span><br>
     <span class="w name">ELVIRA</span> <span class="w name">BUNGA</span> <span class="w name">NASUTION</span>
   </h1>
+  <div class="sub" id="subMsg">semoga apa yang kamu inginkan tercapai yaa, kak 🎉</div>
 </div>
 
 <a class="back" href="malam.html">← balik ke kamar</a>
@@ -132,7 +136,7 @@ function explode(x, y){
   const fw = document.createElement('div');
   fw.className = 'firework';
   fw.style.left = x + 'vw'; fw.style.top = y + 'vh';
-  const n = 26, radius = 80 + Math.random()*70;
+  const n = 40, radius = 140 + Math.random()*110;
   for (let i=0;i<n;i++){
     const sp = document.createElement('span');
     sp.className = 'spark';
@@ -160,12 +164,19 @@ function revealWord(i){ if (words[i]){ words[i].classList.add('show'); flash(); 
 let ambientOn = false;
 function startAmbient(){
   if (ambientOn) return; ambientOn = true;
-  setInterval(() => { randomShow(); if (Math.random() > .5) setTimeout(randomShow, 350); }, 1300);
+  setInterval(() => {
+    randomShow();
+    if (Math.random() > .35) setTimeout(randomShow, 280);
+    if (Math.random() > .6)  setTimeout(randomShow, 560);
+  }, 900);
 }
 
 let wi = 0;
 function nextShot(){
-  if (wi >= words.length){ setTimeout(startAmbient, 700); return; }
+  if (wi >= words.length){
+    const sub = document.getElementById('subMsg'); if (sub) sub.classList.add('show');
+    setTimeout(startAmbient, 500); return;
+  }
   launchFirework(45 + Math.random()*10, 22 + Math.random()*16);  // roket dari tengah-bawah
   setTimeout(() => { revealWord(wi); wi++; setTimeout(nextShot, 1050); }, 750);  // reveal pas meledak
 }
