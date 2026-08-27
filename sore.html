@@ -451,9 +451,10 @@
     <img class="room-bg" id="roomBg" src="assets/room1.png" alt="kamar">
     <!-- objek diisi lewat JS -->
     <button class="hotspot" id="mapHotspot" aria-label="Peta" style="left:50.5%; top:34%; width:17.5%; height:17%;"></button>
-    <div class="map-tip" id="mapTip" style="left:50.5%; top:26%;">Bekasi &middot; colek aku</div>
+    <div class="map-tip" id="mapTip" style="left:50.5%; top:26%;">peta bekasi</div>
     <button class="hotspot" id="screenHotspot" aria-label="Layar" style="left:51%; top:47%; width:9%; height:11%;"></button>
-    <div class="map-tip" id="screenTip" style="left:51%; top:40%;">Setel musik &middot; colek aku</div>
+    <div class="map-tip" id="screenTip" style="left:51%; top:40%;">setel musik</div>
+    <div class="map-tip" id="fotoTip" style="left:31%; top:35%;">about me</div>
 
     <!-- SAKLAR di dinding, sebelah foto -->
     <button class="saklar" id="saklar" aria-label="Saklar lampu" style="left:22%; top:45%; width:10%;">
@@ -637,6 +638,7 @@ OBJECTS.forEach(o => {
   btn.className = 'obj' + (o.anim ? ' anim-' + o.anim : '');
   btn.style.left = o.x + '%'; btn.style.top = o.y + '%'; btn.style.width = o.w + '%';
   btn.setAttribute('aria-label', o.title);
+  if (o.detail) btn.id = 'fotoObj';
   btn.innerHTML = `<img src="${o.img}" alt="${o.title}">`;
   btn.addEventListener('click', () => {
     if (viewport._drag) return;
@@ -829,6 +831,13 @@ const screenHotspot = document.getElementById('screenHotspot');
 const screenTip = document.getElementById('screenTip');
 screenHotspot.addEventListener('mouseenter', () => screenTip.classList.add('show'));
 screenHotspot.addEventListener('mouseleave', () => screenTip.classList.remove('show'));
+
+const fotoObj = document.getElementById('fotoObj');
+const fotoTip = document.getElementById('fotoTip');
+if (fotoObj && fotoTip){
+  fotoObj.addEventListener('mouseenter', () => fotoTip.classList.add('show'));
+  fotoObj.addEventListener('mouseleave', () => fotoTip.classList.remove('show'));
+}
 screenHotspot.addEventListener('click', () => {
   if (viewport._drag) return;
   screenTip.classList.remove('show');
