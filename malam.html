@@ -427,6 +427,14 @@
 .q-hint::after{ border-top:5px solid var(--card-border) !important; bottom:-5px !important; }
 /* =================================================================== */
 
+
+/* ============ hilangin kotak/glow highlight (tetep bisa diklik) ============ */
+.hotspot, .obj, .hotspot:focus, .obj:focus, .hotspot:focus-visible, .obj:focus-visible{ outline:none !important; }
+.hotspot::after, .hotspot:hover::after, .hotspot:focus-visible::after,
+.obj::after, .obj:hover::after, .obj:focus-visible::after{ box-shadow:none !important; }
+.anim-glow{ animation:none !important; }
+/* ========================================================================= */
+
 </style>
 </head>
 <body>
