@@ -50,15 +50,24 @@
   .greet .eyebrow{ font-family:var(--font-mono); letter-spacing:.32em; text-transform:uppercase;
     font-size:clamp(10px,2.6vw,14px); color:#ffd9a0; opacity:0; animation:fadeUp .8s ease .3s forwards;
     text-shadow:0 2px 8px rgba(0,0,0,.6); }
-  .greet h1{ font-family:var(--font-display); font-weight:700; line-height:1.06;
-    font-size:clamp(30px,8.5vw,86px); margin:10px 0 6px; color:#ffe9c2;
-    text-shadow:0 0 16px rgba(255,209,102,.65), 0 0 44px rgba(255,140,180,.4), 0 3px 0 rgba(0,0,0,.4);
-    animation:fadeUp .9s ease .15s both; }
-  .greet .name{ display:block; font-size:clamp(26px,9vw,94px); color:#ffd7e6;
+  .greet h1{ font-family:var(--font-display); font-weight:700; line-height:1.1;
+    font-size:clamp(30px,8vw,82px); margin:8px 0 0; color:#ffe9c2; }
+  .hbd .w{ display:inline-block; opacity:0; will-change:transform,opacity;
+    text-shadow:0 0 16px rgba(255,209,102,.6), 0 0 44px rgba(255,140,180,.4), 0 3px 0 rgba(0,0,0,.4); }
+  .hbd .name{ color:#ffd7e6; font-size:clamp(26px,8.4vw,88px);
     text-shadow:0 0 16px rgba(255,160,190,.6), 0 0 44px rgba(160,200,255,.4), 0 3px 0 rgba(0,0,0,.4); }
-  .greet .sub{ font-family:var(--font-display); font-style:italic; font-size:clamp(14px,3.6vw,22px);
-    color:#f3e9d0; opacity:0; animation:fadeUp .9s ease .6s forwards; text-shadow:0 2px 10px rgba(0,0,0,.6); }
+  .hbd .w.show{ animation:wordPop .7s cubic-bezier(.2,1.5,.4,1) forwards; }
+  @keyframes wordPop{
+    0%{ opacity:0; transform:translateY(14px) scale(.5); filter:brightness(2.2); }
+    60%{ opacity:1; transform:translateY(0) scale(1.12); }
+    100%{ opacity:1; transform:translateY(0) scale(1); filter:brightness(1); } }
   @keyframes fadeUp{ from{ opacity:0; transform:translateY(16px);} to{ opacity:1; transform:translateY(0);} }
+
+  /* kilatan pas meledak */
+  .flash{ position:fixed; inset:0; z-index:4; pointer-events:none;
+    background:radial-gradient(circle at 50% 42%, rgba(255,240,200,.3), rgba(255,240,200,0) 55%);
+    animation:flashPop .26s ease forwards; }
+  @keyframes flashPop{ from{ opacity:1; } to{ opacity:0; } }
 
   .back{ position:fixed; bottom:18px; left:50%; transform:translateX(-50%); z-index:6;
     font-family:var(--font-mono); font-size:12px; color:#f3e2bb; text-decoration:none;
@@ -75,8 +84,10 @@
 
 <div class="greet">
   <div class="eyebrow">✦ make a wish ✦</div>
-  <h1>HAPPY BIRTHDAY<span class="name">ELVIRA BUNGA NASUTION</span></h1>
-  <div class="sub">semoga semua maumu meluncur setinggi kembang api ini ya 🎆</div>
+  <h1 class="hbd">
+    <span class="w">HAPPY</span> <span class="w">BIRTHDAY</span><br>
+    <span class="w name">ELVIRA</span> <span class="w name">BUNGA</span> <span class="w name">NASUTION</span>
+  </h1>
 </div>
 
 <a class="back" href="malam.html">← balik ke kamar</a>
@@ -135,8 +146,30 @@ function explode(x, y){
   setTimeout(() => fw.remove(), 1700);
 }
 function randomShow(){ launchFirework(12 + Math.random()*76, 18 + Math.random()*42); }
-[0, 500, 1000].forEach(d => setTimeout(randomShow, d));
-setInterval(() => { randomShow(); if (Math.random() > .5) setTimeout(randomShow, 350); }, 1300);
+
+/* ---------- kilatan pas 'duar' ---------- */
+function flash(){
+  const f = document.createElement('div'); f.className = 'flash';
+  document.body.appendChild(f); setTimeout(() => f.remove(), 280);
+}
+
+/* ---------- urutan: tiap roket meledak -> muncul 1 kata ---------- */
+const words = document.querySelectorAll('.hbd .w');
+function revealWord(i){ if (words[i]){ words[i].classList.add('show'); flash(); } }
+
+let ambientOn = false;
+function startAmbient(){
+  if (ambientOn) return; ambientOn = true;
+  setInterval(() => { randomShow(); if (Math.random() > .5) setTimeout(randomShow, 350); }, 1300);
+}
+
+let wi = 0;
+function nextShot(){
+  if (wi >= words.length){ setTimeout(startAmbient, 700); return; }
+  launchFirework(45 + Math.random()*10, 22 + Math.random()*16);  // roket dari tengah-bawah
+  setTimeout(() => { revealWord(wi); wi++; setTimeout(nextShot, 1050); }, 750);  // reveal pas meledak
+}
+setTimeout(nextShot, 900);  // mulai bentar setelah kebuka
 
 document.getElementById('sky').addEventListener('pointerdown', e => {
   explode(e.clientX / window.innerWidth * 100, Math.max(8, e.clientY / window.innerHeight * 100));
