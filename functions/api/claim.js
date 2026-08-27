@@ -16,9 +16,12 @@ function json(obj, status) {
 
 export async function onRequestPost(context) {
   const { request, env } = context;
-  const token = env.TELEGRAM_BOT_TOKEN;
-  const chatId = env.TELEGRAM_CHAT_ID;
-  if (!token || !chatId) return json({ ok: false, error: 'not_configured' }, 500);
+  const token = (env.TELEGRAM_BOT_TOKEN || '').trim();
+  const chatId = (env.TELEGRAM_CHAT_ID || '').trim();
+  if (!token || !chatId) {
+    return json({ ok: false, error: 'not_configured',
+      missing: [!token && 'TELEGRAM_BOT_TOKEN', !chatId && 'TELEGRAM_CHAT_ID'].filter(Boolean) }, 500);
+  }
 
   let body = {};
   try { body = await request.json(); } catch { body = {}; }
