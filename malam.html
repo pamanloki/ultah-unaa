@@ -516,6 +516,28 @@
   display:flex; align-items:center; justify-content:center; box-shadow:2px 2px 0 rgba(0,0,0,.3); cursor:pointer; }
 /* ==================================================== */
 
+
+/* ====== buku: animasi buka halaman ====== */
+.book{ display:block !important; position:relative; height:min(80vh,580px); max-height:none; perspective:2200px; }
+.leaf{ position:absolute; inset:0; display:flex; }
+.leaf[hidden]{ display:none !important; }
+.turner{ position:absolute; top:0; bottom:0; left:50%; right:0; transform-origin:left center;
+  background:linear-gradient(90deg,#ece0c4,#f7f0de);
+  box-shadow:inset 10px 0 16px rgba(0,0,0,.07), -8px 0 16px rgba(0,0,0,.14);
+  z-index:6; display:none; backface-visibility:hidden; }
+@keyframes pgFwd{ from{ transform:rotateY(0); } to{ transform:rotateY(-178deg); } }
+@keyframes pgBack{ from{ transform:rotateY(-178deg); } to{ transform:rotateY(0); } }
+.fentry{ text-align:center; margin:4px 0 16px; }
+.fentry .fimg{ width:98px; height:98px; object-fit:contain; image-rendering:pixelated; display:block; margin:0 auto;
+  background:#efe0be; border:2px solid #6f4a25; box-shadow:2px 2px 0 rgba(0,0,0,.2); }
+.fentry .fname{ font-family:var(--font-mono); font-weight:700; font-size:13px; margin-top:6px; color:#2f1d0c; }
+.fentry .fcap{ font-family:"Caveat",cursive; font-size:19px; line-height:1.15; color:#883f27; margin-top:2px; }
+.jr-home{ position:absolute; left:14px; bottom:12px; z-index:7; font-family:var(--font-mono); font-size:12px;
+  background:linear-gradient(#b6813f,#8a5a2b); color:#fff5df; border:2px solid #2a1809; padding:7px 14px;
+  box-shadow:2px 2px 0 rgba(0,0,0,.3); cursor:pointer; }
+.jr-home:active{ transform:translateY(1px); }
+/* ======================================== */
+
 </style>
 </head>
 <body>
@@ -644,32 +666,31 @@
 <!-- JURNAL KESUKAAN -->
 <div class="journal-overlay" id="journalOverlay">
   <div class="jr-backdrop" id="jrBackdrop"></div>
-  <div class="book">
+  <div class="book" id="book">
     <button class="jr-close" id="jrClose">✕</button>
-    <div class="page left">
+    <div class="leaf" id="leafMenu">
+      <div class="page left">
       <div class="jr-head">Favorit Elvira 💛</div>
       <button class="jr-card" data-cat="makanan" style="--rot:-2deg"><span class="tape"></span><span class="cat-big">MAKANAN</span></button>
       <button class="jr-card" data-cat="minuman" style="--rot:1.6deg"><span class="tape"></span><span class="cat-big">MINUMAN</span></button>
       <button class="jr-card" data-cat="musik" style="--rot:-1deg"><span class="tape"></span><span class="cat-big">MUSIK</span></button>
-    </div>
-    <div class="spiral"></div>
-    <div class="page right">
+      </div>
+      <div class="spiral"></div>
+      <div class="page right">
       <div class="jr-head">&nbsp;</div>
       <button class="jr-card" data-cat="band" style="--rot:2deg"><span class="tape"></span><span class="cat-big">GRUP / BAND</span></button>
       <button class="jr-card" data-cat="film" style="--rot:-1.6deg"><span class="tape"></span><span class="cat-big">FILM</span></button>
       <button class="jr-card" data-cat="kartun" style="--rot:1deg"><span class="tape"></span><span class="cat-big">KARTUN</span></button>
       <button class="jr-card" data-cat="serem" style="--rot:-2deg"><span class="tape"></span><span class="cat-big">SEREM</span></button>
+      </div>
     </div>
-  </div>
-</div>
-
-<!-- KERTAS DETAIL kategori -->
-<div class="paper-overlay" id="paperOverlay">
-  <div class="paper-backdrop" id="paperBackdrop"></div>
-  <div class="paper-note">
-    <button class="paper-close" id="paperClose">✕</button>
-    <div class="paper-title" id="paperTitle"></div>
-    <div class="paper-body" id="paperBody"></div>
+    <div class="leaf" id="leafDetail" hidden>
+      <div class="page left" id="detailLeft"></div>
+      <div class="spiral"></div>
+      <div class="page right" id="detailRight"></div>
+      <button class="jr-home" id="jrHome">← menu</button>
+    </div>
+    <div class="turner" id="turner"></div>
   </div>
 </div>
 
@@ -1241,16 +1262,30 @@ windowHotspot.addEventListener('mouseenter', () => windowTip.classList.add('show
 
 /* ---------- confetti ---------- */
 const journalOverlay = document.getElementById('journalOverlay');
-function openJournal(){ journalOverlay.classList.add('show'); if (typeof hintTap!=='undefined') hintTap.style.opacity=0; burstConfetti(14); }
+const leafMenu = document.getElementById('leafMenu');
+const leafDetail = document.getElementById('leafDetail');
+const detailLeft = document.getElementById('detailLeft');
+const detailRight = document.getElementById('detailRight');
+const turner = document.getElementById('turner');
+let flipping = false;
+
+function openJournal(){
+  leafDetail.hidden = true; leafMenu.hidden = false;
+  journalOverlay.classList.add('show');
+  if (typeof hintTap !== 'undefined') hintTap.style.opacity = 0;
+  burstConfetti(14);
+}
 function closeJournal(){ journalOverlay.classList.remove('show'); }
 document.getElementById('jrClose').addEventListener('click', closeJournal);
 document.getElementById('jrBackdrop').addEventListener('click', closeJournal);
 
-/* ---------- detail kategori (kertas) ---------- */
+/* isi tiap kategori — keterangan (cap) tinggal diedit */
 const CATS = {
-  makanan:{ title:'🍗 Makanan', note:'seringnya mama masak ayam 🥰',
-    foods:[{img:'assets/ayam.png',label:'Ayam'},{img:'assets/bihun.png',label:'Bihun'},
-           {img:'assets/mie.png',label:'Mie kuning'},{img:'assets/miesedaap.png',label:'Mie Sedaap'}] },
+  makanan:{ title:'🍗 Makanan', foods:[
+    {img:'assets/ayam.png',      label:'Ayam',       cap:'seringnya mama masak ayam 🥰'},
+    {img:'assets/bihun.png',     label:'Bihun',      cap:'(keterangan menyusul ~)'},
+    {img:'assets/mie.png',       label:'Mie kuning', cap:'(keterangan menyusul ~)'},
+    {img:'assets/miesedaap.png', label:'Mie Sedaap', cap:'(keterangan menyusul ~)'} ] },
   minuman:{ title:'🥤 Minuman', note:'wajib ada es krim! 🍦',
     list:['air putih','jus mangga / alpukat','kopi susu','teh susu','es krim'] },
   musik:{ title:'🎵 Musik', note:'nyanyi bareng yuk 🎶',
@@ -1264,26 +1299,50 @@ const CATS = {
   serem:{ title:'👻 Serem', note:'berani-berani takut 👀',
     list:['Final Destination'] },
 };
-const paperOverlay = document.getElementById('paperOverlay');
-const paperTitle = document.getElementById('paperTitle');
-const paperBody = document.getElementById('paperBody');
-function openCat(key){
-  const d = CATS[key]; if (!d) return;
-  paperTitle.innerHTML = d.title;
-  let html = '';
-  if (d.foods) html += '<div class="paper-foods">' + d.foods.map(f =>
-    '<div class="food"><img class="fimg" src="'+f.img+'" alt="'+f.label+'" onerror="this.style.display=\'none\'"><div class="flab">'+f.label+'</div></div>').join('') + '</div>';
-  if (d.list) html += '<ul class="paper-list">' + d.list.map(x => '<li>'+x+'</li>').join('') + '</ul>';
-  if (d.note) html += '<div class="paper-note-hand">\u270E ' + d.note + '</div>';
-  paperBody.innerHTML = html;
-  paperOverlay.classList.add('show'); burstConfetti(8);
+
+function foodCell(f){
+  return '<div class="fentry">' +
+    '<img class="fimg" src="'+f.img+'" alt="'+f.label+'" onerror="this.style.display=\'none\'">' +
+    '<div class="fname">'+f.label+'</div>' +
+    '<div class="fcap">'+(f.cap||'')+'</div></div>';
 }
-function closeCat(){ paperOverlay.classList.remove('show'); }
-document.getElementById('paperClose').addEventListener('click', closeCat);
-document.getElementById('paperBackdrop').addEventListener('click', closeCat);
-document.querySelectorAll('.jr-card[data-cat]').forEach(btn => {
-  btn.addEventListener('click', () => { if (!viewport._drag) openCat(btn.dataset.cat); });
+function renderDetail(key){
+  const d = CATS[key]; if (!d) return;
+  let L = '<div class="jr-head">'+d.title+'</div>';
+  let R = '<div class="jr-head">&nbsp;</div>';
+  if (d.foods){
+    if (d.foods[0]) L += foodCell(d.foods[0]);
+    if (d.foods[1]) L += foodCell(d.foods[1]);
+    if (d.foods[2]) R += foodCell(d.foods[2]);
+    if (d.foods[3]) R += foodCell(d.foods[3]);
+  } else {
+    L += '<ul class="paper-list">' + d.list.map(function(x){return '<li>'+x+'</li>';}).join('') + '</ul>';
+    R += '<div class="paper-note-hand">✎ ' + d.note + '</div>';
+  }
+  detailLeft.innerHTML = L; detailRight.innerHTML = R;
+}
+function playFlip(name, swap){
+  flipping = true;
+  turner.style.display = 'block';
+  turner.style.animation = 'none'; void turner.offsetWidth;
+  turner.style.animation = name + ' .7s ease forwards';
+  setTimeout(swap, 340);
+  setTimeout(function(){ turner.style.display = 'none'; flipping = false; }, 720);
+}
+function openCat(key){
+  if (flipping) return;
+  renderDetail(key);
+  playFlip('pgFwd', function(){ leafMenu.hidden = true; leafDetail.hidden = false; });
+}
+function backToMenu(){
+  if (flipping) return;
+  playFlip('pgBack', function(){ leafDetail.hidden = true; leafMenu.hidden = false; });
+}
+document.getElementById('jrHome').addEventListener('click', backToMenu);
+document.querySelectorAll('.jr-card[data-cat]').forEach(function(btn){
+  btn.addEventListener('click', function(){ if (!viewport._drag) openCat(btn.dataset.cat); });
 });
+
 
 function burstConfetti(n){
   const colors=['#a8763a','#a23b2e','#f8f0dd','#e7d7ae'];
