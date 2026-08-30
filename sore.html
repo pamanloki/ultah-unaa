@@ -436,6 +436,7 @@
 .anim-glow{ animation:none !important; }
 /* ========================================================================= */
 
+.modal-text-box{ max-height:56vh; overflow-y:auto; }
 </style>
 </head>
 <body>
@@ -455,6 +456,8 @@
     <button class="hotspot" id="screenHotspot" aria-label="Layar" style="left:51%; top:47%; width:9%; height:11%;"></button>
     <div class="map-tip" id="screenTip" style="left:51%; top:40%;">setel musik</div>
     <div class="map-tip" id="fotoTip" style="left:31%; top:35%;">about me</div>
+    <button class="hotspot" id="shelfHotspot" aria-label="Lemari buku" style="left:85%; top:54%; width:25%; height:58%;"></button>
+    <div class="map-tip" id="shelfTip" style="left:85%; top:23%;">kesukaan elvira</div>
 
     <!-- SAKLAR di dinding, sebelah foto -->
     <button class="saklar" id="saklar" aria-label="Saklar lampu" style="left:22%; top:45%; width:10%;">
@@ -837,6 +840,26 @@ const fotoTip = document.getElementById('fotoTip');
 if (fotoObj && fotoTip){
   fotoObj.addEventListener('mouseenter', () => fotoTip.classList.add('show'));
   fotoObj.addEventListener('mouseleave', () => fotoTip.classList.remove('show'));
+}
+
+const shelfHotspot = document.getElementById('shelfHotspot');
+const shelfTip = document.getElementById('shelfTip');
+if (shelfHotspot && shelfTip){
+  shelfHotspot.addEventListener('mouseenter', () => shelfTip.classList.add('show'));
+  shelfHotspot.addEventListener('mouseleave', () => shelfTip.classList.remove('show'));
+  shelfHotspot.addEventListener('click', () => {
+    if (viewport._drag) return;
+    shelfTip.classList.remove('show');
+    openModal('Favorit Elvira \uD83D\uDC9B', '<span style="font-size:26px">\uD83D\uDCDA</span>',
+      'ada banyak yaa maunya \uD83D\uDE06<br><br>' +
+      '\uD83C\uDF57 <b>Makanan</b><br>ayam, bihun, mie kuning (Mie Sedaap)<br><br>' +
+      '\uD83E\uDD64 <b>Minuman</b><br>air putih, jus mangga/alpukat, kopi susu, teh susu, es krim<br><br>' +
+      '\uD83C\uDFB5 <b>Musik</b><br>genre R&amp;B \u2014 suka lagu yang enak dinyanyiin<br><br>' +
+      '\uD83C\uDFA4 <b>Grup/Band</b><br>Day6, NCT, CORTIS (katanya adiknya BTS wkwk) \u2014 pokoknya K-pop<br><br>' +
+      '\uD83C\uDFAC <b>Film</b><br>wajib happy ending (anti sad ending!), apalagi drakor \uD83D\uDC98<br><br>' +
+      '\uD83D\uDCFA <b>Kartun</b><br>Studio Ghibli<br><br>' +
+      '\uD83D\uDC7B <b>Serem</b><br>Final Destination');
+  });
 }
 screenHotspot.addEventListener('click', () => {
   if (viewport._drag) return;
