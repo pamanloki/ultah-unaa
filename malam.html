@@ -482,6 +482,40 @@
 }
 /* ========================================================= */
 
+
+/* ====== kartu jadi judul besar yang bisa diklik ====== */
+.jr-card{ display:flex; align-items:center; justify-content:center; min-height:66px;
+  width:calc(100% - 12px); cursor:pointer; -webkit-appearance:none; appearance:none; font:inherit; }
+.jr-card:hover{ filter:brightness(1.06); }
+.jr-card:active{ transform:rotate(var(--rot,-1.5deg)) scale(.98); }
+.cat-big{ font-family:var(--font-display); font-weight:700; font-size:clamp(20px,3.4vw,28px);
+  letter-spacing:.06em; color:#2f1d0c; text-shadow:0 1px 0 rgba(255,255,255,.25); }
+
+/* ====== KERTAS detail kategori ====== */
+.paper-overlay{ position:fixed; inset:0; z-index:34; display:none; align-items:center; justify-content:center; padding:20px; }
+.paper-overlay.show{ display:flex; animation:fadeIn .2s ease; }
+.paper-backdrop{ position:absolute; inset:0; background:rgba(43,33,24,.55); backdrop-filter:blur(2px); }
+.paper-note{ position:relative; z-index:2; width:min(430px,94vw); max-height:84vh; overflow-y:auto;
+  background:repeating-linear-gradient(#fbf3dd 0 27px, rgba(120,90,50,.13) 27px 28px), #fbf3dd;
+  border:2px solid #6f4a25; box-shadow:0 0 0 5px #caa06a, 0 0 0 8px #2a1809, 10px 12px 0 rgba(0,0,0,.32);
+  padding:22px 20px 22px; animation:pop .28s ease; color:#3a2610; }
+.paper-title{ font-family:var(--font-display); font-weight:700; font-size:22px; color:#5a3a1c; text-align:center; margin-bottom:14px; }
+.paper-list{ list-style:none; margin:2px 0; }
+.paper-list li{ font-family:var(--font-mono); font-size:14px; padding:8px 0 8px 26px; position:relative;
+  border-bottom:1px dashed rgba(90,60,30,.3); }
+.paper-list li::before{ content:"\2713"; position:absolute; left:5px; color:#a23b2e; }
+.paper-foods{ display:flex; flex-wrap:wrap; gap:12px; justify-content:center; margin:2px 0 4px; }
+.food{ width:90px; text-align:center; }
+.food .fimg{ width:84px; height:84px; object-fit:contain; image-rendering:pixelated; display:block; margin:0 auto;
+  background:#efe0be; border:2px solid #6f4a25; box-shadow:2px 2px 0 rgba(0,0,0,.2); }
+.food .flab{ font-family:var(--font-mono); font-size:11px; margin-top:5px; color:#3a2610; }
+.paper-note-hand{ font-family:"Caveat",cursive; font-size:22px; color:#883f27; text-align:center;
+  margin-top:16px; transform:rotate(-1.2deg); }
+.paper-close{ position:absolute; top:8px; right:10px; width:30px; height:30px; z-index:3; border-radius:0;
+  background:linear-gradient(#b6813f,#8a5a2b); color:#fff5df; border:2px solid #2a1809; font-size:14px;
+  display:flex; align-items:center; justify-content:center; box-shadow:2px 2px 0 rgba(0,0,0,.3); cursor:pointer; }
+/* ==================================================== */
+
 </style>
 </head>
 <body>
@@ -614,46 +648,28 @@
     <button class="jr-close" id="jrClose">✕</button>
     <div class="page left">
       <div class="jr-head">Favorit Elvira 💛</div>
-      <div class="jr-card" style="--rot:-2deg"><span class="tape"></span>
-        <div class="ct">🍗 Makanan</div>
-        <div class="ci">ayam, bihun, mie kuning (Mie Sedaap)</div>
-        <div class="jr-note">seringnya mama masak ayam 🥰</div>
-      </div>
-      <div class="jr-card" style="--rot:1.6deg"><span class="tape"></span>
-        <div class="ct">🥤 Minuman</div>
-        <div class="ci">air putih, jus mangga/alpukat, kopi susu, teh susu, es krim</div>
-        <div class="jr-note">wajib ada es krim! 🍦</div>
-      </div>
-      <div class="jr-card" style="--rot:-1deg"><span class="tape"></span>
-        <div class="ct">🎵 Musik</div>
-        <div class="ci">genre R&amp;B — yang enak dinyanyiin</div>
-        <div class="jr-note">nyanyi bareng yuk 🎶</div>
-      </div>
+      <button class="jr-card" data-cat="makanan" style="--rot:-2deg"><span class="tape"></span><span class="cat-big">MAKANAN</span></button>
+      <button class="jr-card" data-cat="minuman" style="--rot:1.6deg"><span class="tape"></span><span class="cat-big">MINUMAN</span></button>
+      <button class="jr-card" data-cat="musik" style="--rot:-1deg"><span class="tape"></span><span class="cat-big">MUSIK</span></button>
     </div>
     <div class="spiral"></div>
     <div class="page right">
-      <div class="jr-head"> </div>
-      <div class="jr-card" style="--rot:2deg"><span class="tape"></span>
-        <div class="ct">🎤 Grup/Band</div>
-        <div class="ci">Day6, NCT, CORTIS — pokoknya K-pop</div>
-        <div class="jr-note">CORTIS baru nih ✨</div>
-      </div>
-      <div class="jr-card" style="--rot:-1.6deg"><span class="tape"></span>
-        <div class="ct">🎬 Film</div>
-        <div class="ci">happy ending only, apalagi drakor</div>
-        <div class="jr-note">sad ending? nope 😤 drakor 💘</div>
-      </div>
-      <div class="jr-card" style="--rot:1deg"><span class="tape"></span>
-        <div class="ct">📺 Kartun</div>
-        <div class="ci">Studio Ghibli</div>
-        <div class="jr-note">cozy banget 🌿</div>
-      </div>
-      <div class="jr-card" style="--rot:-2deg"><span class="tape"></span>
-        <div class="ct">👻 Serem</div>
-        <div class="ci">Final Destination</div>
-        <div class="jr-note">berani-berani takut 👀</div>
-      </div>
+      <div class="jr-head">&nbsp;</div>
+      <button class="jr-card" data-cat="band" style="--rot:2deg"><span class="tape"></span><span class="cat-big">GRUP / BAND</span></button>
+      <button class="jr-card" data-cat="film" style="--rot:-1.6deg"><span class="tape"></span><span class="cat-big">FILM</span></button>
+      <button class="jr-card" data-cat="kartun" style="--rot:1deg"><span class="tape"></span><span class="cat-big">KARTUN</span></button>
+      <button class="jr-card" data-cat="serem" style="--rot:-2deg"><span class="tape"></span><span class="cat-big">SEREM</span></button>
     </div>
+  </div>
+</div>
+
+<!-- KERTAS DETAIL kategori -->
+<div class="paper-overlay" id="paperOverlay">
+  <div class="paper-backdrop" id="paperBackdrop"></div>
+  <div class="paper-note">
+    <button class="paper-close" id="paperClose">✕</button>
+    <div class="paper-title" id="paperTitle"></div>
+    <div class="paper-body" id="paperBody"></div>
   </div>
 </div>
 
@@ -1229,6 +1245,45 @@ function openJournal(){ journalOverlay.classList.add('show'); if (typeof hintTap
 function closeJournal(){ journalOverlay.classList.remove('show'); }
 document.getElementById('jrClose').addEventListener('click', closeJournal);
 document.getElementById('jrBackdrop').addEventListener('click', closeJournal);
+
+/* ---------- detail kategori (kertas) ---------- */
+const CATS = {
+  makanan:{ title:'🍗 Makanan', note:'seringnya mama masak ayam 🥰',
+    foods:[{img:'assets/ayam.png',label:'Ayam'},{img:'assets/bihun.png',label:'Bihun'},
+           {img:'assets/mie.png',label:'Mie kuning'},{img:'assets/miesedaap.png',label:'Mie Sedaap'}] },
+  minuman:{ title:'🥤 Minuman', note:'wajib ada es krim! 🍦',
+    list:['air putih','jus mangga / alpukat','kopi susu','teh susu','es krim'] },
+  musik:{ title:'🎵 Musik', note:'nyanyi bareng yuk 🎶',
+    list:['genre R&B','lagu yang enak dinyanyiin'] },
+  band:{ title:'🎤 Grup / Band', note:'CORTIS baru nih ✨',
+    list:['Day6','NCT','CORTIS','pokoknya K-pop'] },
+  film:{ title:'🎬 Film', note:'sad ending? nope 😤 drakor 💘',
+    list:['happy ending only','drama korea'] },
+  kartun:{ title:'📺 Kartun', note:'cozy banget 🌿',
+    list:['Studio Ghibli'] },
+  serem:{ title:'👻 Serem', note:'berani-berani takut 👀',
+    list:['Final Destination'] },
+};
+const paperOverlay = document.getElementById('paperOverlay');
+const paperTitle = document.getElementById('paperTitle');
+const paperBody = document.getElementById('paperBody');
+function openCat(key){
+  const d = CATS[key]; if (!d) return;
+  paperTitle.innerHTML = d.title;
+  let html = '';
+  if (d.foods) html += '<div class="paper-foods">' + d.foods.map(f =>
+    '<div class="food"><img class="fimg" src="'+f.img+'" alt="'+f.label+'" onerror="this.style.display=\'none\'"><div class="flab">'+f.label+'</div></div>').join('') + '</div>';
+  if (d.list) html += '<ul class="paper-list">' + d.list.map(x => '<li>'+x+'</li>').join('') + '</ul>';
+  if (d.note) html += '<div class="paper-note-hand">\u270E ' + d.note + '</div>';
+  paperBody.innerHTML = html;
+  paperOverlay.classList.add('show'); burstConfetti(8);
+}
+function closeCat(){ paperOverlay.classList.remove('show'); }
+document.getElementById('paperClose').addEventListener('click', closeCat);
+document.getElementById('paperBackdrop').addEventListener('click', closeCat);
+document.querySelectorAll('.jr-card[data-cat]').forEach(btn => {
+  btn.addEventListener('click', () => { if (!viewport._drag) openCat(btn.dataset.cat); });
+});
 
 function burstConfetti(n){
   const colors=['#a8763a','#a23b2e','#f8f0dd','#e7d7ae'];
