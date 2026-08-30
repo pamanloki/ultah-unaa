@@ -6,7 +6,7 @@
 <title>Kamar Elvira — Malam</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Caveat:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg:#efe2c4; --bg-panel:#f8f0dd; --bg-panel-2:#e7d7ae;
@@ -436,6 +436,52 @@
 /* ========================================================================= */
 
 .modal-text-box{ max-height:56vh; overflow-y:auto; }
+
+/* ================= JURNAL (buku kesukaan) ================= */
+.journal-overlay{ position:fixed; inset:0; z-index:33; display:none; align-items:center; justify-content:center; padding:18px; }
+.journal-overlay.show{ display:flex; animation:fadeIn .2s ease; }
+.jr-backdrop{ position:absolute; inset:0; background:rgba(43,33,24,.6); backdrop-filter:blur(2px); }
+.book{ position:relative; z-index:2; display:flex; width:min(770px,96vw); max-height:88vh;
+  background:#efe6cf; border:3px solid #6f4a25; border-radius:6px;
+  box-shadow:0 0 0 6px #8a5a2b, 0 0 0 9px #2a1809, 14px 16px 0 rgba(0,0,0,.35);
+  overflow:hidden; animation:pop .28s ease; }
+.page{ flex:1; min-width:0; padding:20px 18px 22px; overflow-y:auto;
+  background:
+    radial-gradient(rgba(120,90,50,.16) 1px, transparent 1.5px) 0 0/16px 16px,
+    linear-gradient(#f7f0de,#f1e7cf); }
+.page.left{ box-shadow:inset -16px 0 26px -16px rgba(0,0,0,.28); }
+.page.right{ box-shadow:inset 16px 0 26px -16px rgba(0,0,0,.28); }
+.spiral{ width:18px; flex:0 0 18px;
+  background:repeating-linear-gradient(#dcc79c,#dcc79c 9px,#b99f6f 9px,#b99f6f 18px);
+  box-shadow:inset 2px 0 0 #6f4a25, inset -2px 0 0 #6f4a25; position:relative; }
+.spiral::before{ content:""; position:absolute; left:5px; right:5px; top:6px; bottom:6px;
+  background:repeating-linear-gradient(#4a3016 0 3px, transparent 3px 15px); border-radius:6px; opacity:.55; }
+.jr-head{ font-family:var(--font-display); font-weight:700; font-size:19px; color:#5a3a1c;
+  text-align:center; margin-bottom:14px; }
+.jr-card{ position:relative; background:linear-gradient(#caa06a,#bb8f55); color:#3a2610;
+  border:1px solid rgba(60,40,20,.35); padding:14px 14px 12px; margin:0 6px 20px;
+  transform:rotate(var(--rot,-1.5deg)); box-shadow:3px 4px 8px rgba(0,0,0,.28); }
+.jr-card .tape{ position:absolute; top:-9px; left:50%; transform:translateX(-50%) rotate(-3deg);
+  width:76px; height:18px; background:rgba(244,232,200,.5); box-shadow:inset 0 0 0 1px rgba(255,255,255,.4); }
+.jr-card .ct{ font-family:var(--font-mono); font-weight:700; font-size:13px; margin-bottom:5px; color:#2f1d0c; }
+.jr-card .ci{ font-size:12.5px; line-height:1.5; color:#3a2610; }
+.jr-note{ font-family:"Caveat",cursive; font-size:20px; line-height:1.15; color:#883f27;
+  margin-top:9px; transform:rotate(-1.4deg); }
+.jr-note::before{ content:"\270E  "; opacity:.55; }
+.jr-close{ position:absolute; top:8px; right:10px; width:30px; height:30px; z-index:4; border-radius:0;
+  background:linear-gradient(#b6813f,#8a5a2b); color:#fff5df; border:2px solid #2a1809; font-size:14px;
+  display:flex; align-items:center; justify-content:center; box-shadow:2px 2px 0 rgba(0,0,0,.3); cursor:pointer; }
+@media (max-width:620px){
+  .book{ flex-direction:column; max-height:90vh; overflow-y:auto; }
+  .spiral{ width:auto; height:16px; flex:0 0 16px;
+    background:repeating-linear-gradient(90deg,#dcc79c,#dcc79c 9px,#b99f6f 9px,#b99f6f 18px);
+    box-shadow:inset 0 2px 0 #6f4a25, inset 0 -2px 0 #6f4a25; }
+  .spiral::before{ left:6px; right:6px; top:5px; bottom:5px;
+    background:repeating-linear-gradient(90deg,#4a3016 0 3px, transparent 3px 15px); }
+  .page{ overflow:visible; }
+}
+/* ========================================================= */
+
 </style>
 </head>
 <body>
@@ -558,6 +604,56 @@
     <img class="paper" src="assets/kertasamplop.png" alt="Surat">
     <div class="letter-text" id="letterText"></div>
     <button class="letter-close" id="letterClose">✕</button>
+  </div>
+</div>
+
+<!-- JURNAL KESUKAAN -->
+<div class="journal-overlay" id="journalOverlay">
+  <div class="jr-backdrop" id="jrBackdrop"></div>
+  <div class="book">
+    <button class="jr-close" id="jrClose">✕</button>
+    <div class="page left">
+      <div class="jr-head">Favorit Elvira 💛</div>
+      <div class="jr-card" style="--rot:-2deg"><span class="tape"></span>
+        <div class="ct">🍗 Makanan</div>
+        <div class="ci">ayam, bihun, mie kuning (Mie Sedaap)</div>
+        <div class="jr-note">seringnya mama masak ayam 🥰</div>
+      </div>
+      <div class="jr-card" style="--rot:1.6deg"><span class="tape"></span>
+        <div class="ct">🥤 Minuman</div>
+        <div class="ci">air putih, jus mangga/alpukat, kopi susu, teh susu, es krim</div>
+        <div class="jr-note">wajib ada es krim! 🍦</div>
+      </div>
+      <div class="jr-card" style="--rot:-1deg"><span class="tape"></span>
+        <div class="ct">🎵 Musik</div>
+        <div class="ci">genre R&amp;B — yang enak dinyanyiin</div>
+        <div class="jr-note">nyanyi bareng yuk 🎶</div>
+      </div>
+    </div>
+    <div class="spiral"></div>
+    <div class="page right">
+      <div class="jr-head"> </div>
+      <div class="jr-card" style="--rot:2deg"><span class="tape"></span>
+        <div class="ct">🎤 Grup/Band</div>
+        <div class="ci">Day6, NCT, CORTIS — pokoknya K-pop</div>
+        <div class="jr-note">CORTIS baru nih ✨</div>
+      </div>
+      <div class="jr-card" style="--rot:-1.6deg"><span class="tape"></span>
+        <div class="ct">🎬 Film</div>
+        <div class="ci">happy ending only, apalagi drakor</div>
+        <div class="jr-note">sad ending? nope 😤 drakor 💘</div>
+      </div>
+      <div class="jr-card" style="--rot:1deg"><span class="tape"></span>
+        <div class="ct">📺 Kartun</div>
+        <div class="ci">Studio Ghibli</div>
+        <div class="jr-note">cozy banget 🌿</div>
+      </div>
+      <div class="jr-card" style="--rot:-2deg"><span class="tape"></span>
+        <div class="ct">👻 Serem</div>
+        <div class="ci">Final Destination</div>
+        <div class="jr-note">berani-berani takut 👀</div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -856,15 +952,7 @@ if (shelfHotspot && shelfTip){
   shelfHotspot.addEventListener('click', () => {
     if (viewport._drag) return;
     shelfTip.classList.remove('show');
-    openModal('Favorit Elvira 💛', '<span style="font-size:26px">📚</span>',
-      'ada banyak yaa maunya 😆<br><br>' +
-      '🍗 <b>Makanan</b><br>ayam, bihun, mie kuning (Mie Sedaap)<br><br>' +
-      '🥤 <b>Minuman</b><br>air putih, jus mangga/alpukat, kopi susu, teh susu, es krim<br><br>' +
-      '🎵 <b>Musik</b><br>genre R&amp;B — suka lagu yang enak dinyanyiin<br><br>' +
-      '🎤 <b>Grup/Band</b><br>Day6, NCT, CORTIS (katanya adiknya BTS wkwk) — pokoknya K-pop<br><br>' +
-      '🎬 <b>Film</b><br>wajib happy ending (anti sad ending!), apalagi drakor 💘<br><br>' +
-      '📺 <b>Kartun</b><br>Studio Ghibli<br><br>' +
-      '👻 <b>Serem</b><br>Final Destination');
+    openJournal();
   });
 }
 screenHotspot.addEventListener('click', () => {
@@ -1136,6 +1224,12 @@ windowHotspot.addEventListener('mouseenter', () => windowTip.classList.add('show
 })();
 
 /* ---------- confetti ---------- */
+const journalOverlay = document.getElementById('journalOverlay');
+function openJournal(){ journalOverlay.classList.add('show'); if (typeof hintTap!=='undefined') hintTap.style.opacity=0; burstConfetti(14); }
+function closeJournal(){ journalOverlay.classList.remove('show'); }
+document.getElementById('jrClose').addEventListener('click', closeJournal);
+document.getElementById('jrBackdrop').addEventListener('click', closeJournal);
+
 function burstConfetti(n){
   const colors=['#a8763a','#a23b2e','#f8f0dd','#e7d7ae'];
   for (let i=0;i<n;i++){
