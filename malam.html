@@ -435,6 +435,7 @@
 .anim-glow{ animation:none !important; }
 /* ========================================================================= */
 
+.modal-text-box{ max-height:56vh; overflow-y:auto; }
 </style>
 </head>
 <body>
@@ -458,6 +459,8 @@
     <button class="hotspot" id="screenHotspot" aria-label="Layar" style="left:51%; top:47%; width:9%; height:11%;"></button>
     <div class="map-tip" id="screenTip" style="left:51%; top:40%;">setel musik</div>
     <div class="map-tip" id="fotoTip" style="left:31%; top:35%;">about me</div>
+    <button class="hotspot" id="shelfHotspot" aria-label="Lemari buku" style="left:85%; top:54%; width:25%; height:58%;"></button>
+    <div class="map-tip" id="shelfTip" style="left:85%; top:23%;">kesukaan elvira</div>
 
     <!-- SAKLAR di dinding, sebelah foto -->
     <button class="saklar on" id="saklar" aria-label="Saklar lampu" style="left:22%; top:45%; width:10%;">
@@ -843,6 +846,26 @@ const fotoTip = document.getElementById('fotoTip');
 if (fotoObj && fotoTip){
   fotoObj.addEventListener('mouseenter', () => fotoTip.classList.add('show'));
   fotoObj.addEventListener('mouseleave', () => fotoTip.classList.remove('show'));
+}
+
+const shelfHotspot = document.getElementById('shelfHotspot');
+const shelfTip = document.getElementById('shelfTip');
+if (shelfHotspot && shelfTip){
+  shelfHotspot.addEventListener('mouseenter', () => shelfTip.classList.add('show'));
+  shelfHotspot.addEventListener('mouseleave', () => shelfTip.classList.remove('show'));
+  shelfHotspot.addEventListener('click', () => {
+    if (viewport._drag) return;
+    shelfTip.classList.remove('show');
+    openModal('Favorit Elvira 💛', '<span style="font-size:26px">📚</span>',
+      'ada banyak yaa maunya 😆<br><br>' +
+      '🍗 <b>Makanan</b><br>ayam, bihun, mie kuning (Mie Sedaap)<br><br>' +
+      '🥤 <b>Minuman</b><br>air putih, jus mangga/alpukat, kopi susu, teh susu, es krim<br><br>' +
+      '🎵 <b>Musik</b><br>genre R&amp;B — suka lagu yang enak dinyanyiin<br><br>' +
+      '🎤 <b>Grup/Band</b><br>Day6, NCT, CORTIS (katanya adiknya BTS wkwk) — pokoknya K-pop<br><br>' +
+      '🎬 <b>Film</b><br>wajib happy ending (anti sad ending!), apalagi drakor 💘<br><br>' +
+      '📺 <b>Kartun</b><br>Studio Ghibli<br><br>' +
+      '👻 <b>Serem</b><br>Final Destination');
+  });
 }
 screenHotspot.addEventListener('click', () => {
   if (viewport._drag) return;
