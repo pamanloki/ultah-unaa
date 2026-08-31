@@ -1196,8 +1196,12 @@ const CATS = {
     {img:'assets/ayam.png',      label:'Ayam',                    cap:'seringnya kamu masak ayam, makanya aku kira ayam favoritnya🥰. buktinya lebih suka ayam > telur :('},
     {img:'assets/bihun.png',     label:'Bihun',                   cap:'kamu aslinya sukanya bihun daripada mie kuning :('},
     {img:'assets/miesedaap.png', label:'Mie kuning (Mie Sedaap)', cap:'INDOMIE > MIE SEDAAP 😠'} ] },
-  minuman:{ title:'🥤 Minuman', note:'wajib ada es krim! 🍦',
-    list:['air putih','jus mangga / alpukat','kopi susu','teh susu','es krim'] },
+  minuman:{ title:'🥤 Minuman', note:'wajib ada es krim! 🍦', foods:[
+    {img:'assets/airputih.png', label:'Air putih'},
+    {img:'assets/jus.png',      label:'Jus mangga / alpukat'},
+    {img:'assets/kopisusu.png', label:'Kopi susu'},
+    {img:'assets/tehsusu.png',  label:'Teh susu'},
+    {img:'assets/eskrim.png',   label:'Es krim'} ] },
   musik:{ title:'🎵 Musik', note:'nyanyi bareng yuk 🎶',
     list:['genre R&B','lagu yang enak dinyanyiin'] },
   band:{ title:'🎤 Grup / Band', note:'CORTIS baru nih ✨',
@@ -1214,17 +1218,17 @@ function foodCell(f){
   return '<div class="fentry">' +
     '<img class="fimg" src="'+f.img+'" alt="'+f.label+'" onerror="this.style.display=\'none\'">' +
     '<div class="fname">'+f.label+'</div>' +
-    '<div class="fcap">'+(f.cap||'')+'</div></div>';
+    (f.cap ? '<div class="fcap">'+f.cap+'</div>' : '') + '</div>';
 }
 function renderDetail(key){
   const d = CATS[key]; if (!d) return;
   let L = '<div class="jr-head">'+d.title+'</div>';
   let R = '<div class="jr-head">&nbsp;</div>';
   if (d.foods){
-    if (d.foods[0]) L += foodCell(d.foods[0]);
-    if (d.foods[1]) L += foodCell(d.foods[1]);
-    if (d.foods[2]) R += foodCell(d.foods[2]);
-    if (d.foods[3]) R += foodCell(d.foods[3]);
+    var half = Math.ceil(d.foods.length / 2);
+    d.foods.slice(0, half).forEach(function(f){ L += foodCell(f); });
+    d.foods.slice(half).forEach(function(f){ R += foodCell(f); });
+    if (d.note) R += '<div class="paper-note-hand">✎ ' + d.note + '</div>';
   } else {
     L += '<ul class="paper-list">' + d.list.map(function(x){return '<li>'+x+'</li>';}).join('') + '</ul>';
     R += '<div class="paper-note-hand">✎ ' + d.note + '</div>';
