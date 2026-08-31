@@ -538,6 +538,31 @@
 .jr-home:active{ transform:translateY(1px); }
 /* ======================================== */
 
+
+/* ============ PAPAN CATATAN (surat buat Elvira) ============ */
+.notes-overlay{ position:fixed; inset:0; z-index:46; display:none; align-items:center; justify-content:center; padding:20px; }
+.notes-overlay.show{ display:flex; animation:fadeIn .2s ease; }
+.notes-backdrop{ position:absolute; inset:0; background:rgba(43,33,24,.6); backdrop-filter:blur(2px); }
+.notes-paper{ position:relative; z-index:2; width:min(440px,94vw); max-height:86vh; overflow-y:auto;
+  background:
+    repeating-linear-gradient(#fbf3dd 0 29px, rgba(120,90,50,.12) 29px 30px),
+    linear-gradient(#fdf6e3,#f7eccf);
+  border:2px solid #6f4a25; box-shadow:0 0 0 5px #caa06a, 0 0 0 8px #2a1809, 12px 14px 0 rgba(0,0,0,.34);
+  padding:34px 26px 26px; transform:rotate(-1deg); animation:pop .3s ease; color:#3a2610; }
+.notes-pin{ position:absolute; top:-16px; left:50%; transform:translateX(-50%); width:26px; height:26px; z-index:4;
+  border-radius:50%; background:radial-gradient(circle at 34% 32%, #ff9a8f, #d84b3a 60%, #9e2c1f);
+  box-shadow:0 3px 5px rgba(0,0,0,.35), inset 0 -2px 3px rgba(0,0,0,.3); }
+.notes-pin::after{ content:""; position:absolute; top:8px; left:9px; width:6px; height:6px; border-radius:50%;
+  background:rgba(255,255,255,.7); }
+.notes-title{ font-family:"Patrick Hand",cursive; font-size:27px; color:#7a3b1e; text-align:center; margin:0 0 12px; }
+.notes-body{ font-family:"Patrick Hand",cursive; font-size:20px; line-height:1.5; color:#4a2c14; }
+.notes-body .sign{ display:block; text-align:right; margin-top:16px; font-size:22px; color:#7a3b1e; }
+.notes-close{ position:absolute; top:8px; right:10px; width:30px; height:30px; z-index:5; border-radius:0;
+  background:linear-gradient(#b6813f,#8a5a2b); color:#fff5df; border:2px solid #2a1809; font-size:14px;
+  display:flex; align-items:center; justify-content:center; box-shadow:2px 2px 0 rgba(0,0,0,.3); cursor:pointer; }
+.notes-close:active{ transform:translateY(1px); }
+/* ========================================================= */
+
 </style>
 </head>
 <body>
@@ -563,6 +588,8 @@
     <div class="map-tip" id="fotoTip" style="left:31%; top:35%;">about me</div>
     <button class="hotspot" id="shelfHotspot" aria-label="Lemari buku" style="left:85%; top:54%; width:25%; height:58%;"></button>
     <div class="map-tip" id="shelfTip" style="left:85%; top:23%;">kesukaan elvira</div>
+    <button class="hotspot" id="notesHotspot" aria-label="Papan catatan" style="left:62%; top:46%; width:9.5%; height:9%;"></button>
+    <div class="map-tip" id="notesTip" style="left:62%; top:37%;">buat kamu 💌</div>
 
     <!-- SAKLAR di dinding, sebelah foto -->
     <button class="saklar on" id="saklar" aria-label="Saklar lampu" style="left:22%; top:45%; width:10%;">
@@ -660,6 +687,17 @@
     <img class="paper" src="assets/kertasamplop.png" alt="Surat">
     <div class="letter-text" id="letterText"></div>
     <button class="letter-close" id="letterClose">✕</button>
+  </div>
+</div>
+
+<!-- PAPAN CATATAN -->
+<div class="notes-overlay" id="notesOverlay">
+  <div class="notes-backdrop" id="notesBackdrop"></div>
+  <div class="notes-paper">
+    <span class="notes-pin"></span>
+    <button class="notes-close" id="notesClose">✕</button>
+    <div class="notes-title">✉ buat kamu</div>
+    <div class="notes-body">Haloo unaaa. Web ga jelas ini aku buat karena gabut dan buat hadiah ultah kamu. maaf kalo terkesan AI slop banget :(. soalnya kan kamu tau sendiri backgroundku bukan web dev atau programmer. aku bikin ini real dari ideku kok :(.<br><br>cuman emang ada web yg buat inspirasi, tapi ketika aku miripin kek gitu njir suah banget wkwkwk. maaf juga kalo bakal ada glitch dari gambar atau animasinya yaa. terus maaf kalau ada salah inget atau sok tau dari isi yg ada di web ga jelas ini.<br><br>Terakhir Happy Birthday Unaaa.....<span class="sign">— Imron</span></div>
   </div>
 </div>
 
@@ -979,6 +1017,19 @@ const fotoTip = document.getElementById('fotoTip');
 if (fotoObj && fotoTip){
   fotoObj.addEventListener('mouseenter', () => fotoTip.classList.add('show'));
   fotoObj.addEventListener('mouseleave', () => fotoTip.classList.remove('show'));
+}
+
+const notesHotspot = document.getElementById('notesHotspot');
+const notesTip = document.getElementById('notesTip');
+const notesOverlay = document.getElementById('notesOverlay');
+function openNotes(){ notesOverlay.classList.add('show'); if (typeof hintTap!=='undefined') hintTap.style.opacity=0; }
+function closeNotes(){ notesOverlay.classList.remove('show'); }
+if (notesHotspot){
+  notesHotspot.addEventListener('mouseenter', () => notesTip.classList.add('show'));
+  notesHotspot.addEventListener('mouseleave', () => notesTip.classList.remove('show'));
+  notesHotspot.addEventListener('click', () => { if (viewport._drag) return; notesTip.classList.remove('show'); openNotes(); });
+  document.getElementById('notesClose').addEventListener('click', closeNotes);
+  document.getElementById('notesBackdrop').addEventListener('click', closeNotes);
 }
 
 const shelfHotspot = document.getElementById('shelfHotspot');
