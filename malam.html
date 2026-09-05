@@ -496,6 +496,15 @@
 .jr-card:hover .cat-big{ color:#8a3f1c; }
 .jr-card:hover .cat-big::after{ opacity:1; transform:scaleX(1.05) rotate(-.8deg); }
 .jr-card:active{ transform:rotate(var(--rot,-1deg)) translateY(0) scale(.99); }
+/* ====== halaman kanan: foto + nama ====== */
+.jr-profile{ display:flex; flex-direction:column; align-items:center; justify-content:center;
+  height:100%; gap:18px; padding:8px 0; }
+.pf-frame{ background:#fdf8ea; padding:12px 12px 18px; border:1px solid rgba(90,60,30,.4);
+  box-shadow:0 8px 18px rgba(40,24,8,.3), inset 0 0 0 1px rgba(255,255,255,.5);
+  transform:rotate(-2.5deg); }
+.pf-frame img{ display:block; width:min(210px,62%); height:auto; background:#e8d9b8; }
+.pf-name{ font-family:"Caveat",cursive; font-weight:700; font-size:clamp(24px,3.6vw,32px);
+  color:#5a3a1c; text-align:center; transform:rotate(-1deg); }
 
 /* ====== KERTAS detail kategori ====== */
 .paper-overlay{ position:fixed; inset:0; z-index:34; display:none; align-items:center; justify-content:center; padding:20px; }
@@ -718,14 +727,14 @@
       <button class="jr-card" data-cat="makanan" style="--rot:-2deg"><span class="tape"></span><span class="cat-big">MAKANAN</span></button>
       <button class="jr-card" data-cat="minuman" style="--rot:1.6deg"><span class="tape"></span><span class="cat-big">MINUMAN</span></button>
       <button class="jr-card" data-cat="musik" style="--rot:-1deg"><span class="tape"></span><span class="cat-big">MUSIK</span></button>
+      <button class="jr-card" data-cat="film" style="--rot:1.4deg"><span class="tape"></span><span class="cat-big">FILM</span></button>
       </div>
       <div class="spiral"></div>
       <div class="page right">
-      <div class="jr-head">&nbsp;</div>
-      <button class="jr-card" data-cat="band" style="--rot:2deg"><span class="tape"></span><span class="cat-big">GRUP / BAND</span></button>
-      <button class="jr-card" data-cat="film" style="--rot:-1.6deg"><span class="tape"></span><span class="cat-big">FILM</span></button>
-      <button class="jr-card" data-cat="kartun" style="--rot:1deg"><span class="tape"></span><span class="cat-big">KARTUN</span></button>
-      <button class="jr-card" data-cat="serem" style="--rot:-2deg"><span class="tape"></span><span class="cat-big">SEREM</span></button>
+      <div class="jr-profile">
+        <div class="pf-frame"><img src="assets/elvira.png" alt="Elvira Bunga Nasution"></div>
+        <div class="pf-name">Elvira Bunga Nasution</div>
+      </div>
       </div>
     </div>
     <div class="leaf" id="leafDetail" hidden>
@@ -1350,20 +1359,17 @@ const CATS = {
     {img:'assets/kopisusu.png', label:'Kopi susu',                 cap:'padahal americano leboh enak'},
     {img:'assets/tehsusu.png',  label:'Teh susu',                  cap:'pas itu kamu suka ini'},
     {img:'assets/eskrim.png',   label:'Es krim',                   cap:'ini mah emang kesukaan kamu'} ] },
-  musik:{ title:'🎵 Musik', foods:[
-    {img:'assets/rnb.png',    label:'R&B',                         cap:'kamu suka genre musik ini kan yaa? suka yg ada rap rap kek gitu?'},
-    {img:'assets/nyanyi.png', label:'lagu apa aja',                cap:'ini lagu apa aja, asal bisa kamu nyanyiin'} ] },
-  band:{ title:'🎤 Grup / Band', note:'pokoknya K-pop! ✨', foods:[
-    {img:'assets/day6.png',   label:'Day6',                        cap:'dulu kamu suka ini padahal, tapi kamu lupain :(. soalnya aku dulu suka lagu letting go apa ya'},
-    {img:'assets/nct.png',    label:'NCT',                         cap:'ini kamu pernah dibeliin kasonya kalo ga salah inget'},
-    {img:'assets/cortis.png', label:'CORTIS',                      cap:'lebih suka ini ya kamu daripada si day6 itu :('} ] },
-  film:{ title:'🎬 Film', note:'sebenernya genre misteri suka juga kan yaa? apadah lupa judul akunya wkwkwk', foods:[
-    {img:'assets/drakor.png',   label:'Drama Korea',               cap:'aku dulu suka yg kamu rekomenin, judulnya summer strike kalo gasalah. yg cowonya bisu apa cool itu ya. yg jago matematika kalo ga salah'},
-    {img:'assets/happyend.png', label:'Happy ending',              cap:'drakor paling favorit kamu yg happy ending ada judulnya 2521 apa yaa'} ] },
-  kartun:{ title:'📺 Kartun', foods:[
-    {img:'assets/ghibli.png', label:'Studio Ghibli',               cap:'kamu pernah bilang ke aku sukanya yg ghibli-ghibli kan yaa'} ] },
-  serem:{ title:'👻 Horor', note:'sebenrnaya suka film zombie juga kan?', foods:[
-    {img:'assets/finaldest.png', label:'Final Destination',        cap:'kamu suka film ini yaa'} ] },
+  musik:{ title:'🎵 Musik', note:'pokoknya K-pop! ✨', foods:[
+    {img:'assets/rnb.png',    label:'R&B',          cap:'kamu suka genre musik ini kan yaa? apalagi yg KRNB? suka yg lagu bikin ngantuk :(. terus lagu kek males nyanyinya wkwk'},
+    {img:'assets/nyanyi.png', label:'lagu apa aja', cap:'ini lagu apa aja, asal bisa kamu nyanyiin'},
+    {img:'assets/day6.png',   label:'Day6',         cap:'dulu kamu suka ini padahal, tapi kamu lupain :(. soalnya aku dulu suka lagu letting go apa ya'},
+    {img:'assets/nct.png',    label:'NCT',          cap:'ini kamu pernah dibeliin kasonya kalo ga salah inget'},
+    {img:'assets/cortis.png', label:'CORTIS',       cap:'lebih suka ini ya kamu daripada si day6 itu :('} ] },
+  film:{ title:'🎬 Film', note:'sebenernya genre misteri suka juga kan yaa? apadah lupa judul akunya wkwkwk. terus suka film zombie juga kan?', foods:[
+    {img:'assets/drakor.png',    label:'Drama Korea',       cap:'aku dulu suka yg kamu rekomenin, judulnya summer strike kalo gasalah. yg cowonya bisu apa cool itu ya. yg jago matematika kalo ga salah'},
+    {img:'assets/happyend.png',  label:'Happy ending',      cap:'drakor paling favorit kamu yg happy ending ada judulnya 2521 apa yaa'},
+    {img:'assets/ghibli.png',    label:'Studio Ghibli',     cap:'kamu pernah bilang ke aku sukanya yg ghibli-ghibli kan yaa'},
+    {img:'assets/finaldest.png', label:'Final Destination', cap:'kamu suka film ini yaa'} ] },
 };
 
 function foodCell(f){
