@@ -456,31 +456,9 @@
   box-shadow:inset 2px 0 0 #6f4a25, inset -2px 0 0 #6f4a25; position:relative; }
 .spiral::before{ content:""; position:absolute; left:5px; right:5px; top:6px; bottom:6px;
   background:repeating-linear-gradient(#4a3016 0 3px, transparent 3px 15px); border-radius:6px; opacity:.55; }
-.jr-head{ font-family:var(--font-display); font-weight:700; font-size:19px; color:#5a3a1c;
-  text-align:center; margin-bottom:14px; }
-.jr-card{ position:relative; color:#3a2610; padding:16px 20px; margin:0 5px 22px;
-  transform:rotate(var(--rot,-1.5deg));
-  background:
-    linear-gradient(180deg, rgba(255,247,222,.22), rgba(0,0,0,.05) 44%, rgba(0,0,0,.15)),
-    repeating-linear-gradient(90deg, rgba(110,72,34,.055) 0 7px, rgba(110,72,34,0) 7px 15px),
-    linear-gradient(180deg,#dbb37c,#c4965d 54%,#b17f46);
-  border:1px solid rgba(70,44,20,.5); border-radius:8px;
-  box-shadow:
-    inset 0 1px 0 rgba(255,245,216,.6),
-    inset 0 -3px 7px rgba(80,48,20,.3),
-    0 6px 0 -1px rgba(120,84,42,.5),
-    0 11px 17px rgba(40,24,8,.3);
-  transition:transform .16s ease, box-shadow .18s ease, filter .18s ease; }
-.jr-card::before{ content:""; position:absolute; inset:6px; border-radius:5px;
-  border:1.5px solid rgba(92,58,28,.38); box-shadow:inset 0 0 0 1px rgba(255,245,216,.22);
-  pointer-events:none; }
-.jr-card .tape{ position:absolute; top:-11px; left:50%; transform:translateX(-50%) rotate(-3deg);
-  width:90px; height:22px; z-index:3;
-  background:repeating-linear-gradient(45deg, rgba(247,237,207,.66) 0 7px, rgba(233,219,183,.66) 7px 14px);
-  box-shadow:inset 0 0 0 1px rgba(255,255,255,.4), 0 2px 5px rgba(0,0,0,.15);
-  border-left:1px dashed rgba(120,90,50,.28); border-right:1px dashed rgba(120,90,50,.28); }
-.jr-card .ct{ font-family:var(--font-mono); font-weight:700; font-size:13px; margin-bottom:5px; color:#2f1d0c; }
-.jr-card .ci{ font-size:12.5px; line-height:1.5; color:#3a2610; }
+.jr-head{ font-family:"Caveat",cursive; font-weight:700; font-size:31px; color:#5a3a1c;
+  text-align:center; margin-bottom:8px; letter-spacing:.01em; }
+/* (kartu kayu dihapus — kategori jadi teks tulisan tangan) */
 .jr-note{ font-family:"Patrick Hand",cursive; font-size:20px; line-height:1.15; color:#5a2f18;
   margin-top:9px; transform:rotate(-1.4deg); }
 .jr-note::before{ content:"\270E  "; opacity:.55; }
@@ -499,25 +477,25 @@
 /* ========================================================= */
 
 
-/* ====== kartu jadi judul besar yang bisa diklik ====== */
-.jr-card{ display:flex; align-items:center; justify-content:center; min-height:72px;
-  width:calc(100% - 10px); cursor:pointer; -webkit-appearance:none; appearance:none; font:inherit; }
-.jr-card:hover{ filter:brightness(1.045) saturate(1.03);
-  transform:rotate(var(--rot,-1.5deg)) translateY(-3px);
-  box-shadow:
-    inset 0 1px 0 rgba(255,245,216,.65),
-    inset 0 -3px 7px rgba(80,48,20,.28),
-    0 9px 0 -1px rgba(120,84,42,.5),
-    0 17px 24px rgba(40,24,8,.34); }
-.jr-card:active{ transform:rotate(var(--rot,-1.5deg)) translateY(1px) scale(.99);
-  box-shadow:
-    inset 0 1px 0 rgba(255,245,216,.4),
-    inset 0 -2px 5px rgba(80,48,20,.3),
-    0 3px 0 -1px rgba(120,84,42,.5),
-    0 6px 11px rgba(40,24,8,.3); }
-.cat-big{ position:relative; z-index:2; font-family:var(--font-display); font-weight:900;
-  font-size:clamp(21px,3.3vw,27px); letter-spacing:.015em; color:#48290f;
-  text-shadow:0 1px 0 rgba(255,245,216,.5), 0 -1px 1px rgba(80,48,20,.3); }
+/* ====== kategori: teks tulisan tangan + garis pensil ====== */
+.jr-card{ display:flex; align-items:center; justify-content:center;
+  width:100%; min-height:54px; margin:0 0 8px; padding:10px 8px;
+  background:none; border:none; box-shadow:none; border-radius:0;
+  -webkit-appearance:none; appearance:none; font:inherit; cursor:pointer;
+  transform:rotate(var(--rot,-1deg)); transition:transform .18s ease; }
+.jr-card::before{ content:none !important; }
+.jr-card .tape{ display:none !important; }
+.cat-big{ position:relative; display:inline-block; font-family:"Caveat",cursive; font-weight:700;
+  font-size:clamp(30px,5.2vw,44px); line-height:1; letter-spacing:.01em; text-transform:lowercase;
+  color:#4f3a26; padding-bottom:14px; text-shadow:0 1px 0 rgba(255,250,236,.55);
+  transition:color .18s ease, transform .18s ease; }
+.cat-big::after{ content:""; position:absolute; left:-6px; right:-6px; bottom:2px; height:13px;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 14' preserveAspectRatio='none'%3E%3Cpath d='M3 8 C 30 2 55 12 80 7 S 130 2 155 8 S 192 11 197 6' fill='none' stroke='%23a4693a' stroke-width='2.6' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat center/100% 100%;
+  opacity:.85; transition:transform .2s ease, opacity .2s ease; }
+.jr-card:hover{ transform:rotate(var(--rot,-1deg)) translateY(-2px) scale(1.03); }
+.jr-card:hover .cat-big{ color:#8a3f1c; }
+.jr-card:hover .cat-big::after{ opacity:1; transform:scaleX(1.05) rotate(-.8deg); }
+.jr-card:active{ transform:rotate(var(--rot,-1deg)) translateY(0) scale(.99); }
 
 /* ====== KERTAS detail kategori ====== */
 .paper-overlay{ position:fixed; inset:0; z-index:34; display:none; align-items:center; justify-content:center; padding:20px; }
