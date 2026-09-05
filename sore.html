@@ -499,12 +499,13 @@
 .jr-card:active{ transform:rotate(var(--rot,-1deg)) translateY(0) scale(.99); }
 /* ====== halaman kanan: foto + nama ====== */
 .jr-profile{ display:flex; flex-direction:column; align-items:center; justify-content:center;
-  height:100%; gap:18px; padding:8px 0; }
-.pf-frame{ background:#fdf8ea; padding:12px 12px 18px; border:1px solid rgba(90,60,30,.4);
-  box-shadow:0 8px 18px rgba(40,24,8,.3), inset 0 0 0 1px rgba(255,255,255,.5);
-  transform:rotate(-2.5deg); }
-.pf-frame img{ display:block; width:min(210px,62%); height:auto; background:#e8d9b8; }
-.pf-name{ font-family:"Caveat",cursive; font-weight:700; font-size:clamp(24px,3.6vw,32px);
+  min-height:100%; gap:18px; padding:16px 0; box-sizing:border-box; text-align:center; }
+.pf-frame{ background:#fdf8ea; padding:12px 12px 16px; border:1px solid rgba(90,60,30,.35);
+  box-shadow:0 8px 18px rgba(40,24,8,.28), inset 0 0 0 1px rgba(255,255,255,.55);
+  transform:rotate(-1.5deg); margin:0 auto; }
+.pf-frame img{ display:block; width:min(200px,68%); height:auto; margin:0 auto;
+  image-rendering:pixelated; background:#efe4cf; }
+.pf-name{ font-family:"Caveat",cursive; font-weight:700; font-size:clamp(24px,3.6vw,33px);
   color:#5a3a1c; text-align:center; transform:rotate(-1deg); }
 
 /* ====== KERTAS detail kategori ====== */
@@ -729,7 +730,7 @@
       <div class="spiral"></div>
       <div class="page right">
       <div class="jr-profile">
-        <div class="pf-frame"><img src="assets/elvira.png" alt="Elvira Bunga Nasution"></div>
+        <div class="pf-frame"><img src="assets/elvira_crop.png" alt="Elvira Bunga Nasution"></div>
         <div class="pf-name">Elvira Bunga Nasution</div>
       </div>
       </div>
