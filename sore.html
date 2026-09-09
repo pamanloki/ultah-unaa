@@ -264,26 +264,9 @@
   .ch-loot svg{ width:30px; height:30px; color:var(--blush); }
   .ch-loot .lb{ font-family:var(--font-mono); font-size:11px; }
 
-  /* ---------- LETTER PANEL (surat di kertas) ---------- */
-  .letter-overlay{ position:fixed; inset:0; z-index:48; display:none; align-items:center; justify-content:center; padding:20px; }
-  .letter-overlay.show{ display:flex; animation:fadeIn .2s ease; }
-  .letter-backdrop{ position:absolute; inset:0; background:rgba(43,33,24,.6); backdrop-filter:blur(2px); }
-  .letter-wrap{ position:relative; z-index:2; width:min(92vw, 430px);
-    animation:mapZoom .5s cubic-bezier(.2,.8,.2,1); }
-  .letter-wrap .paper{ width:100%; display:block; image-rendering:pixelated;
-    filter:drop-shadow(0 10px 26px rgba(0,0,0,.45)); user-select:none; -webkit-user-drag:none; }
-  .letter-text{ position:absolute; inset:13% 15% 12% 15%; overflow:auto;
-    font-family:var(--font-body); color:#5a3f28; text-align:center; line-height:1.5;
-    font-size:clamp(10px, 2.7vw, 15px);
-    display:flex; flex-direction:column; justify-content:center; scrollbar-width:none; }
-  .letter-text::-webkit-scrollbar{ display:none; }
-  .letter-text .ttd{ margin-top:12px; font-family:var(--font-display); font-style:italic; color:#7a4a24; }
+  /* heart icon (dipakai di pesan kotak harta) */
   .heart-icon{ display:inline-block; animation:heartBeat 1s ease-in-out infinite; }
   @keyframes heartBeat{ 0%,100%{ transform:scale(1);} 50%{ transform:scale(1.25);} }
-  .letter-close{ position:absolute; top:-13px; right:-13px; width:32px; height:32px; border-radius:50%;
-    background:var(--bg-panel); color:var(--text); border:2px solid var(--text); font-size:15px;
-    display:flex; align-items:center; justify-content:center; z-index:4; cursor:pointer;
-    box-shadow:2px 2px 0 rgba(43,33,24,.2); }
 
   /* ---------- OVERLAY UI (nempel di layar, nggak ikut geser) ---------- */
   .banner{ position:fixed; top:0; left:0; right:0; text-align:center; padding:14px 16px 24px;
@@ -397,7 +380,7 @@
 .ch-go,.claim-send{ background:linear-gradient(#b6813f,#8a5a2b) !important; color:#fff5df !important;
   border:3px solid var(--card-border) !important; border-radius:0 !important; font-family:var(--font-mono) !important;
   font-weight:700 !important; box-shadow:inset 0 3px 0 rgba(255,255,255,.22), inset 0 -3px 0 rgba(0,0,0,.28), 3px 3px 0 rgba(0,0,0,.2) !important; }
-.modal-close,.ch-close,.pl-close,.letter-close,.mappanel-close{ background:linear-gradient(#b6813f,#8a5a2b) !important;
+.modal-close,.ch-close,.pl-close,.mappanel-close{ background:linear-gradient(#b6813f,#8a5a2b) !important;
   color:#fff5df !important; border:2px solid var(--card-border) !important; border-radius:0 !important;
   box-shadow:2px 2px 0 rgba(0,0,0,.28) !important; }
 /* panel detail (peta / foto / kertas password) */
@@ -690,16 +673,6 @@
       <div class="ch-sub">Nih isinya, colek satu-satu ya 🥰</div>
       <div class="ch-loot" id="chLoot"></div>
     </div>
-  </div>
-</div>
-
-<!-- LETTER PANEL (surat amplop) -->
-<div class="letter-overlay" id="letterOverlay">
-  <div class="letter-backdrop" id="letterBackdrop"></div>
-  <div class="letter-wrap">
-    <img class="paper" src="assets/kertasamplop.png" alt="Surat">
-    <div class="letter-text" id="letterText"></div>
-    <button class="letter-close" id="letterClose">✕</button>
   </div>
 </div>
 
@@ -1125,18 +1098,6 @@ function spawnLoot(){
     stage.appendChild(btn);
   });
 }
-
-/* ---------- SURAT (amplop) -> panel kertas ---------- */
-const letterOverlay = document.getElementById('letterOverlay');
-const letterText = document.getElementById('letterText');
-function openLetter(){
-  letterText.innerHTML = LETTER_MSG;
-  letterOverlay.classList.add('show'); hintTap.style.opacity = 0;
-  burstConfetti(20);
-}
-function closeLetter(){ letterOverlay.classList.remove('show'); }
-document.getElementById('letterClose').addEventListener('click', closeLetter);
-document.getElementById('letterBackdrop').addEventListener('click', closeLetter);
 
 /* ---------- KADO -> klaim hadiah (kirim alamat ke Telegram) ---------- */
 const claimOverlay = document.getElementById('claimOverlay');
