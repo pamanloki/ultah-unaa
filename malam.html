@@ -566,6 +566,10 @@
 /* ===== FIX HP: filter drop-shadow bikin kotak hitam di WebView Android/Telegram
    (kelihatan pas geser). Matiin filter di semua tempelan yg ada di stage. ===== */
 #stage *{ filter:none !important; animation:none !important; transition:none !important; }
+/* kucing & boneka: animasinya cuma geser background-position (bukan transform/opacity/filter),
+   jadi aman — nggak bikin layer GPU/kotak hitam. Nyalain lagi. */
+#stage .cat{ animation:catIdle 1.15s steps(8) infinite !important; }
+#stage .bnk{ animation:bnkPlay 2.2s steps(10) infinite !important; }
 /* ================================================================= */
 
 </style>
