@@ -27,22 +27,8 @@
     background-position:center, center, center, center;
     background-repeat:no-repeat; }
 
-  /* ---------- KEMBANG API ---------- */
-  .fx-layer{ position:absolute; inset:0; pointer-events:none; z-index:3; }
-  .firework{ position:absolute; width:0; height:0; }
-  .spark{ position:absolute; left:0; top:0; width:7px; height:7px; border-radius:50%;
-    background:var(--c,#ffd166); box-shadow:0 0 14px 3px var(--c,#ffd166);
-    transform:rotate(var(--a)) translateY(0); opacity:1;
-    animation:burst var(--dur,1.15s) ease-out forwards; }
-  @keyframes burst{
-    0%{ transform:rotate(var(--a)) translateY(0) scale(1); opacity:1; }
-    75%{ opacity:1; }
-    100%{ transform:rotate(var(--a)) translateY(calc(var(--r,90px) * -1)) scale(.4); opacity:0; }
-  }
-  .rocket{ position:absolute; bottom:0; width:3px; height:14px; border-radius:2px;
-    background:linear-gradient(#fff,rgba(255,255,255,0)); box-shadow:0 0 8px 2px rgba(255,240,200,.8);
-    animation:launch var(--lt,1s) cubic-bezier(.2,.7,.4,1) forwards; }
-  @keyframes launch{ to{ transform:translateY(calc(var(--ly,-60vh))); opacity:.2; } }
+  /* ---------- KEMBANG API (digambar di canvas, biar nggak jadi kotak hitam di HP) ---------- */
+  #fx{ position:fixed; inset:0; z-index:3; pointer-events:none; }
 
   /* ---------- TULISAN ULANG TAHUN ---------- */
   .greet{ position:fixed; inset:0; z-index:5; display:flex; flex-direction:column;
@@ -67,12 +53,6 @@
     color:#f7ead0; margin-top:16px; opacity:0; text-shadow:0 2px 12px rgba(0,0,0,.7); }
   .greet .sub.show{ animation:fadeUp 1s ease forwards; }
 
-  /* kilatan pas meledak */
-  .flash{ position:fixed; inset:0; z-index:4; pointer-events:none;
-    background:radial-gradient(circle at 50% 42%, rgba(255,240,200,.3), rgba(255,240,200,0) 55%);
-    animation:flashPop .26s ease forwards; }
-  @keyframes flashPop{ from{ opacity:1; } to{ opacity:0; } }
-
   .back{ position:fixed; bottom:18px; left:50%; transform:translateX(-50%); z-index:6;
     font-family:var(--font-mono); font-size:12px; color:#f3e2bb; text-decoration:none;
     background:linear-gradient(#5c3a19,#3e2712); border:2px solid #150c04;
@@ -82,9 +62,8 @@
 </style>
 </head>
 <body>
-<div class="sky" id="sky">
-  <div class="fx-layer" id="fx"></div>
-</div>
+<div class="sky" id="sky"></div>
+<canvas id="fx"></canvas>
 
 <div class="greet">
   <h1 class="hbd">
@@ -117,49 +96,107 @@ if (window.Telegram && window.Telegram.WebApp) { const tg = window.Telegram.WebA
   window.addEventListener('keydown', kick);
 })();
 
-/* ---------- kembang api ---------- */
-const fx = document.getElementById('fx');
-const COLORS = ['#ffd166','#ff6b9d','#8ecae6','#c8b6ff','#a0f0c0','#ffb4a2','#fff3b0'];
-
-function launchFirework(x, y){
-  const rocket = document.createElement('div');
-  rocket.className = 'rocket';
-  rocket.style.left = x + 'vw';
-  rocket.style.setProperty('--ly', '-' + (100 - y) + 'vh');
-  rocket.style.setProperty('--lt', (0.7 + Math.random()*0.3).toFixed(2)+'s');
-  fx.appendChild(rocket);
-  setTimeout(() => { rocket.remove(); explode(x, y); }, 750);
+/* ============================================================
+   KEMBANG API — digambar di <canvas>.
+   Alasan: kalau tiap percikan bikin elemen DOM transparan yg
+   dianimasi transform, WebView HP (Telegram/Android) nge-cat
+   area transparannya jadi kotak hitam. Canvas = 1 bitmap, aman.
+   ============================================================ */
+const canvas = document.getElementById('fx');
+const ctx = canvas.getContext('2d');
+let W = 0, H = 0, DPR = 1;
+function resize(){
+  DPR = Math.min(window.devicePixelRatio || 1, 2);
+  W = window.innerWidth; H = window.innerHeight;
+  canvas.width = Math.round(W * DPR); canvas.height = Math.round(H * DPR);
+  canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
 }
-function explode(x, y){
-  const c = COLORS[Math.floor(Math.random()*COLORS.length)];
-  const c2 = COLORS[Math.floor(Math.random()*COLORS.length)];
-  const fw = document.createElement('div');
-  fw.className = 'firework';
-  fw.style.left = x + 'vw'; fw.style.top = y + 'vh';
-  const n = 40, radius = 140 + Math.random()*110;
+window.addEventListener('resize', resize);
+resize();
+
+// warna kembang api (RGB)
+const COLORS = [
+  [255,209,102],[255,107,157],[142,202,230],[200,182,255],
+  [160,240,192],[255,180,162],[255,243,176]
+];
+const rnd = a => a[Math.floor(Math.random()*a.length)];
+
+const rockets = [];  // roket yg naik
+const sparks  = [];  // percikan setelah meledak
+let flashLife = 0;   // kilatan pas meledak (0..1)
+
+function drawGlow(x, y, size, c, alpha){
+  const rad = size * 4;
+  const g = ctx.createRadialGradient(x, y, 0, x, y, rad);
+  g.addColorStop(0,   'rgba('+c[0]+','+c[1]+','+c[2]+','+alpha+')');
+  g.addColorStop(0.4, 'rgba('+c[0]+','+c[1]+','+c[2]+','+(alpha*0.55)+')');
+  g.addColorStop(1,   'rgba('+c[0]+','+c[1]+','+c[2]+',0)');
+  ctx.fillStyle = g;
+  ctx.beginPath(); ctx.arc(x, y, rad, 0, Math.PI*2); ctx.fill();
+}
+
+function explode(x, y, cb){
+  const c1 = rnd(COLORS), c2 = rnd(COLORS);
+  const n = 38, base = 3.4 + Math.random()*1.4;
   for (let i=0;i<n;i++){
-    const sp = document.createElement('span');
-    sp.className = 'spark';
-    sp.style.setProperty('--a', (i * (360/n)) + 'deg');
-    sp.style.setProperty('--r', radius + 'px');
-    sp.style.setProperty('--c', i % 2 ? c : c2);
-    sp.style.setProperty('--dur', (1 + Math.random()*0.5).toFixed(2)+'s');
-    fw.appendChild(sp);
+    const a = (i/n) * Math.PI*2 + Math.random()*0.12;
+    const v = base * (0.55 + Math.random()*0.7);
+    sparks.push({ x, y, vx:Math.cos(a)*v, vy:Math.sin(a)*v,
+      life:1, decay:0.010 + Math.random()*0.012,
+      color: i%2 ? c1 : c2, size: 1.8 + Math.random()*1.6 });
   }
-  fx.appendChild(fw);
-  setTimeout(() => fw.remove(), 1700);
+  flashLife = 1;
+  if (cb) cb();
+}
+
+// x,y dalam PERSEN layar (biar sama kayak versi lama)
+function launchFirework(xPct, yPct, cb){
+  const x  = xPct/100 * W;
+  const ty = yPct/100 * H;
+  const vy = (ty - H) / 46;            // sampai target ~0.75s @60fps
+  rockets.push({ x, y:H, ty, vy, color:rnd(COLORS), cb });
 }
 function randomShow(){ launchFirework(12 + Math.random()*76, 18 + Math.random()*42); }
 
-/* ---------- kilatan pas 'duar' ---------- */
-function flash(){
-  const f = document.createElement('div'); f.className = 'flash';
-  document.body.appendChild(f); setTimeout(() => f.remove(), 280);
+function tick(){
+  ctx.clearRect(0, 0, W, H);
+  ctx.globalCompositeOperation = 'lighter';
+
+  // kilatan lembut pas meledak
+  if (flashLife > 0){
+    const g = ctx.createRadialGradient(W*0.5, H*0.42, 0, W*0.5, H*0.42, Math.max(W,H)*0.6);
+    g.addColorStop(0, 'rgba(255,240,200,'+(flashLife*0.22)+')');
+    g.addColorStop(1, 'rgba(255,240,200,0)');
+    ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
+    flashLife -= 0.06;
+  }
+
+  // roket naik
+  for (let i=rockets.length-1;i>=0;i--){
+    const r = rockets[i];
+    r.y += r.vy;
+    drawGlow(r.x, r.y, 2.4, r.color, 1);
+    if (r.y <= r.ty){ explode(r.x, r.y, r.cb); rockets.splice(i,1); }
+  }
+
+  // percikan
+  for (let i=sparks.length-1;i>=0;i--){
+    const p = sparks[i];
+    p.vx *= 0.985; p.vy = p.vy*0.985 + 0.03;   // gesekan + gravitasi
+    p.x += p.vx; p.y += p.vy; p.life -= p.decay;
+    if (p.life <= 0){ sparks.splice(i,1); continue; }
+    drawGlow(p.x, p.y, p.size, p.color, Math.max(0, p.life));
+  }
+
+  ctx.globalCompositeOperation = 'source-over';
+  requestAnimationFrame(tick);
 }
+requestAnimationFrame(tick);
 
 /* ---------- urutan: tiap roket meledak -> muncul 1 kata ---------- */
 const words = document.querySelectorAll('.hbd .w');
-function revealWord(i){ if (words[i]){ words[i].classList.add('show'); flash(); } }
+function revealWord(i){ if (words[i]) words[i].classList.add('show'); }
 
 let ambientOn = false;
 function startAmbient(){
@@ -177,13 +214,16 @@ function nextShot(){
     const sub = document.getElementById('subMsg'); if (sub) sub.classList.add('show');
     setTimeout(startAmbient, 500); return;
   }
-  launchFirework(45 + Math.random()*10, 22 + Math.random()*16);  // roket dari tengah-bawah
-  setTimeout(() => { revealWord(wi); wi++; setTimeout(nextShot, 1050); }, 750);  // reveal pas meledak
+  // roket dari tengah-bawah; pas meledak -> reveal 1 kata, lanjut kata berikutnya
+  launchFirework(45 + Math.random()*10, 22 + Math.random()*16, () => {
+    revealWord(wi); wi++; setTimeout(nextShot, 1050);
+  });
 }
 setTimeout(nextShot, 900);  // mulai bentar setelah kebuka
 
+// ketuk langit -> meledak di situ
 document.getElementById('sky').addEventListener('pointerdown', e => {
-  explode(e.clientX / window.innerWidth * 100, Math.max(8, e.clientY / window.innerHeight * 100));
+  explode(e.clientX, Math.max(H*0.08, e.clientY));
 });
 </script>
 </body>
