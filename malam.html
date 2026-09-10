@@ -1198,9 +1198,22 @@ viewport.addEventListener('scroll', () => { hintTap.style.opacity = 0; }, { once
 const nightFade = document.getElementById('nightFade');
 requestAnimationFrame(() => setTimeout(() => nightFade.classList.add('gone'), 40));
 
-/* ---------- MALAM: musik auto-play ---------- */
+/* ---------- MALAM: musik LANJUT dari state (sore/langit), bukan ngulang dari awal ---------- */
 (function autoplayMusic(){
-  function start(){ if (curTrack < 0) selectTrack(0, true); else playAudio(); }
+  let st = null;
+  try { st = JSON.parse(sessionStorage.getItem('ultah_music') || 'null'); } catch(e){}
+  let startI = 0, startT = 0;
+  if (st && st.src){
+    const idx = TRACKS.findIndex(t => t.src === st.src);
+    if (idx >= 0){ startI = idx; if (typeof st.t === 'number' && isFinite(st.t)) startT = st.t; }
+  }
+  // seek ke posisi tersimpan sekali, pas metadata siap
+  let seeked = false;
+  audio.addEventListener('loadedmetadata', () => {
+    if (seeked || startT <= 0) return; seeked = true;
+    try { audio.currentTime = startT; } catch(e){}
+  });
+  function start(){ if (curTrack < 0) selectTrack(startI, true); else playAudio(); }
   start(); // coba langsung
   // fallback: kalau browser blokir autoplay, mulai pas interaksi pertama
   const kick = () => {

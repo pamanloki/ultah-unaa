@@ -1000,6 +1000,16 @@ function closePlayer(){ playerOverlay.classList.remove('show'); }
 document.getElementById('plClose').addEventListener('click', closePlayer);
 document.getElementById('plBackdrop').addEventListener('click', closePlayer);
 
+/* ---------- simpan state lagu biar lanjut di malam.html ---------- */
+function saveMusicState(){
+  try {
+    if (curTrack >= 0) sessionStorage.setItem('ultah_music',
+      JSON.stringify({ i:curTrack, src:TRACKS[curTrack].src, t:audio.currentTime, playing:isPlaying }));
+  } catch(e){}
+}
+audio.addEventListener('timeupdate', saveMusicState);
+window.addEventListener('pagehide', saveMusicState);
+
 const screenHotspot = document.getElementById('screenHotspot');
 const screenTip = document.getElementById('screenTip');
 screenHotspot.addEventListener('mouseenter', () => screenTip.classList.add('show'));
